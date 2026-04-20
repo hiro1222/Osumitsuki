@@ -1,9 +1,0 @@
-diff a/Assets/Obj_Osumitsuki/Obj_Osumitsuki.cs b/Assets/Obj_Osumitsuki/Obj_Osumitsuki.cs	(rejected hunks)
-@@ -3,6 +3,7 @@
- public class Obj_Osumitsuki : MonoBehaviour
- {
- 
-+<<<<<<< HEAD
-     [Header("�C���N�X�e�[�^�X")]
-     //���݂̃C���N�̗�
-     private float curInkAmount;
