@@ -377,8 +377,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
-<<<<<<< HEAD
-=======
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,15 +548,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
->>>>>>> fe7106dfbefcf6e06ec7fbc76d83114d5b2a8b83
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 330585546}
   - {fileID: 410087041}
-<<<<<<< HEAD
-=======
   - {fileID: 832575519}
   - {fileID: 1233458567}
->>>>>>> fe7106dfbefcf6e06ec7fbc76d83114d5b2a8b83
