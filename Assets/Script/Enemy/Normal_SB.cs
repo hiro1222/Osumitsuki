@@ -94,6 +94,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     private bool isPlayerKnockedBack;
     private float knockbackDuration = 0.3f;
 
+    private Vector3 patrolPosA;
+    private Vector3 patrolPosB;
+
     // ====================================================================
     //  初期化
     // ====================================================================
@@ -105,6 +108,10 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         inkHitCount = 0;
         state = EnemyState.Free;
         currentPatrolTarget = patrolPointA;
+
+        // ワールド座標を最初に記憶しておく（子オブジェクトでも回転の影響を受けない）
+        if (patrolPointA != null) patrolPosA = patrolPointA.position;
+        if (patrolPointB != null) patrolPosB = patrolPointB.position;
 
         if (player == null)
         {
@@ -147,6 +154,8 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     {
         if (player == null) return;
         if (isAlly) return;
+
+        FollowGround();
 
         // プレイヤーのノックバック処理
         UpdatePlayerKnockback();
@@ -197,7 +206,8 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
 
         if (patrolPointA == null || patrolPointB == null) return;
 
-        Vector3 toTarget = currentPatrolTarget.position - transform.position;
+        Vector3 currentPos = (currentPatrolTarget == patrolPointA) ? patrolPosA : patrolPosB;
+        Vector3 toTarget = currentPos - transform.position; ;
         toTarget.y = 0f;
 
         if (toTarget.magnitude > 0.3f)
@@ -344,6 +354,7 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     private void LookAt(Vector3 direction)
     {
         if (direction.sqrMagnitude < 0.01f) return;
+        direction.y = 0;
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             Quaternion.LookRotation(direction),
@@ -372,5 +383,25 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         }
 
         Debug.Log("RYOKUDUKI_NOTO");
+    }
+
+    private void FollowGround()
+    {
+        // isTriggerのコライダー（PaintableSurfaceの床）も検知する
+        if (Physics.Raycast(
+                transform.position + Vector3.up * 0.5f,
+                Vector3.down,
+                out RaycastHit hit,
+                10f,
+                ~0, // 全レイヤー対象
+                QueryTriggerInteraction.Collide)) // ← Triggerも当たるように
+        {
+            // Enemyコライダー自身には当たらないようにする
+            if (hit.collider.gameObject == gameObject) return;
+
+            float targetY = hit.point.y;
+            float newY = Mathf.Lerp(transform.position.y, targetY, 10f * Time.deltaTime);
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
     }
 }
