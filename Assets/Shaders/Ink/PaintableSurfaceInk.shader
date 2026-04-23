@@ -98,14 +98,14 @@ Shader "Ink/PaintableSurfaceInk"
 
                 half3 finalRgb = baseCol.rgb;
 
-                if (density > 0.004)
+                if (density > 0.001)
                 {
                     #ifdef _ENABLEGRAYSCALE_ON
                     // ── 方式D: 墨が塗られた場所は元の色をグレースケール化 ──
                     float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
                     float3 grayRgb = float3(gray, gray, gray);
                     // density で グレースケール化
-                    finalRgb = lerp(finalRgb, grayRgb, density * _GrayscaleStrength);
+                    finalRgb = lerp(finalRgb, grayRgb, _GrayscaleStrength);
                     #endif
 
                     // ── 墨の色をグレー（or 元の色）の上に重ねる ──
