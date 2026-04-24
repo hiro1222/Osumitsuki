@@ -12,11 +12,13 @@ public class Obj_Osumitsuki : MonoBehaviour
 
     private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
     private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
+    private bool endFlg = false;        //終了フラグ
 
 
     //プロパティ
     public bool OsumiTrg => osumitsukiTrg;
     public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
+    public bool EndFlg => endFlg;           //処理が終了したかどうか
 
 
     //お墨付き時のアクション
@@ -38,7 +40,7 @@ public class Obj_Osumitsuki : MonoBehaviour
         if (curInkAmount > maxInkCapa)
             curInkAmount = maxInkCapa;
 
-        if (InkRatio/100f <= curInkAmount / maxInkCapa)
+        if (InkRatio/100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
         {
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);

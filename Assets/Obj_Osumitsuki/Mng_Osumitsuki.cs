@@ -32,7 +32,8 @@ public class Mng_Osumitsuki : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        action_Objects.RemoveAll(obj => obj.OsumiFlg == true);
+        action_Objects.RemoveAll(obj => obj.OsumiFlg || obj.EndFlg);
+        update_Objects.RemoveAll(obj => obj.EndFlg);
 
         foreach (Obj_Osumitsuki obj in update_Objects)
         {
