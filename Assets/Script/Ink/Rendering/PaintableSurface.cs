@@ -79,6 +79,21 @@ public class PaintableSurface : MonoBehaviour
     public bool VisualDirty => visualDirty;
 
     // ====================================================================
+    //  イベント
+    // ====================================================================
+
+    /// <summary>
+    /// 塗られたときに発火するイベント
+    /// 引数: (塗られたセル数, このPaintで加算したdensity値)
+    /// 
+    /// ■ 購読例（Obj_Osumitsuki継承クラスで）:
+    ///   ps.OnPainted += (cells, density) => Painted(0.5f);
+    /// 
+    /// ■ 親オブジェクト側で集約したい場合は PaintableSurfaceGroup を使う
+    /// </summary>
+    public event System.Action<int, byte> OnPainted;
+
+    // ====================================================================
     //  初期化
     // ====================================================================
 
