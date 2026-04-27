@@ -16,7 +16,7 @@ public class PlayerAnimatorDriver : MonoBehaviour
     [SerializeField] private string defaultChildAnimatorName = "nazori";
 
     [Header("Base Animation Names")]
-    [SerializeField] private string idleAnimationName = "Idle";
+    [SerializeField] private string idleAnimationName = "idle";
     [SerializeField] private string walkAnimationName = "walk";
     [SerializeField] private string jumpAnimationName = "jump";
 
@@ -60,7 +60,6 @@ public class PlayerAnimatorDriver : MonoBehaviour
         SafeSetBool(hashIsNazori, controller.ActionManager.IsNazori);
         SafeSetInt(hashActionKind, (int)controller.ActionManager.CurrentAction);
 
-        // アクション中はアクション側のアニメを優先する
         if (controller.ActionManager.IsActing)
         {
             return;
@@ -89,6 +88,40 @@ public class PlayerAnimatorDriver : MonoBehaviour
         PlayAnimationInternal(stateName, actionCrossFade, true);
     }
 
+    public void PauseCurrentAnimationAt(string stateName, float seconds)
+    {
+        if (anim == null) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+
+        int hash = Animator.StringToHash(stateName);
+
+        if (!anim.HasState(0, hash))
+        {
+            Debug.LogWarning("Animator state not found: " + stateName);
+            return;
+        }
+
+        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+        float length = info.length;
+
+        if (length <= 0.0f)
+        {
+            length = 1.0f;
+        }
+
+        float normalizedTime = Mathf.Clamp01(seconds / length);
+
+        currentStateName = stateName;
+        anim.Play(hash, 0, normalizedTime);
+        anim.speed = 0.0f;
+    }
+
+    public void ResumeAnimation()
+    {
+        if (anim == null) return;
+        anim.speed = 1.0f;
+    }
+
     private void PlayBaseAnimation(string stateName)
     {
         PlayAnimationInternal(stateName, baseCrossFade, false);
@@ -99,15 +132,21 @@ public class PlayerAnimatorDriver : MonoBehaviour
         if (anim == null) return;
         if (string.IsNullOrEmpty(stateName)) return;
 
-        // ここが重要。
-        // 同じステートに毎フレームCrossFadeすると、アニメが1フレーム目に戻り続ける。
+        int hash = Animator.StringToHash(stateName);
+
+        if (!anim.HasState(0, hash))
+        {
+            Debug.LogWarning("Animator state not found: " + stateName);
+            return;
+        }
+
         if (!forceRestart && currentStateName == stateName)
         {
             return;
         }
 
         currentStateName = stateName;
-        anim.CrossFadeInFixedTime(stateName, fadeTime);
+        anim.CrossFadeInFixedTime(hash, fadeTime, 0);
     }
 
     private void SafeSetFloat(int hash, float value)
