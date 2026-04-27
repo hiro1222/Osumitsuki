@@ -15,6 +15,11 @@ public class PlayerMove : MonoBehaviour
     private Vector3 velocity;
     private bool jumpRequestedThisFrame;
 
+    private bool externalPositionLock;
+    private bool externalGravityEnabled = true;
+    private bool lockHeightOnly;
+    private Vector3 lockedPosition;
+
     public bool IsGrounded { get; private set; }
     public float VerticalVelocity => velocity.y;
 
@@ -28,6 +33,23 @@ public class PlayerMove : MonoBehaviour
     public void Tick()
     {
         UpdateMove();
+    }
+
+    public void SetExternalPositionLock(bool enabled, Vector3 position, bool heightOnly)
+    {
+        externalPositionLock = enabled;
+        lockedPosition = position;
+        lockHeightOnly = heightOnly;
+    }
+
+    public void SetExternalGravityEnabled(bool enabled)
+    {
+        externalGravityEnabled = enabled;
+    }
+
+    public void ClearVerticalVelocity()
+    {
+        velocity.y = 0.0f;
     }
 
     private void UpdateMove()
@@ -67,15 +89,36 @@ public class PlayerMove : MonoBehaviour
             IsGrounded = false;
         }
 
-        velocity.y += stats.gravity * Time.deltaTime;
+        if (externalGravityEnabled)
+        {
+            velocity.y += stats.gravity * Time.deltaTime;
+        }
+        else
+        {
+            velocity.y = 0.0f;
+        }
 
         Vector3 finalMove = move * speed;
         finalMove.y = velocity.y;
 
         characterController.Move(finalMove * Time.deltaTime);
 
-        // ジャンプ入力直後の1フレームで、CharacterControllerがまだ接地扱いを返すことがある。
-        // そのフレームだけは空中扱いを維持してjumpアニメを即開始させる。
+        if (externalPositionLock)
+        {
+            Vector3 pos = transform.position;
+
+            if (lockHeightOnly)
+            {
+                pos.y = lockedPosition.y;
+            }
+            else
+            {
+                pos = lockedPosition;
+            }
+
+            transform.position = pos;
+        }
+
         if (!jumpRequestedThisFrame)
         {
             IsGrounded = characterController.isGrounded;
