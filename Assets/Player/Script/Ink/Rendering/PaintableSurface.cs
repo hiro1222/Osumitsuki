@@ -74,6 +74,7 @@ public class PaintableSurface : MonoBehaviour
     // ── プロパティ ──
     public int GridW => gridW;
     public int GridH => gridH;
+    public bool VisualDirty => visualDirty;
 
     // ====================================================================
     //  初期化
