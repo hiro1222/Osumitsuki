@@ -86,18 +86,11 @@ public class FlyingSlash : MonoBehaviour
     /// </summary>
     private void OnImpact(RaycastHit hit)
     {
-        // まずEnemyHitReceiverを確認
-        var hitReceiver = hit.collider.GetComponent<EnemyHitReceiver>();
-        if (hitReceiver != null)
-        {
-            // Enemyに当たった → お墨付き処理
-            hitReceiver.ReceiveInkHit();
-            Destroy(gameObject);
-            return;
-        }
-
-        // 地面・壁 → 墨を塗る
         InkPaintService.Paint(hit, pattern);
+
+        // TODO: 敵へのダメージ処理
+        // TODO: InkImpactProcessor で滲み・飛沫・垂れ
+
         Destroy(gameObject);
     }
 
