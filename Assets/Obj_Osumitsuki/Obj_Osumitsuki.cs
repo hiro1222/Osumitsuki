@@ -10,6 +10,9 @@ public class Obj_Osumitsuki : MonoBehaviour
     [SerializeField] private float maxInkCapa = 100;      //インクの最大量
     [SerializeField] private float InkRatio = 70;   //お墨付き
 
+    [SerializeField] private Texture2D wasiTex;
+    [SerializeField] private Texture2D osumiTex;
+
     private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
     private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
     private bool endFlg = false;        //終了フラグ
@@ -20,6 +23,14 @@ public class Obj_Osumitsuki : MonoBehaviour
     public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
     public bool EndFlg => endFlg;           //処理が終了したかどうか
 
+
+    private void Update()
+    {
+        if (GetComponent<PaintableSurface>())
+        {
+
+        }
+    }
 
     //お墨付き時のアクション
     public virtual void Action_Osumitsuki()
