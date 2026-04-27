@@ -31,14 +31,6 @@ public class Obj_Osumitsuki : MonoBehaviour
         ps = GetComponent<PaintableSurface>();
     }
 
-    private void Update()
-    {
-        if (ps.VisualDirty)
-        {
-            Painted(0.5f);
-        }
-    }
-
     //お墨付き時のアクション
     public virtual void Action_Osumitsuki()
     {
