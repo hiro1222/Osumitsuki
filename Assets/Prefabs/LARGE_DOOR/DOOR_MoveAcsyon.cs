@@ -125,7 +125,7 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
 
         if (leftDone && rightDone && !OsumiFlg)
         {
-            
+            End();
         }
     }
 }
