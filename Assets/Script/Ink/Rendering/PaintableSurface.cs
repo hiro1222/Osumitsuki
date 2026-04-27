@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// UV方式の統合インクサーフェス（設計書 第3章・第4章）
+/// UV方式の統合インクサーフェス
 /// 
 /// 1つのdensity配列から描画・判定・コリジョンを全て生成する。
 /// メッシュのUV1座標をそのまま使う。
@@ -13,17 +13,12 @@ using System.Collections.Generic;
 /// - 色は最新のものに上書き
 /// - UV島境界の3D距離チェック（別パーツへの染み出し防止）
 /// - 4セル揃ったときだけコリジョン生成（境界の飛び出し抑制）
+/// - OnPaintedイベントで外部に塗り通知（Obj_Osumitsuki / PaintableSurfaceGroup が購読）
 /// 
 /// ■ 前提条件:
 /// - メッシュのUV展開が重なっていないこと（ユニークUV）
 /// - MeshColliderが必要（BoxCollider等ではtextureCoordが取れない）
-/// - Unity標準のCube/Sphereは使えない（UVが重なっているため）
-/// 
-/// ■ セットアップ:
-/// 1. カスタムメッシュのオブジェクトにアタッチ
-/// 2. MeshColliderが付いていることを確認
-/// 3. PaintableSurfaceInk シェーダーのマテリアルを適用
-/// 4. レイヤー "PlayerVSObject" を作成しておく
+/// - レイヤー "PlayerVSObject" を作成しておく
 /// </summary>
 public class PaintableSurface : MonoBehaviour
 {
@@ -84,7 +79,11 @@ public class PaintableSurface : MonoBehaviour
 
     /// <summary>
     /// 塗られたときに発火するイベント
-    /// 引数: (塗られたセル数, このPaintで加算したdensity値)
+    /// 引数: (ブラシ範囲内のセル数, このPaintで加算しようとしたdensity値)
+    /// 
+    /// ■ 発火条件:
+    /// ブラシ範囲内に有効なセルが1つでもあれば発火する。
+    /// densityが既に飽和していても、ヒットさえすれば発火する（重ね塗りで加算したい用途のため）。
     /// 
     /// ■ 購読例（Obj_Osumitsuki継承クラスで）:
     ///   ps.OnPainted += (cells, density) => Painted(0.5f);
@@ -367,7 +366,8 @@ public class PaintableSurface : MonoBehaviour
         // hit.normalがゼロならcellNormalをフォールバックとして使う
         bool useHitNormal = hitNormalLocal.sqrMagnitude > 0.01f;
 
-        int painted = 0;
+        int painted = 0;       // 実際に変化したセル数（メッシュ再構築判定用）
+        int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む。OnPainted用）
         for (int dv = -cellRadius; dv <= cellRadius; dv++)
         {
             for (int du = -cellRadius; du <= cellRadius; du++)
@@ -388,6 +388,9 @@ public class PaintableSurface : MonoBehaviour
                 float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
                 if (dist3DSq > localRadiusSq) continue;
 
+                // ブラシ範囲内のセル数（飽和済みでもカウント）
+                hitCells++;
+
                 // 重ね塗り: densityを加算（255で飽和）、色は最新のものに上書き
                 int newDensity = density[idx] + inkDensity;
                 if (newDensity > 255) newDensity = 255;
@@ -406,11 +409,19 @@ public class PaintableSurface : MonoBehaviour
             }
         }
 
+        // メッシュ再構築は変化があったときだけ
         if (painted > 0)
         {
             RebuildDirtyChunks();
             visualDirty = true;
         }
+        // OnPaintedは「塗ろうとしたセルが1つでもあれば」発火
+        // 飽和済みセルにヒットしただけでも通知される（重ね塗りでも加算したい用途のため）
+        if (hitCells > 0)
+        {
+            OnPainted?.Invoke(hitCells, inkDensity);
+        }
+
     }
 
     /// <summary>ワールド半径をUV空間の半径に概算変換（設計書 3.5）</summary>
