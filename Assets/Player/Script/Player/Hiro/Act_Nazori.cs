@@ -6,11 +6,32 @@ public class Act_Nazori : PlayerActionBase
     [SerializeField] private string animationName = "nazori";
     [SerializeField] private float moveSpeedRate = 0.35f;
 
+    [Header("Paint")]
+    [SerializeField] private bool enablePaint = true;
+    [SerializeField] private float paintInterval = 0.05f;
+    [SerializeField] private float paintForwardOffset = 0.65f;
+    [SerializeField] private float paintRadius = 0.8f;
+    [SerializeField] private byte paintDensity = 180;
+
+    private PlayerInkActionPainter inkPainter;
+    private float paintTimer;
+
     public override string ActionName => "なぞり";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.Nazori;
     public override string AnimationName => animationName;
     public override float MoveSpeedRate => moveSpeedRate;
     public override bool IsHoldAction => true;
+
+    public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
+    {
+        base.Initialize(owner, actionManager);
+
+        inkPainter = owner.GetComponent<PlayerInkActionPainter>();
+        if (inkPainter == null)
+        {
+            inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
+        }
+    }
 
     public override bool CanStart()
     {
@@ -22,21 +43,35 @@ public class Act_Nazori : PlayerActionBase
         if (!controller.InputHandler.NazoriHeld)
         {
             EndAction();
+            return;
         }
     }
 
     protected override void OnStartEffect()
     {
-        // TODO: なぞり開始時の処理を後から追加
+        paintTimer = 0.0f;
+        Paint();
     }
 
     protected override void OnTickEffect(float dt)
     {
-        // TODO: なぞり継続中の処理を後から追加
+        if (!enablePaint) return;
+
+        paintTimer += dt;
+        if (paintTimer >= paintInterval)
+        {
+            paintTimer = 0.0f;
+            Paint();
+        }
     }
 
-    protected override void OnEndEffect()
+    protected override void OnEndEffect() { }
+
+    private void Paint()
     {
-        // TODO: なぞり終了時の処理を後から追加
+        if (!enablePaint) return;
+        if (inkPainter == null) return;
+
+        inkPainter.PaintGroundNearPlayer(controller.transform, paintForwardOffset, paintRadius, paintDensity);
     }
 }

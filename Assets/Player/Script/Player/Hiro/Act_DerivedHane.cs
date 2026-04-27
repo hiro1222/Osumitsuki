@@ -3,15 +3,34 @@ using UnityEngine;
 public class Act_DerivedHane : PlayerActionBase
 {
     [Header("Derived Hane")]
-    [SerializeField] private string animationName = "derived_hane";
+    [SerializeField] private string animationName = "hasel_hane";
     [SerializeField] private float duration = 0.55f;
     [SerializeField] private float moveSpeedRate = 0.0f;
+
+    [Header("Slash Pattern")]
+    [SerializeField] private bool enableSlash = true;
+    [SerializeField] private int patternIndex = 3;
+    [SerializeField] private float spawnForwardOffset = 1.5f;
+    [SerializeField] private float spawnHeightOffset = 0.4f;
+
+    private PlayerInkActionPainter inkPainter;
 
     public override string ActionName => "派生はね";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.DerivedHane;
     public override string AnimationName => animationName;
     public override float Duration => duration;
     public override float MoveSpeedRate => moveSpeedRate;
+
+    public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
+    {
+        base.Initialize(owner, actionManager);
+
+        inkPainter = owner.GetComponent<PlayerInkActionPainter>();
+        if (inkPainter == null)
+        {
+            inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
+        }
+    }
 
     public override bool CanStart()
     {
@@ -20,16 +39,12 @@ public class Act_DerivedHane : PlayerActionBase
 
     protected override void OnStartEffect()
     {
-        // TODO: 派生はね開始時の処理を後から追加
+        if (!enableSlash) return;
+        if (inkPainter == null) return;
+
+        inkPainter.FireSlashPattern(controller.transform, patternIndex, spawnForwardOffset, spawnHeightOffset);
     }
 
-    protected override void OnTickEffect(float dt)
-    {
-        // TODO: 派生はね中の効果を後から追加
-    }
-
-    protected override void OnEndEffect()
-    {
-        // TODO: 派生はね終了時の処理を後から追加
-    }
+    protected override void OnTickEffect(float dt) { }
+    protected override void OnEndEffect() { }
 }
