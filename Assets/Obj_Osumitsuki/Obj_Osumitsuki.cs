@@ -72,4 +72,9 @@ public class Obj_Osumitsuki : MonoBehaviour
     {
         osumitsukiFlg = true;
     }
+
+    public void End()
+    {
+        endFlg = true;
+    }
 }
