@@ -10,12 +10,15 @@ public class Obj_Osumitsuki : MonoBehaviour
     [SerializeField] private float maxInkCapa = 100;      //インクの最大量
     [SerializeField] private float InkRatio = 70;   //お墨付き
 
-    [SerializeField] private Texture2D wasiTex;
-    [SerializeField] private Texture2D osumiTex;
+    [Header("お墨付き後のテクスチャ")]
+    [SerializeField] private Material myMaterial;
 
     private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
     private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
     private bool endFlg = false;        //終了フラグ
+
+
+    private PaintableSurface ps;
 
 
     //プロパティ
@@ -23,12 +26,16 @@ public class Obj_Osumitsuki : MonoBehaviour
     public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
     public bool EndFlg => endFlg;           //処理が終了したかどうか
 
+    private void Awake()
+    {
+        ps = GetComponent<PaintableSurface>();
+    }
 
     private void Update()
     {
-        if (GetComponent<PaintableSurface>())
+        if (ps.VisualDirty)
         {
-
+            Painted(0.5f);
         }
     }
 
@@ -53,6 +60,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 
         if (InkRatio/100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
         {
+            GetComponent<MeshRenderer>().material = myMaterial;
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
         }

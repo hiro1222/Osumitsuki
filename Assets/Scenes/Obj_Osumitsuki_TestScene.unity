@@ -194,7 +194,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6989444288531890306, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 337961806}
   m_SourcePrefab: {fileID: 100100000, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
 --- !u!1 &304771127 stripped
 GameObject:
@@ -240,6 +243,46 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2599591738776831908, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
+--- !u!1 &337961800 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6989444288531890306, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
+  m_PrefabInstance: {fileID: 253187473}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &337961806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337961800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f47f5e0af6f934c90f04b09e5db2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxInkCapa: 50
+  InkRatio: 70
+  myMaterial: {fileID: 2100000, guid: 3d46706a25ed3fd46be59f68981f43db, type: 2}
+--- !u!1 &361070902 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1982081412993109086, guid: c1f80a948c4501847823d93511d96bd5, type: 3}
+  m_PrefabInstance: {fileID: 1094835940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &361070908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361070902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f47f5e0af6f934c90f04b09e5db2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxInkCapa: 50
+  InkRatio: 70
+  myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
 --- !u!1 &385720209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,7 +1204,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1982081412993109086, guid: c1f80a948c4501847823d93511d96bd5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 361070908}
   m_SourcePrefab: {fileID: 100100000, guid: c1f80a948c4501847823d93511d96bd5, type: 3}
 --- !u!1 &1361418850
 GameObject:
@@ -1899,10 +1945,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 100
+  maxInkCapa: 50
   InkRatio: 70
-  wasiTex: {fileID: 0}
-  osumiTex: {fileID: 0}
+  myMaterial: {fileID: 2100000, guid: ec6696e8a38369542a05a73642cf1f82, type: 2}
   targets:
   - {fileID: 580014040}
   - {fileID: 1361418850}

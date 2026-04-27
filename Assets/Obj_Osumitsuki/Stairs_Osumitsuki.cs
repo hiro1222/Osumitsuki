@@ -20,7 +20,7 @@ public class Stairs_Osumitsuki : Movement_Osumitsuki
 
     private void FixedUpdate()
     {
-        Painted(0.3f);
+        //Painted(0.3f);
     }
 
 }

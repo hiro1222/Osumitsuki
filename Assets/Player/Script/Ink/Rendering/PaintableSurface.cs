@@ -71,6 +71,8 @@ public class PaintableSurface : MonoBehaviour
     private int chunksX, chunksY;
     private bool[] chunkDirty;
 
+    private Obj_Osumitsuki obj_osumi;   //お墨付きするスクリプト
+
     // ── プロパティ ──
     public int GridW => gridW;
     public int GridH => gridH;
@@ -150,6 +152,9 @@ public class PaintableSurface : MonoBehaviour
 
         propBlock = new MaterialPropertyBlock();
         visualDirty = false;
+
+
+        obj_osumi = GetComponent<Obj_Osumitsuki>();
     }
 
     private void OnDestroy()
@@ -313,6 +318,12 @@ public class PaintableSurface : MonoBehaviour
         float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
         float localRadiusSq = localRadius * localRadius;
+
+        if (obj_osumi != null)
+        {
+            float power = Mathf.Sqrt(localRadiusSq);
+            obj_osumi.Painted(power);
+        }
 
         PaintInternal(uv, uvRadius, hitLocal, hitNormalLocal, localRadiusSq, inkDensity, inkColorId);
     }
