@@ -4,48 +4,47 @@ using UnityEngine;
 /// <summary>
 /// 友好EnemyのManager
 /// プレイヤーにアタッチする
-///
-/// 【役割】
-/// ・敵対EnemyのBecomeAlly時に通知を受け取りAllyEnemyを生成
-/// ・追従中は最大4体、5体目以降はストック
-/// ・消費されたらストックから補充
-/// ・追従位置を毎フレーム計算してAllyEnemyに渡す
-///
-/// 【外部から呼ぶ関数】
-/// ・OnEnemyBecameAlly() : 敵対Enemyのお墨付き時に呼ぶ
-/// ・ConsumeAlly()       : 身代わり・ギミック援助で消費するときに呼ぶ
-/// ・GetAllyCount()      : 追従中の仲間数を返す
-/// ・GetStockCount()     : ストック数を返す
 /// </summary>
 public class AllyEnemyManager : MonoBehaviour
 {
-    // ====================================================================
-    //  設定（Inspector）
-    // ====================================================================
-
     [Header("AllyEnemyのPrefab")]
     [SerializeField] private AllyEnemy allyEnemyPrefab;
 
     [Header("隊列設定（一列縦隊）")]
-    [Tooltip("プレイヤーから1番目の仲間までの距離")]
     [SerializeField] private float followDistance = 2.5f;
-    [Tooltip("仲間同士の前後間隔")]
     [SerializeField] private float rowSpacing = 1.5f;
 
     [Header("追従の最大数")]
-    [Tooltip("追従できる最大数（それ以上はストック）")]
     [SerializeField] private int maxFollowCount = 4;
 
-    // ====================================================================
-    //  内部状態（全てprivate）
-    // ====================================================================
+    [Header("アンカー参照")]
+    [SerializeField] private PlayerActionAnchorProvider anchorProvider;
+    [SerializeField] private PlayerActionManager actionManager;
 
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
-    // ====================================================================
-    //  毎フレーム
-    // ====================================================================
+    private static readonly Dictionary<PlayerActionManager.ActionKind,
+        PlayerActionAnchorProvider.ActionAnchorType> anchorMap =
+        new Dictionary<PlayerActionManager.ActionKind,
+            PlayerActionAnchorProvider.ActionAnchorType>
+    {
+        { PlayerActionManager.ActionKind.Nazori,       PlayerActionAnchorProvider.ActionAnchorType.Nazori       },
+        { PlayerActionManager.ActionKind.Harai,        PlayerActionAnchorProvider.ActionAnchorType.Harai        },
+        { PlayerActionManager.ActionKind.Hane,         PlayerActionAnchorProvider.ActionAnchorType.Hane         },
+        { PlayerActionManager.ActionKind.DerivedHarai, PlayerActionAnchorProvider.ActionAnchorType.DerivedHarai },
+        { PlayerActionManager.ActionKind.DerivedHane,  PlayerActionAnchorProvider.ActionAnchorType.DerivedHane  },
+        { PlayerActionManager.ActionKind.Tome,         PlayerActionAnchorProvider.ActionAnchorType.Tome         },
+    };
+
+    private void Awake()
+    {
+        if (anchorProvider == null)
+            anchorProvider = GetComponent<PlayerActionAnchorProvider>();
+
+        if (actionManager == null)
+            actionManager = GetComponent<PlayerActionManager>();
+    }
 
     private void Update()
     {
@@ -54,39 +53,52 @@ public class AllyEnemyManager : MonoBehaviour
         ReplenishFromStock();
     }
 
-    // ====================================================================
-    //  隊列管理
-    // ====================================================================
-
     private void UpdateFormation()
     {
         int count = followingAllies.Count;
         if (count == 0) return;
 
+        bool isActing = actionManager != null && actionManager.IsActing;
+        PlayerActionManager.ActionKind currentKind =
+            actionManager != null ? actionManager.CurrentAction : PlayerActionManager.ActionKind.None;
+
         for (int i = 0; i < count; i++)
         {
             if (followingAllies[i] == null) continue;
 
-            // プレイヤーの真後ろに一列縦隊
-            float distFromPlayer = followDistance + i * rowSpacing;
-            Vector3 pos = transform.position - transform.forward * distFromPlayer;
+            // ── アクション中かどうかで分岐 ──
+            if (isActing
+                && anchorProvider != null
+                && anchorMap.TryGetValue(currentKind, out var anchorType))
+            {
+                // アクション中: アンカー位置に移動
+                Transform anchor = anchorProvider.GetAnchor(anchorType, i);
+                Vector3 targetPos = anchor != null ? anchor.position : GetFormationPos(i);
 
-            // Y座標はプレイヤーと同じ高さに合わせる
-            pos.y = transform.position.y;
-
-            followingAllies[i].SetFollowTarget(pos);
+                followingAllies[i].SetUseAnchorSpeed(true);
+                followingAllies[i].SetFollowTarget(targetPos);
+            }
+            else
+            {
+                // 通常時: プレイヤーの真後ろに一列縦隊
+                followingAllies[i].SetUseAnchorSpeed(false);
+                followingAllies[i].SetFollowTarget(GetFormationPos(i));
+            }
         }
     }
 
-    // ====================================================================
-    //  ストックから補充
-    // ====================================================================
+    private Vector3 GetFormationPos(int i)
+    {
+        float distFromPlayer = followDistance + i * rowSpacing;
+        Vector3 pos = transform.position - transform.forward * distFromPlayer;
+        pos.y = transform.position.y;
+        return pos;
+    }
 
     private void ReplenishFromStock()
     {
         while (followingAllies.Count < maxFollowCount && stockCount > 0)
         {
-            // プレイヤーの後ろ・同じ高さに生成
             Vector3 spawnPos = transform.position - transform.forward * followDistance;
             spawnPos.y = transform.position.y;
             SpawnAllyEnemy(spawnPos);
@@ -94,10 +106,6 @@ public class AllyEnemyManager : MonoBehaviour
             Debug.Log($"[AllyEnemyManager] ストックから補充。残りストック: {stockCount}");
         }
     }
-
-    // ====================================================================
-    //  AllyEnemy生成
-    // ====================================================================
 
     private void SpawnAllyEnemy(Vector3 spawnPos)
     {
@@ -109,31 +117,16 @@ public class AllyEnemyManager : MonoBehaviour
 
         AllyEnemy newAlly = Instantiate(allyEnemyPrefab, spawnPos, Quaternion.identity);
         followingAllies.Add(newAlly);
-
         Debug.Log($"[AllyEnemyManager] AllyEnemy生成。追従中: {followingAllies.Count}体");
     }
 
-    // ====================================================================
-    //  外部から呼ぶ関数
-    // ====================================================================
-
-    /// <summary>
-    /// 敵対EnemyのBecomeAlly時に呼ぶ
-    /// Normal_SBなどから呼ばれる
-    /// </summary>
     public void OnEnemyBecameAlly(Vector3 spawnPosition, float inkRecovery)
     {
-        // インク回復処理（Player担当と要すり合わせ後に実装）
-        // player.GetComponent<PlayerInk>()?.RecoverInk(inkRecovery);
-
-        // 生成位置のY座標をプレイヤーに合わせる
         Vector3 fixedSpawnPos = spawnPosition;
         fixedSpawnPos.y = transform.position.y;
 
         if (followingAllies.Count < maxFollowCount)
-        {
             SpawnAllyEnemy(fixedSpawnPos);
-        }
         else
         {
             stockCount++;
@@ -141,10 +134,6 @@ public class AllyEnemyManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 仲間を1体消費する
-    /// 身代わり・ギミック援助時に呼ぶ
-    /// </summary>
     public void ConsumeAlly()
     {
         for (int i = 0; i < followingAllies.Count; i++)
@@ -160,19 +149,18 @@ public class AllyEnemyManager : MonoBehaviour
         Debug.Log("[AllyEnemyManager] 消費できる仲間がいません");
     }
 
-    /// <summary>追従中の仲間数を返す</summary>
     public int GetAllyCount() => followingAllies.Count;
-
-    /// <summary>ストック数を返す</summary>
     public int GetStockCount() => stockCount;
-
-    // ====================================================================
-    //  GUI（デバッグ）
-    // ====================================================================
 
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 130, 400, 20),
             $"仲間: {followingAllies.Count}体  ストック: {stockCount}体");
+
+        if (actionManager != null && actionManager.IsActing)
+        {
+            GUI.Label(new Rect(10, 150, 400, 20),
+                $"アクション中: {actionManager.CurrentAction} → アンカー移動");
+        }
     }
 }

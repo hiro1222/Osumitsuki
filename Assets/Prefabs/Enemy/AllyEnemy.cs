@@ -29,6 +29,10 @@ public class AllyEnemy : MonoBehaviour
 
     [Header("移動")]
     [SerializeField] private float followSpeed = 6f;
+    [SerializeField] private float anchorSpeed = 12f;  // アンカー移動時の速度
+
+    private bool useAnchorSpeed = false;  // 追加
+
 
     [Header("跳ねアニメーション")]
     [SerializeField] private float bounceHeight = 1.5f;
@@ -100,7 +104,8 @@ public class AllyEnemy : MonoBehaviour
 
         if (toTarget.magnitude > 0.3f)
         {
-            transform.position += toTarget.normalized * followSpeed * Time.deltaTime;
+            float speed = useAnchorSpeed ? anchorSpeed : followSpeed;
+            transform.position += toTarget.normalized * speed * Time.deltaTime;
         }
 
         if (toTarget.sqrMagnitude > 0.01f)
@@ -159,5 +164,10 @@ public class AllyEnemy : MonoBehaviour
             transform.position = bounceBasePos;
             state = AllyState.Follow;
         }
+    }
+
+    public void SetUseAnchorSpeed(bool use)
+    {
+        useAnchorSpeed = use;
     }
 }
