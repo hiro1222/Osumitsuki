@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -22,9 +23,42 @@ public class PlayerStats : MonoBehaviour
     public int maxHP = 100;
     public int currentHP = 100;
 
+    [Header("リスポーン")]
+    [SerializeField] private float respawnY = -10f;
+
+    private Vector3 spawnPosition;
+
     public void Initialize(PlayerController owner)
     {
         controller = owner;
         currentHP = maxHP;
+        // 初期位置を記憶
+        transform.position = new Vector3(transform.position.x, 1f, transform.position.z);
+        spawnPosition = transform.position;
     }
+
+    private void Update()
+    {
+        // ── 落下しすぎたらリスポーン ──
+        if (transform.position.y < respawnY)
+        {
+            Respawn();
+        }
+
+    }
+
+
+    private void Respawn()
+    {
+        Debug.Log(spawnPosition);
+        controller.enabled = false;
+        transform.position = spawnPosition;
+        controller.enabled = true;
+    }
+
+    public void SetspawnPosition(Vector3 Position)
+    {
+        spawnPosition = Position;
+    }
+
 }
