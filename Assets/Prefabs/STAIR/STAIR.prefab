@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4be8206516d70234f9c2949cad8ef0d9, type: 2}
+  - {fileID: 2100000, guid: 0dd2afd42b5cf8f4aa597b00e539d0e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,9 +104,7 @@ MonoBehaviour:
   maxInkCapa: 20
   InkRatio: 70
   myMaterial: {fileID: 2100000, guid: 44293b5fc657c2b44bcdbdff520f4a7b, type: 2}
-  targets:
-  - {fileID: 0}
-  - {fileID: 0}
+  targets: []
   turnSpd: 60
   moveSpd: 10
 --- !u!114 &6940981869789576794

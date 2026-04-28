@@ -75,7 +75,7 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
     /// <summary>Žq‚Ì‚Ç‚±‚©‚ª“h‚ç‚ê‚½‚çŒÄ‚Î‚ê‚é</summary>
     private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
     {
-        Painted(0.5f);
+        Painted(4f);
     }
 
     /// <summary>

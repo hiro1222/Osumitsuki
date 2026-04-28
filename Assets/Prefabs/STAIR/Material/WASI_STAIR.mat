@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PaintableStair
+  m_Name: WASI_STAIR
   m_Shader: {fileID: 4800000, guid: 69b7a9020ed1d2c409e10193b6ca99cb, type: 3}
   m_Parent: {fileID: 2100000, guid: 4d9b2c4e24d078446b00ac28a65f8cdd, type: 2}
   m_ModifiedSerializedProperties: 0
