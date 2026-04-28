@@ -32,8 +32,6 @@ public class PlayerStats : MonoBehaviour
     {
         controller = owner;
         currentHP = maxHP;
-        // ‰ŠúˆÊ’u‚ğ‹L‰¯
-        transform.position = new Vector3(transform.position.x, 1f, transform.position.z);
         spawnPosition = transform.position;
     }
 

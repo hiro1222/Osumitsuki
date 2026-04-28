@@ -8,8 +8,7 @@ public class TORII_Osumi : Obj_Osumitsuki
 
     private void Start()
     {
-        // ‰ŠúˆÊ’u‚ğ‹L‰¯
-        transform.position = new Vector3(transform.position.x, 1f, transform.position.z);
+
     }
 
     public override void Action_Osumitsuki()
