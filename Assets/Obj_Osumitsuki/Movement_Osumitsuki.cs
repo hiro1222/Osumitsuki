@@ -21,6 +21,12 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     //初期化時１回だけ、派生クラスのStart()で呼び出し予定
     protected void SetupBaseData()
     {
+        if (targets.Count <= 0)
+        {
+            curTargetIndex = -1;
+            return;
+        }
+
         curTargetIndex = 0;
         targetPos = targets[curTargetIndex].transform.position;
         state = true;
@@ -30,20 +36,41 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     private void Move()
     {
         Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpd * Time.deltaTime);
+        newPos.y = transform.position.y;
         transform.position = newPos;
 
-        if (targetPos == transform.position)
+        Vector3 difPos = targetPos - transform.position;
+        float absDifX = Mathf.Abs(difPos.x);
+        float absDifZ = Mathf.Abs(difPos.z);
+
+        if (absDifX < 0.01f && absDifZ < 0.01f)
             ChangeTarget();
 
     }
-    
-    //回転処理
-    private void Rotate()
+
+	//目標変更
+	private void ChangeTarget()
+	{
+		curTargetIndex++;
+		if (curTargetIndex >= targets.Count)
+		{
+			curTargetIndex = -1;
+			return;
+		}
+		targetPos = targets[curTargetIndex].transform.position;
+		Switch_State();
+	}
+
+
+
+	//回転処理
+	private void Rotate()
     {
         //ターゲットの向き
         Vector3 dir = (targetPos - transform.position).normalized;
         //上下の位置関係を無視
         dir.y = 0;
+        dir *= -1;
 
         //方向がゼロでないか確認
         if (dir.sqrMagnitude < 0.0001f)
@@ -61,26 +88,16 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
             Switch_State();
     }
 
-    //目標変更
-    private void ChangeTarget()
-    {
-        targetPos = targets[curTargetIndex].transform.position;
-
-        curTargetIndex++;
-        if (curTargetIndex >= targets.Count)
-        {
-            curTargetIndex = -1;
-            return;
-        }
-        targetPos = targets[curTargetIndex].transform.position;
-        Switch_State();
-    }
-
     //回転と移動切り替え
     protected void Update_RotateMove()
     {
-        if (curTargetIndex == -1)
+
+        //ターゲットがいなければ終了
+		if (curTargetIndex == -1)
+        {
+            End();
             return;
+        }
 
         if (state)
         {

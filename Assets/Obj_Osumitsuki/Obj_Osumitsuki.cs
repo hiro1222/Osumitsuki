@@ -18,18 +18,11 @@ public class Obj_Osumitsuki : MonoBehaviour
     private bool endFlg = false;        //終了フラグ
 
 
-    private PaintableSurface ps;
-
-
     //プロパティ
     public bool OsumiTrg => osumitsukiTrg;
     public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
     public bool EndFlg => endFlg;           //処理が終了したかどうか
 
-    private void Awake()
-    {
-        ps = GetComponent<PaintableSurface>();
-    }
 
     //お墨付き時のアクション
     public virtual void Action_Osumitsuki()
@@ -53,6 +46,7 @@ public class Obj_Osumitsuki : MonoBehaviour
         if (InkRatio/100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
         {
             GetComponent<MeshRenderer>().material = myMaterial;
+            gameObject.layer = LayerMask.NameToLayer("Default");
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
         }
@@ -65,7 +59,7 @@ public class Obj_Osumitsuki : MonoBehaviour
         osumitsukiFlg = true;
     }
 
-    public void End()
+    public virtual void End()
     {
         endFlg = true;
     }

@@ -1,7 +1,9 @@
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Stairs_Osumitsuki : Movement_Osumitsuki
 {
+
 
     private void Start()
     {
@@ -10,17 +12,12 @@ public class Stairs_Osumitsuki : Movement_Osumitsuki
 
     public override void Action_Osumitsuki()
     {
-        Action2Update();
+		Action2Update();
     }
 
     public override void Update_Osumitsuki()
     {
-        Update_RotateMove();
-    }
-
-    private void FixedUpdate()
-    {
-        //Painted(0.3f);
+		Update_RotateMove();
     }
 
 }
