@@ -35,6 +35,19 @@ public class PlayerMove : MonoBehaviour
         UpdateMove();
     }
 
+    public void FaceCameraDirectionInstant()
+    {
+        if (cameraTransform == null) return;
+
+        Vector3 camForward = cameraTransform.forward;
+        camForward.y = 0.0f;
+
+        if (camForward.sqrMagnitude <= 0.0001f) return;
+
+        camForward.Normalize();
+        tf.rotation = Quaternion.LookRotation(camForward, Vector3.up);
+    }
+
     public void SetExternalPositionLock(bool enabled, Vector3 position, bool heightOnly)
     {
         externalPositionLock = enabled;
@@ -74,7 +87,10 @@ public class PlayerMove : MonoBehaviour
 
         float speed = stats.walkSpeed * controller.ActionManager.CurrentMoveSpeedRate;
 
-        if (move.sqrMagnitude > 0.0001f && controller.ActionManager.CurrentMoveSpeedRate > 0.0f)
+        if (move.sqrMagnitude > 0.0001f &&
+            controller.ActionManager.CurrentMoveSpeedRate > 0.0f &&
+            (!controller.ActionManager.IsActing ||
+              controller.ActionManager.IsNazori))
         {
             Quaternion targetRot = Quaternion.LookRotation(move, Vector3.up);
             tf.rotation = Quaternion.Slerp(tf.rotation, targetRot, rotateSpeed * Time.deltaTime);

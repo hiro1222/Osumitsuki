@@ -25,16 +25,23 @@ public class PlayerActionManager : MonoBehaviour
     private PlayerActionBase currentAction;
 
     [Header("Return Animation")]
-    [SerializeField] private string idleAnimationName = "Idle";
+    [SerializeField] private string idleAnimationName = "idle";
 
     [Header("Nazori Reinput Rule")]
     [SerializeField] private bool requireNazoriReleaseAfterAction = true;
+
+    [Header("Paint Level")]
+    [SerializeField] private int paintLevel;
+    [SerializeField] private int maxPaintLevel = 4;
+    [SerializeField] private float paintLevelRadiusBonus = 0.25f;
 
     private bool nazoriReleaseRequired;
 
     public bool IsActing { get; private set; }
     public bool IsNazori { get; private set; }
     public ActionKind CurrentAction { get; private set; }
+
+    public int PaintLevel => paintLevel;
 
     public float CurrentMoveSpeedRate
     {
@@ -77,7 +84,6 @@ public class PlayerActionManager : MonoBehaviour
 
         if (currentAction != null && currentAction.IsRunning)
         {
-            // なぞり中だけ派生を許可
             if (CurrentAction == ActionKind.Nazori)
             {
                 if (input.HaraiPressed)
@@ -104,7 +110,6 @@ public class PlayerActionManager : MonoBehaviour
             return;
         }
 
-        // 空中B/LShiftは止め。通常なぞりより優先。
         if (!controller.Move.IsGrounded && input.TomePressed)
         {
             TryStartAction(actTome);
@@ -123,8 +128,6 @@ public class PlayerActionManager : MonoBehaviour
             return;
         }
 
-        // なぞりは「押しっぱなし再発動」を禁止。
-        // 派生/他アクション後は一度Shift/Bを離してから再入力が必要。
         if (input.NazoriHeld && !nazoriReleaseRequired)
         {
             TryStartAction(actNazori);
@@ -132,6 +135,22 @@ public class PlayerActionManager : MonoBehaviour
         }
 
         RefreshFlags();
+    }
+
+    public void AddPaintLevel()
+    {
+        paintLevel = Mathf.Clamp(paintLevel + 1, 0, maxPaintLevel);
+    }
+
+    public void ResetPaintLevel()
+    {
+        paintLevel = 0;
+    }
+
+    public float GetPaintRadius(float baseRadius)
+    {
+        float rate = 1.0f + paintLevelRadiusBonus * paintLevel;
+        return baseRadius * rate;
     }
 
     private void TryStartAction(PlayerActionBase action)
@@ -151,6 +170,12 @@ public class PlayerActionManager : MonoBehaviour
 
         currentAction = action;
         CurrentAction = action.Kind;
+
+        // ★ここ変更：フラグ見る
+        if (action.FaceCameraOnStart && controller.Move != null)
+        {
+            controller.Move.FaceCameraDirectionInstant();
+        }
 
         action.StartAction();
 
@@ -172,7 +197,6 @@ public class PlayerActionManager : MonoBehaviour
         IsActing = false;
         IsNazori = false;
 
-        // 派生/単発アクション後、Shift/B押しっぱなしでなぞりへ戻らないようにする
         if (requireNazoriReleaseAfterAction &&
             finishedKind != ActionKind.None &&
             finishedKind != ActionKind.Nazori)

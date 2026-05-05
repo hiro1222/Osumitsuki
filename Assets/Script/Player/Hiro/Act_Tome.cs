@@ -25,16 +25,34 @@ public class Act_Tome : PlayerActionBase
     [SerializeField] private float pauseAnimationAtSeconds = 0.30f;
     [SerializeField] private float resumeAfterGroundedTime = 0.0f;
 
+    [Header("Paint")]
+    [SerializeField] private bool enablePaint = true;
+    [SerializeField] private float paintForwardOffset = 0.5f;
+    [SerializeField] private float paintRadius = 0.9f;
+    [SerializeField] private byte paintDensity = 200;
+
     private TomePhase phase;
     private float timer;
     private float groundedTimer;
     private Vector3 fixedPosition;
+    private PlayerInkActionPainter inkPainter;
 
     public override string ActionName => "止め";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.Tome;
     public override string AnimationName => animationName;
     public override float Duration => duration;
     public override float MoveSpeedRate => moveSpeedRate;
+
+    public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
+    {
+        base.Initialize(owner, actionManager);
+
+        inkPainter = owner.GetComponent<PlayerInkActionPainter>();
+        if (inkPainter == null)
+        {
+            inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
+        }
+    }
 
     public override bool CanStart()
     {
@@ -49,6 +67,8 @@ public class Act_Tome : PlayerActionBase
         timer = 0.0f;
         groundedTimer = 0.0f;
         fixedPosition = controller.transform.position;
+
+        PaintTome();
 
         if (controller.Move != null)
         {
@@ -111,6 +131,8 @@ public class Act_Tome : PlayerActionBase
         if (!controller.Move.IsGrounded) return;
 
         groundedTimer = 0.0f;
+        PaintTome();
+
         phase = TomePhase.LandingResume;
     }
 
@@ -134,6 +156,20 @@ public class Act_Tome : PlayerActionBase
         {
             EndAction();
         }
+    }
+
+    private void PaintTome()
+    {
+        if (!enablePaint) return;
+        if (inkPainter == null) return;
+
+        float radius = controller.ActionManager.GetPaintRadius(paintRadius);
+
+        inkPainter.PaintGroundNearPlayer(
+            controller.transform,
+            paintForwardOffset,
+            radius,
+            paintDensity);
     }
 
     public override void EndAction()

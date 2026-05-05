@@ -8,7 +8,7 @@ public abstract class PlayerActionBase : MonoBehaviour
     private float timer;
 
     public bool IsRunning { get; protected set; }
-
+    public virtual bool FaceCameraOnStart => true;
     public virtual string ActionName => "Base";
     public virtual PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.None;
     public virtual string AnimationName => "";

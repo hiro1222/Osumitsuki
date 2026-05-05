@@ -10,6 +10,11 @@ public class ThirdPersonOrbitCamera : MonoBehaviour
     [SerializeField] private float minDistance = 2.0f;
     [SerializeField] private float maxDistance = 8.0f;
 
+    [Header("Collision")]
+    [SerializeField] private LayerMask cameraCollisionMask = ~0;
+    [SerializeField] private float collisionRadius = 0.2f;
+    [SerializeField] private float collisionOffset = 0.2f;
+
     [Header("Rotation")]
     [SerializeField] private float yaw;
     [SerializeField] private float pitch = 20.0f;
@@ -20,6 +25,17 @@ public class ThirdPersonOrbitCamera : MonoBehaviour
     [Header("Options")]
     [SerializeField] private bool lockCursor = true;
     [SerializeField] private bool invertY = false;
+
+    public Vector3 CameraForwardFlat
+    {
+        get
+        {
+            Vector3 f = transform.forward;
+            f.y = 0.0f;
+            if (f.sqrMagnitude > 0.0001f) f.Normalize();
+            return f;
+        }
+    }
 
     private void Start()
     {
@@ -60,11 +76,33 @@ public class ThirdPersonOrbitCamera : MonoBehaviour
     {
         Quaternion rot = Quaternion.Euler(pitch, yaw, 0.0f);
 
-        Vector3 offset = rot * new Vector3(0.0f, 0.0f, -distance);
-        Vector3 cameraPos = target.position + offset;
+        Vector3 targetPos = target.position + Vector3.up * 1.0f;
+        Vector3 desiredOffset = rot * new Vector3(0.0f, 0.0f, -distance);
+        Vector3 desiredPos = targetPos + desiredOffset;
 
-        transform.position = cameraPos;
-        transform.LookAt(target.position);
+        Vector3 dir = desiredPos - targetPos;
+        float dist = dir.magnitude;
+
+        if (dist > 0.0001f)
+        {
+            dir.Normalize();
+
+            if (Physics.SphereCast(
+                targetPos,
+                collisionRadius,
+                dir,
+                out RaycastHit hit,
+                dist,
+                cameraCollisionMask,
+                QueryTriggerInteraction.Ignore))
+            {
+                float fixedDist = Mathf.Max(minDistance, hit.distance - collisionOffset);
+                desiredPos = targetPos + dir * fixedDist;
+            }
+        }
+
+        transform.position = desiredPos;
+        transform.LookAt(targetPos);
     }
 
     private Vector2 ReadLookInput()

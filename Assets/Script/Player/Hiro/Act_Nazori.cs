@@ -14,6 +14,7 @@ public class Act_Nazori : PlayerActionBase
     [SerializeField] private byte paintDensity = 180;
 
     private PlayerInkActionPainter inkPainter;
+    private PlayerPaintStatus paintStatus;
     private float paintTimer;
 
     public override string ActionName => "なぞり";
@@ -21,6 +22,9 @@ public class Act_Nazori : PlayerActionBase
     public override string AnimationName => animationName;
     public override float MoveSpeedRate => moveSpeedRate;
     public override bool IsHoldAction => true;
+
+    // なぞりは開始時にカメラ方向へ強制回転しない
+    public override bool FaceCameraOnStart => false;
 
     public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
     {
@@ -30,6 +34,12 @@ public class Act_Nazori : PlayerActionBase
         if (inkPainter == null)
         {
             inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
+        }
+
+        paintStatus = owner.GetComponent<PlayerPaintStatus>();
+        if (paintStatus == null)
+        {
+            paintStatus = owner.gameObject.AddComponent<PlayerPaintStatus>();
         }
     }
 
@@ -58,6 +68,7 @@ public class Act_Nazori : PlayerActionBase
         if (!enablePaint) return;
 
         paintTimer += dt;
+
         if (paintTimer >= paintInterval)
         {
             paintTimer = 0.0f;
@@ -65,13 +76,26 @@ public class Act_Nazori : PlayerActionBase
         }
     }
 
-    protected override void OnEndEffect() { }
+    protected override void OnEndEffect()
+    {
+    }
 
     private void Paint()
     {
         if (!enablePaint) return;
         if (inkPainter == null) return;
 
-        inkPainter.PaintGroundNearPlayer(controller.transform, paintForwardOffset, paintRadius, paintDensity);
+        float scaledRadius = paintRadius;
+
+        if (paintStatus != null)
+        {
+            scaledRadius = paintStatus.GetPaintRadius(paintRadius);
+        }
+
+        inkPainter.PaintGroundNearPlayer(
+            controller.transform,
+            paintForwardOffset,
+            scaledRadius,
+            paintDensity);
     }
 }
