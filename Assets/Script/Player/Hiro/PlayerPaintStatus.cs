@@ -15,6 +15,11 @@ public class PlayerPaintStatus : MonoBehaviour
         paintLevel = Mathf.Clamp(paintLevel + amount, 0, maxPaintLevel);
     }
 
+    public void SubPaintLevel(int amount = 1)
+    {
+        paintLevel = Mathf.Clamp(paintLevel - amount, 0, 0);
+    }
+
     public void SetPaintLevel(int level)
     {
         paintLevel = Mathf.Clamp(level, 0, maxPaintLevel);
