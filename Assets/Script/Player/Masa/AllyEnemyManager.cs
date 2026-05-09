@@ -21,6 +21,9 @@ public class AllyEnemyManager : MonoBehaviour
     [SerializeField] private PlayerActionAnchorProvider anchorProvider;
     [SerializeField] private PlayerActionManager actionManager;
 
+    [Header("PaintStatus参照")]
+    [SerializeField] private PlayerPaintStatus paintStatus;
+
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
@@ -44,6 +47,9 @@ public class AllyEnemyManager : MonoBehaviour
 
         if (actionManager == null)
             actionManager = GetComponent<PlayerActionManager>();
+
+        if (paintStatus == null)
+            paintStatus = GetComponent<PlayerPaintStatus>();
     }
 
     private void Update()
@@ -142,11 +148,15 @@ public class AllyEnemyManager : MonoBehaviour
             {
                 followingAllies[i].Consume();
                 followingAllies.RemoveAt(i);
-                Debug.Log($"[AllyEnemyManager] 仲間消費。残り: {followingAllies.Count}体 ストック: {stockCount}体");
+
+                // 消費時に塗り範囲を1段階下げる
+                if (paintStatus != null)
+                    paintStatus.SubPaintLevel();
+
+                Debug.Log($"[AllyEnemyManager] 仲間消費。残り: {followingAllies.Count}体");
                 return;
             }
         }
-        Debug.Log("[AllyEnemyManager] 消費できる仲間がいません");
     }
 
     public int GetAllyCount() => followingAllies.Count;

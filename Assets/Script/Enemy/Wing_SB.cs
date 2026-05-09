@@ -88,8 +88,8 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float bounceHeight = 1.5f;
     [SerializeField] private float bounceDuration = 0.5f;
 
-    [Header("仲間になったときの色")]
-    [SerializeField] private Color allyColor = Color.cyan;
+    [Header("PaintStatus参照")]
+    [SerializeField] private PlayerPaintStatus paintStatus;
 
     // ====================================================================
     //  内部状態
@@ -455,6 +455,13 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     {
         if (isAlly) return;
         isAlly = true;
+
+        // お墨付き時に塗り範囲を1段階上げる
+        if (paintStatus == null)
+            paintStatus = player.GetComponent<PlayerPaintStatus>();
+
+        if (paintStatus != null)
+            paintStatus.AddPaintLevel();  // 1刻みで増加
 
         if (allyManager != null)
             allyManager.OnEnemyBecameAlly(transform.position, inkRecovery);
