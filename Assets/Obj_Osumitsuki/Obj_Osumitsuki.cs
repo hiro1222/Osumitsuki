@@ -49,7 +49,9 @@ public class Obj_Osumitsuki : MonoBehaviour
             gameObject.layer = LayerMask.NameToLayer("Default");
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
-        }
+
+            this.gameObject.layer = LayerMask.GetMask("PlayerVSObject");
+		}
 
         return osumitsukiTrg;
     }
@@ -62,5 +64,14 @@ public class Obj_Osumitsuki : MonoBehaviour
     public virtual void End()
     {
         endFlg = true;
+    }
+
+
+    private void DestroyInkCollision()
+    {
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+
+        for (int i = 0;  i < colliders.Length; i++)
+        { Destroy(colliders[i]); }
     }
 }

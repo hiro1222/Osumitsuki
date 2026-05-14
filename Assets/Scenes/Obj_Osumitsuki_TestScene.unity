@@ -119,6 +119,31 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &165333760 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6989444288531890306, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
+  m_PrefabInstance: {fileID: 293891157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &165333761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165333760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f648672d6c04d24599334129016169d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridResolution: 64
+  walkThreshold: 50
+  chunkSize: 16
+  meshThickness: 0.15
+  renderResolution: 256
+  texture2Ds:
+  - {fileID: 2800000, guid: 6dbe954714b284343b21054db6c984ef, type: 3}
+  - {fileID: 2800000, guid: 948a329e1ea342a448954ef20ba01620, type: 3}
 --- !u!1001 &293891157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -183,10 +208,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2515608191450143805, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6989444288531890306, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 165333761}
   m_SourcePrefab: {fileID: 100100000, guid: 9f8012c9bb3641c41b8793b45b80478c, type: 3}
 --- !u!1 &385720209
 GameObject:

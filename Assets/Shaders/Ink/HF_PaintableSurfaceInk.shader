@@ -17,9 +17,12 @@ Shader "Ink/HF_PaintableSurfaceInk"
         _BaseColor ("地面の色", Color) = (0.85, 0.82, 0.75, 1)
         _BaseTex ("地面のテクスチャ", 2D) = "white" {}
         _OsumiTex ("オスミツキテクスチャ (R: density, G: colorId, B: palette)", 2D) = "black" {}
+        _MaskTexArray ("Ink Mask Array", 2DArray) = "" {}
+        _MaskIndex ("Ink Mask Index", Float) = 0
 
         [Header(Ink Textures (auto set))]
 		_MaskTex ("Ink Mask", 2D) = "black" {}
+
         _InkTex ("Ink Density", 2D) = "black" {}
         _InkColorTex ("Ink Color ID", 2D) = "black" {}
         _InkPalette ("Ink Palette", 2D) = "black" {}
@@ -74,6 +77,10 @@ Shader "Ink/HF_PaintableSurfaceInk"
             TEXTURE2D(_InkPalette);  SAMPLER(sampler_InkPalette);
 			TEXTURE2D(_MaskTex);	 SAMPLER(sampler_MaskTex);
 
+            TEXTURE2D_ARRAY(_MaskTexArray); SAMPLER(sampler_MaskTexArray);
+            float _MaskIndex;
+
+
             Varyings vert(Attributes input)
             {
                 Varyings output;
@@ -91,7 +98,8 @@ Shader "Ink/HF_PaintableSurfaceInk"
 
                 // ── 墨のデータを読む ──
 				// マスクの情報を取得する
-				float mask = SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, input.up).r;
+				float mask = SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, input.uv).r;
+                mask = SAMPLE_TEXTURE2D_ARRAY(_MaskTexArray,sampler_MaskTexArray,input.uv,_MaskIndex).r;
 
                 // ── 色パレットから墨の色を取得 ──
                 // colorIdN は 0-1 正規化されているので、そのままパレットのUとして使える
@@ -113,7 +121,7 @@ Shader "Ink/HF_PaintableSurfaceInk"
                     #endif
 
                     // ── 墨の色をグレー（or 元の色）の上に重ねる ──
-                    float inkAlpha = smoothstep(0.0, 0.4, density) * _InkColorStrength;
+                    float inkAlpha = smoothstep(0.0, 0.4, mask) * _InkColorStrength;
                     finalRgb = lerp(finalRgb, inkColor, inkAlpha);
                 }
                 else 

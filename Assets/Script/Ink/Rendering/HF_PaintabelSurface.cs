@@ -41,7 +41,9 @@ public class HF_PaintableSurface : MonoBehaviour
 
     [Header("お墨付きパラメータ")]
     [Tooltip("お墨付きマスク画像")]
-    [SerializeField] private List<Texture2D> texture2Ds = new List<Texture2D>();
+    [SerializeField] private Texture2D[] textures;
+    private float curMaskIndex;
+    private Texture2DArray maskTextureArray;
 
     // ── 内部データ ──
     // 単一データソース（描画・判定・コリジョン全ての元）
@@ -102,7 +104,8 @@ public class HF_PaintableSurface : MonoBehaviour
 
     private void Awake()
     {
-        meshRenderer = GetComponent<Renderer>();
+		Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		meshRenderer = GetComponent<Renderer>();
 
         gridW = gridResolution;
         gridH = gridResolution;
@@ -116,7 +119,7 @@ public class HF_PaintableSurface : MonoBehaviour
         {
             Debug.LogError($"[PaintableSurface] {gameObject.name}: MeshColliderが必要です");
             enabled = false;
-            return;
+			return;
         }
 
         // ── 親MeshColliderをTriggerにする ──
@@ -126,9 +129,8 @@ public class HF_PaintableSurface : MonoBehaviour
 
         // UV→3D変換テーブルを構築（設計書 3.3）
         BuildUVToWorldTable();
-
-        // チャンク初期化
-        chunksX = Mathf.CeilToInt((float)gridW / chunkSize);
+		// チャンク初期化
+		chunksX = Mathf.CeilToInt((float)gridW / chunkSize);
         chunksY = Mathf.CeilToInt((float)gridH / chunkSize);
         chunkDirty = new bool[chunksX * chunksY];
 
@@ -159,10 +161,9 @@ public class HF_PaintableSurface : MonoBehaviour
             filterMode = FilterMode.Bilinear,
             wrapMode = TextureWrapMode.Clamp
         };
-
-        // 色番号テクスチャ（色番号をそのまま流し込む）
-        // Point filterで色番号がブレンドされないようにする
-        colorTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
+		// 色番号テクスチャ（色番号をそのまま流し込む）
+		// Point filterで色番号がブレンドされないようにする
+		colorTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
         {
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp
@@ -170,10 +171,12 @@ public class HF_PaintableSurface : MonoBehaviour
 
         propBlock = new MaterialPropertyBlock();
         visualDirty = false;
+		Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
+		obj_osumi = GetComponent<Obj_Osumitsuki>();
 
-        obj_osumi = GetComponent<Obj_Osumitsuki>();
-    }
+		SendGPU_Mask();
+	}
 
     private void OnDestroy()
     {
@@ -183,6 +186,33 @@ public class HF_PaintableSurface : MonoBehaviour
         if (collisionChild != null) Destroy(collisionChild);
     }
 
+
+    /**
+    * @brief    マスク用テクスチャ複数枚をテクスチャ配列に変換＆GPUに送信
+    * 
+    */
+    private void SendGPU_Mask()
+    {
+		Debug.Log("SendGPU_Mask");
+		if (textures == null) return;
+		Debug.Log("突破");
+
+		int width = textures[0].width;
+        int height = textures[0].height;
+
+        maskTextureArray = new Texture2DArray(width, height, textures.Length, TextureFormat.R8, false);
+		Debug.Log("突破");
+		for (int i = 0; i < textures.Length; i++)
+            maskTextureArray.SetPixels(textures[i].GetPixels(), i);
+		Debug.Log("突破");
+		maskTextureArray.Apply();
+		Debug.Log("突破x");
+		// GPUへ
+		meshRenderer.material.SetTexture("_MaskTexArray", maskTextureArray);
+        meshRenderer.material.SetFloat("_MaskIndex", curMaskIndex);
+
+        Debug.Log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+    }
     // ====================================================================
     //  UV→3D変換テーブルの構築（設計書 3.3）
     // ====================================================================
@@ -324,6 +354,8 @@ public class HF_PaintableSurface : MonoBehaviour
     /// </summary>
     public void Paint(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
     {
+        curMaskIndex++;
+        if (curMaskIndex > textures.Length) curMaskIndex = textures.Length - 1;
         // ヒット位置をローカル座標に変換（cellPositionsはローカル座標で保存されているため）
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         // ヒット法線もローカル空間に変換（表裏判定用）
