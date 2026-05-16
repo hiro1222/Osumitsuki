@@ -173,4 +173,9 @@ public class AllyEnemyManager : MonoBehaviour
                 $"アクション中: {actionManager.CurrentAction} → アンカー移動");
         }
     }
+
+    public IReadOnlyList<AllyEnemy> GetAllyEnemy()
+    {
+        return followingAllies;
+    }
 }
