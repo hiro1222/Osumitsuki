@@ -15,6 +15,10 @@ public class Obj_Osumitsuki : MonoBehaviour
     [Header("お墨付き後のテクスチャ")]
     [SerializeField] private Material myMaterial;
 
+    [Header("お助け用オブジェクト（PlayerからAllyEnemy情報を取得する方法に変えたい）")]
+    [SerializeField] private List<Transform> allyEnemyTargetPos = new List<Transform>();
+    [SerializeField] private AllyEnemyManager allyEnemyManager;
+
     private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
     private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
     private bool endFlg = false;        //終了フラグ
@@ -79,6 +83,10 @@ public class Obj_Osumitsuki : MonoBehaviour
     }
 
 
+    /**
+    * @brief    お墨付き前についているインク当たり判定を削除
+    * @param    GameObject[]    _gameObjects    子要素配列
+    */ 
     private void DestroyInkCollider(GameObject[] _gameObjects)
     {
 
@@ -87,8 +95,6 @@ public class Obj_Osumitsuki : MonoBehaviour
         for (int i =0; i < childrenCount; i++)
         { 
             colliders[i] = _gameObjects[i].GetComponent<Collider>();
-
-
 
 			if (colliders[i].gameObject.name == $"{gameObject.name}_InkCollision")
 			    Destroy(colliders[i].gameObject);
@@ -105,6 +111,14 @@ public class Obj_Osumitsuki : MonoBehaviour
         }
     }
 
+
+    /**
+    * @brief    プレイヤーからAllyEnemyを参照して保持する
+    */
+    void HelperEnemy()
+    {
+
+    }
 
 
 }
