@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using Unity.IO.LowLevel.Unsafe;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Obj_Osumitsuki : MonoBehaviour
@@ -45,12 +47,22 @@ public class Obj_Osumitsuki : MonoBehaviour
 
         if (InkRatio/100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
         {
-            GetComponent<MeshRenderer>().material = myMaterial;
-            gameObject.layer = LayerMask.NameToLayer("Default");
+			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+			GetComponent<MeshRenderer>().material = myMaterial;
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
 
-            this.gameObject.layer = LayerMask.GetMask("PlayerVSObject");
+            int childrenCount = transform.childCount;
+            if (childrenCount > 0)
+            {
+			    GameObject[] childrenObj = new GameObject[childrenCount];
+			    for (int i = 0; i < childrenCount; i++)
+                {
+                    Transform chiledTransform = transform.GetChild(i);
+                    childrenObj[i] = chiledTransform.gameObject;
+			    }
+                DestroyInkCollider(childrenObj);
+            }
 		}
 
         return osumitsukiTrg;
@@ -67,11 +79,32 @@ public class Obj_Osumitsuki : MonoBehaviour
     }
 
 
-    private void DestroyInkCollision()
+    private void DestroyInkCollider(GameObject[] _gameObjects)
     {
-        Collider[] colliders = GetComponentsInChildren<Collider>();
+
+        int childrenCount = _gameObjects.Length;
+        Collider[] colliders = new Collider[childrenCount];
+        for (int i =0; i < childrenCount; i++)
+        { 
+            colliders[i] = _gameObjects[i].GetComponent<Collider>();
+
+
+
+			if (colliders[i].gameObject.name == $"{gameObject.name}_InkCollision")
+			    Destroy(colliders[i].gameObject);
+		}
 
         for (int i = 0;  i < colliders.Length; i++)
-        { Destroy(colliders[i]); }
+        {
+            var collider = colliders[i];
+			collider.gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+            GameObject grandChild = collider.gameObject.transform.GetChild(0).gameObject;
+
+			if (grandChild.name == $"{collider.gameObject.name}_InkCollision")
+                Destroy(grandChild);
+        }
     }
+
+
+
 }
