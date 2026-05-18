@@ -14181,7 +14181,7 @@ PrefabInstance:
     - target: {fileID: 3705510683673764994, guid: 63b9e3d5adf6e7448be078db1efebf94, type: 3}
       propertyPath: allyEnemyManager
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1735472103}
     - target: {fileID: 3705510683673764994, guid: 63b9e3d5adf6e7448be078db1efebf94, type: 3}
       propertyPath: allyEnemyTarget.Array.size
       value: 2
@@ -14723,7 +14723,7 @@ PrefabInstance:
     - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: allyEnemyManager
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1735472103}
     - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: targets.Array.size
       value: 2
