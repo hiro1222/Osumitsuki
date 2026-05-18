@@ -7,7 +7,6 @@ public class Test_Osumitsuki : Obj_Osumitsuki
 
     public override void Action_Osumitsuki()
     {
-        Debug.Log((int)(time/100) + "•b");
         time += Time.deltaTime;
 
         if (time > 800f)
@@ -15,9 +14,7 @@ public class Test_Osumitsuki : Obj_Osumitsuki
     }
 
     public override void Update_Osumitsuki()
-    {
-        Debug.Log("UpdateF" + gameObject.name);
-    }
+    {}
 
     private void FixedUpdate()
     {
