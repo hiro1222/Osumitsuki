@@ -1,3 +1,4 @@
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
 
 /// <summary>
@@ -43,6 +44,7 @@ public static class InkPaintService
     public static void Paint(RaycastHit hit, float radius, byte inkDensity, byte colorId = 0)
     {
         var surface = FindSurface(hit.collider);
+        var hfSurface = FindHFSurface(hit.collider);
         if (surface != null)
             surface.Paint(hit, radius, inkDensity, colorId);
     }
@@ -133,5 +135,10 @@ public static class InkPaintService
     {
         return col.GetComponent<PaintableSurface>()
             ?? col.GetComponentInParent<PaintableSurface>();
+    }
+    private static HF_PaintableSurface FindHFSurface(Collider col)
+    {
+        return col.GetComponent<HF_PaintableSurface>()
+            ?? col.GetComponent<HF_PaintableSurface>();
     }
 }

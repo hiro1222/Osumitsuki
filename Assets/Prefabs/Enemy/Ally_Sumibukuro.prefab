@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followSpeed: 6
-  anchorSpeed: 100
+  anchorSpeed: 30
   bounceHeight: 1.5
   bounceDuration: 0.5
   allyColor: {r: 1, g: 0, b: 0, a: 1}

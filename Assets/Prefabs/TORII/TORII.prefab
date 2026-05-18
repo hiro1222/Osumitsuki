@@ -70,9 +70,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7ca62fc3139e5fd458c04781106c473c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5662950626325014373}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7ca62fc3139e5fd458c04781106c473c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3985829022013246699}
   m_SourcePrefab: {fileID: 100100000, guid: 7ca62fc3139e5fd458c04781106c473c, type: 3}
 --- !u!1 &5380991759992331097 stripped
 GameObject:
@@ -118,19 +115,3 @@ MonoBehaviour:
   chunkSize: 16
   meshThickness: 0.15
   renderResolution: 256
---- !u!114 &3985829022013246699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5380991759992331097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94bca4b97a28ca54aab24a3f1d2e69e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxInkCapa: 100
-  InkRatio: 70
-  myMaterial: {fileID: 2100000, guid: e4e1e5629477b064f99230880526df5f, type: 2}
-  CS_PlayerState: {fileID: 0}
