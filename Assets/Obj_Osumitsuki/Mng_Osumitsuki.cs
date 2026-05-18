@@ -37,12 +37,12 @@ public class Mng_Osumitsuki : MonoBehaviour
 
         foreach (Obj_Osumitsuki obj in update_Objects)
         {
-            obj.Update_Osumitsuki();
+            obj.Update_Osumitsuki_Cover();
         }
 
         foreach (Obj_Osumitsuki obj in action_Objects)
         {
-            obj.Action_Osumitsuki();
+            obj.Action_Osumitsuki_Cover();
 
             if (obj.OsumiFlg)
                 update_Objects.Add(obj);

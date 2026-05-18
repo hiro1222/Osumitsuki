@@ -14,7 +14,6 @@ public class Sakura_Osumitsuki : Obj_Osumitsuki
         group = GetComponent<PaintableSurfaceGroup>();
         if (group != null)
         {
-            Debug.Log("bbbbbbbbbbbbbbb");
             group.OnAnyPainted += HandleAnyPainted;
         }
     }
@@ -35,7 +34,6 @@ public class Sakura_Osumitsuki : Obj_Osumitsuki
 
     public override void Action_Osumitsuki()
     {
-        Debug.Log("aaaaaaaaaaaaaaaaaaa");
         // 子のMeshRenderer全員のマテリアルを差し替え
         if (woodMaterial != null && petalMaterial != null)
         {
