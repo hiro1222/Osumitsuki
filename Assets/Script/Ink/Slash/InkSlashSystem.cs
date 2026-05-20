@@ -1,47 +1,40 @@
 using UnityEngine;
 
-/// <summary>
-/// FlyingSlashの生成・管理（設計書セクション11: InkSlashSystem）
-/// - 複数のSlashPatternを保持
-/// - CreateSlash() で選択中のパターンの斬撃を発射
-///
-/// ■ セットアップ:
-/// 1. このスクリプトをアタッチ
-/// 2. InkManager をドラッグ
-/// 3. Patterns 配列にSlashPatternアセットをドラッグ（なければデフォルトで生成される）
+///// <summary>
+///// FlyingSlashの生成・管理（設計書セクション11: InkSlashSystem）
+///// - 複数のSlashPatternを保持
+///// - CreateSlash() で選択中のパターンの斬撃を発射
+/////
+///// ■ セットアップ:
+///// 1. このスクリプトをアタッチ
+///// 2. InkManager をドラッグ
+///// 3. Patterns 配列にSlashPatternアセットをドラッグ（なければデフォルトで生成される）
+///// </summary>
+/// FlyingSlashの生成・管理
 /// </summary>
 public class InkSlashSystem : MonoBehaviour
 {
-    //[Header("参照")]
-    //[SerializeField] private InkManager inkManager;
-
     [Header("斬撃プレハブ（空ならQuadを自動生成）")]
     [SerializeField] private GameObject slashPrefab;
 
     [Header("Trail用テクスチャ（SlashTrail.png）")]
     [SerializeField] private Texture2D trailTexture;
 
-    [Header("斬撃テクスチャ（Generate後にドラッグ: 横一文字, 縦斬り, 斜め, 円弧 の順）")]
+    [Header("斬撃テクスチャ（横一文字, 縦斬り, 斜め, 円弧 の順）")]
     [SerializeField] private Texture2D[] slashTextures;
 
     [Header("斬撃パターン（空ならデフォルト4種を自動生成）")]
     [SerializeField] private SlashPattern[] patterns;
 
-    // 現在選択中のパターン
     private int currentPatternIndex;
     private LayerMask hitMask;
 
-    /// <summary>現在のパターン</summary>
     public SlashPattern CurrentPattern =>
         patterns != null && patterns.Length > 0 ? patterns[currentPatternIndex] : null;
 
-    /// <summary>現在のパターンインデックス</summary>
     public int CurrentPatternIndex => currentPatternIndex;
-
-    /// <summary>パターン数</summary>
     public int PatternCount => patterns != null ? patterns.Length : 0;
 
-    /// <summary>指定インデックスのパターンを取得</summary>
     public SlashPattern GetPattern(int index)
     {
         if (patterns == null || index < 0 || index >= patterns.Length) return null;
@@ -50,50 +43,61 @@ public class InkSlashSystem : MonoBehaviour
 
     private void Start()
     {
-        // Playerレイヤーを除外
         int playerLayer = LayerMask.NameToLayer("Player");
         hitMask = playerLayer >= 0 ? ~(1 << playerLayer) : ~0;
 
-        // パターンが未設定ならデフォルトを生成
         if (patterns == null || patterns.Length == 0)
         {
             patterns = CreateDefaultPatterns();
-            Debug.Log("[InkSlashSystem] デフォルトパターン4種を生成しました。" +
-                      "Assets > Create > Ink/Slash Pattern でカスタムパターンを作れます。");
+            Debug.Log("[InkSlashSystem] デフォルトパターン4種を生成しました。");
         }
 
         currentPatternIndex = 0;
     }
 
-    /// <summary>パターンを切り替える</summary>
     public void SelectPattern(int index)
     {
         if (patterns == null || patterns.Length == 0) return;
         currentPatternIndex = Mathf.Clamp(index, 0, patterns.Length - 1);
     }
 
-    /// <summary>次のパターンに切り替え</summary>
     public void NextPattern()
     {
         if (patterns == null || patterns.Length == 0) return;
         currentPatternIndex = (currentPatternIndex + 1) % patterns.Length;
     }
 
-    /// <summary>前のパターンに切り替え</summary>
     public void PrevPattern()
     {
         if (patterns == null || patterns.Length == 0) return;
         currentPatternIndex = (currentPatternIndex - 1 + patterns.Length) % patterns.Length;
     }
 
-    /// <summary>斬撃を発射する</summary>
     public void CreateSlash(Vector3 position, Vector3 direction)
     {
         SlashPattern pat = CurrentPattern;
-        if (pat == null) return;
 
-        // オブジェクト生成
+        if (pat == null)
+        {
+            Debug.LogError("[InkSlashSystem] CurrentPattern が null です");
+            return;
+        }
+
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            Debug.LogWarning("[InkSlashSystem] direction が 0 なので transform.forward に補正します");
+            direction = transform.forward;
+        }
+
+        Debug.Log(
+            "[InkSlashSystem] CreateSlash " +
+            "Pos:" + position +
+            " Dir:" + direction +
+            " Speed:" + pat.speed
+        );
+
         GameObject obj;
+
         if (slashPrefab != null)
         {
             obj = Instantiate(slashPrefab, position, Quaternion.LookRotation(direction));
@@ -103,68 +107,78 @@ public class InkSlashSystem : MonoBehaviour
             obj = CreateDefaultSlashObject(position, direction, pat);
         }
 
-        // FlyingSlashコンポーネント設定
+        if (obj == null)
+        {
+            Debug.LogError("[InkSlashSystem] 斬撃オブジェクト生成失敗");
+            return;
+        }
+
         FlyingSlash slash = obj.GetComponent<FlyingSlash>();
         if (slash == null)
+        {
             slash = obj.AddComponent<FlyingSlash>();
+        }
 
         slash.velocity = direction.normalized * pat.speed;
         slash.pattern = pat;
         slash.hitMask = hitMask;
     }
 
-    /// <summary>プレハブ未設定時: Quad＋TrailRendererで斬撃を作る</summary>
     private GameObject CreateDefaultSlashObject(Vector3 position, Vector3 direction, SlashPattern pat)
     {
-        GameObject obj = new GameObject($"Slash_{pat.patternName}");
+        GameObject obj = new GameObject("Slash_" + pat.patternName);
         obj.transform.position = position;
         obj.transform.rotation = Quaternion.LookRotation(direction);
 
-        // ── Quad（斬撃の見た目本体） ──
         GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
         quad.name = "Visual";
         quad.transform.SetParent(obj.transform, false);
 
-        // Colliderを外す
-        var col = quad.GetComponent<Collider>();
-        if (col != null) Destroy(col);
-
-        // サイズをパターンに合わせる
-        Vector2 size = pat.visualSize;
-        if (size.sqrMagnitude < 0.01f) size = new Vector2(3f, 1.5f);
-        quad.transform.localScale = new Vector3(size.x, size.y, 1f);
-
-        // Quadを進行方向に対して垂直に立てる（XY平面がカメラに向く）
-        // Quadのデフォルトは-Z方向を向いているので、90°回転して進行方向と直交させる
-        quad.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-        // マテリアル設定
-        var renderer = quad.GetComponent<Renderer>();
-        if (renderer != null)
+        Collider col = quad.GetComponent<Collider>();
+        if (col != null)
         {
-            Shader slashShader = Shader.Find("Ink/SlashVisual");
-            if (slashShader == null) slashShader = Shader.Find("Universal Render Pipeline/Unlit");
-
-            var mat = new Material(slashShader);
-            mat.color = new Color(0.02f, 0.02f, 0.05f, 1f);
-
-            if (pat.slashTexture != null)
-            {
-                mat.SetTexture("_MainTex", pat.slashTexture);
-            }
-
-            // 透明描画の設定
-            mat.SetFloat("_Surface", 1); // Transparent
-            mat.renderQueue = 3000;
-
-            renderer.material = mat;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
+            Destroy(col);
         }
 
-        // ── Trail Renderer（飛行の軌跡） ──
-        var trail = obj.AddComponent<TrailRenderer>();
+        Vector2 size = pat.visualSize;
+        if (size.sqrMagnitude < 0.01f)
+        {
+            size = new Vector2(3f, 1.5f);
+        }
+
+        quad.transform.localScale = new Vector3(size.x, size.y, 1f);
+        quad.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        Renderer renderer = quad.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            Shader slashShader = FindSlashShader();
+
+            if (slashShader == null)
+            {
+                Debug.LogError("[InkSlashSystem] 全Shader取得失敗。Visual用Material生成をスキップします。");
+            }
+            else
+            {
+                Material mat = new Material(slashShader);
+                mat.color = new Color(0.02f, 0.02f, 0.05f, 1f);
+
+                if (pat.slashTexture != null)
+                {
+                    SetTextureSafe(mat, pat.slashTexture);
+                }
+
+                mat.renderQueue = 3000;
+
+                renderer.material = mat;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                renderer.receiveShadows = false;
+            }
+        }
+
+        TrailRenderer trail = obj.AddComponent<TrailRenderer>();
         trail.time = pat.trailTime > 0 ? pat.trailTime : 0.3f;
+
         float tw = pat.trailWidth > 0 ? pat.trailWidth : 0.5f;
         trail.startWidth = tw;
         trail.endWidth = tw * 0.1f;
@@ -173,41 +187,81 @@ public class InkSlashSystem : MonoBehaviour
         trail.numCornerVertices = 4;
         trail.numCapVertices = 4;
 
-        // Trail用マテリアル
-        Shader trailShader = Shader.Find("Ink/SlashVisual");
-        if (trailShader == null) trailShader = Shader.Find("Universal Render Pipeline/Unlit");
-        var trailMat = new Material(trailShader);
-        trailMat.color = new Color(0.02f, 0.02f, 0.05f, 0.8f);
-        trailMat.renderQueue = 3000;
+        Shader trailShader = FindSlashShader();
 
-        // Trail用テクスチャがあればセット（SlashTrail.png）
-        if (trailTexture != null)
+        if (trailShader == null)
         {
-            trailMat.SetTexture("_MainTex", trailTexture);
+            Debug.LogError("[InkSlashSystem] Trail Shader取得失敗。Trail用Material生成をスキップします。");
+        }
+        else
+        {
+            Material trailMat = new Material(trailShader);
+            trailMat.color = new Color(0.02f, 0.02f, 0.05f, 0.8f);
+            trailMat.renderQueue = 3000;
+
+            if (trailTexture != null)
+            {
+                SetTextureSafe(trailMat, trailTexture);
+            }
+
+            trail.material = trailMat;
         }
 
-        trail.material = trailMat;
-
-        // Trail の色カーブ（先端濃い→末尾薄い）
-        var colorGrad = new Gradient();
+        Gradient colorGrad = new Gradient();
         colorGrad.SetKeys(
-            new[] {
+            new[]
+            {
                 new GradientColorKey(new Color(0.02f, 0.02f, 0.05f), 0f),
                 new GradientColorKey(new Color(0.1f, 0.1f, 0.13f), 1f)
             },
-            new[] {
+            new[]
+            {
                 new GradientAlphaKey(0.9f, 0f),
                 new GradientAlphaKey(0f, 1f)
             }
         );
+
         trail.colorGradient = colorGrad;
 
         return obj;
     }
 
-    /// <summary>
-    /// デフォルトの4パターンを生成（設計書セクション5.2の値）
-    /// </summary>
+    private Shader FindSlashShader()
+    {
+        Shader shader = Shader.Find("Ink/SlashVisual");
+
+        if (shader == null)
+        {
+            shader = Shader.Find("Universal Render Pipeline/Unlit");
+        }
+
+        if (shader == null)
+        {
+            shader = Shader.Find("Universal Render Pipeline/Lit");
+        }
+
+        if (shader == null)
+        {
+            shader = Shader.Find("Sprites/Default");
+        }
+
+        return shader;
+    }
+
+    private void SetTextureSafe(Material mat, Texture2D tex)
+    {
+        if (mat == null || tex == null) return;
+
+        if (mat.HasProperty("_MainTex"))
+        {
+            mat.SetTexture("_MainTex", tex);
+        }
+        else if (mat.HasProperty("_BaseMap"))
+        {
+            mat.SetTexture("_BaseMap", tex);
+        }
+    }
+
     private SlashPattern[] CreateDefaultPatterns()
     {
         var horizontal = ScriptableObject.CreateInstance<SlashPattern>();
@@ -298,8 +352,8 @@ public class InkSlashSystem : MonoBehaviour
         circle.trailTime = 0.2f;
         circle.fadeSpeed = 1.5f;
 
-        // テクスチャが設定されていれば割り当て（横一文字, 縦斬り, 斜め, 円弧 の順）
-        var result = new[] { horizontal, vertical, diagonal, circle };
+        SlashPattern[] result = new[] { horizontal, vertical, diagonal, circle };
+
         if (slashTextures != null)
         {
             for (int i = 0; i < result.Length && i < slashTextures.Length; i++)

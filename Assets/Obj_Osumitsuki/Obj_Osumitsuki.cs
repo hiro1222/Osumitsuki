@@ -2,6 +2,8 @@ using NUnit.Framework;
 using Unity.IO.LowLevel.Unsafe;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 
 public class Obj_Osumitsuki : MonoBehaviour
 {
@@ -9,13 +11,20 @@ public class Obj_Osumitsuki : MonoBehaviour
     [Header("インクステータス")]
     //現在のインクの量
     protected float curInkAmount = 0;
-    [SerializeField] private float maxInkCapa = 100;      //インクの最大量
-    [SerializeField] private float InkRatio = 70;   //お墨付き
+    [SerializeField] private float maxInkCapa = 100;    //インクの最大量
+    [SerializeField] private float InkRatio = 70;       //お墨付き
 
     [Header("お墨付き後のテクスチャ")]
     [SerializeField] private Material myMaterial;
 
-    private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
+    [Header("お助け用オブジェクト")]
+    [SerializeField] private Transform[] allyEnemyTarget;    //AllyEnemy目標座標
+    [SerializeField] private AllyEnemyManager allyEnemyManager;
+
+    private AllyEnemy[] helperAllyEnemys;   //Osumitsuki_Objがお墨付き後移動補助やく墨袋
+    private AllyEnemy.IAllyEnemyState[] helperEnemyStates;
+
+	private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
     private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
     private bool endFlg = false;        //終了フラグ
 
@@ -26,15 +35,97 @@ public class Obj_Osumitsuki : MonoBehaviour
     public bool EndFlg => endFlg;           //処理が終了したかどうか
 
 
-    //お墨付き時のアクション
-    public virtual void Action_Osumitsuki()
+	private class AllyEnemy_Func_Base_Obj_Osumitsuki : AllyEnemy.IAllyEnemyState
     {
+        public AllyEnemy_Base_ObjOsumi_State state;
+        private Transform target;
+        private float speed = 10f;
+        
+        public enum AllyEnemy_Base_ObjOsumi_State
+        {
+            CHASER,
+            HELPER,
+            END,
+        }
 
+        public void SetState(AllyEnemy_Base_ObjOsumi_State _state) { state = _state; }
+        public void SetTarget(Transform _transform) { target = _transform; }
+        public AllyEnemy_Base_ObjOsumi_State GetState() { return state; }
+
+		/// <summary>ステート開始時に1回呼ばれる</summary>
+		public void OnEnter(AllyEnemy owner)
+        {
+			state = AllyEnemy_Base_ObjOsumi_State.CHASER;
+        }
+
+		/// <summary>毎フレーム呼ばれる。falseを返すとステート終了→Followに戻る</summary>
+		public bool OnTick(AllyEnemy owner, float dt)
+        {
+			switch (state)
+            {
+                case AllyEnemy_Base_ObjOsumi_State.CHASER: Chase_Update(owner, dt); return true;
+                case AllyEnemy_Base_ObjOsumi_State.HELPER: Help_Update(owner, dt); return true;
+                case AllyEnemy_Base_ObjOsumi_State.END: owner.ClearExternalState(); return true;
+            }
+
+            return false;
+        }
+
+		/// <summary>ステート終了時に1回呼ばれる</summary>
+		public void OnExit(AllyEnemy owner)
+        {
+        }
+
+        private void Chase_Update(AllyEnemy _owner, float _deltaTime)
+        {
+            if (target == null) return;
+            Debug.Log("目標座標に向かってるよ");
+            _owner.transform.position = Vector3.MoveTowards(
+			_owner.transform.position,
+            target.position,
+            speed * _deltaTime
+            );
+
+            if (Vector3.Distance(_owner.transform.position, target.position) < 0.01f )
+                state = AllyEnemy_Base_ObjOsumi_State.HELPER;
+        }
+        private void Help_Update(AllyEnemy _owner, float _deltaTime)
+        {
+            _owner.transform.position = target.position;
+            _owner.transform.rotation = target.rotation;
+        }
+	}
+
+	private void Awake()
+	{
+        if (allyEnemyTarget != null)
+        {
+            helperAllyEnemys = new AllyEnemy[allyEnemyTarget.Length];
+            helperEnemyStates = new AllyEnemy.IAllyEnemyState[allyEnemyTarget.Length];
+        }
+	}
+
+	public void Action_Osumitsuki_Cover()
+    {
+        Debug.Log("お墨付きアクション");
+        SearchOsumitsuki_Obj();
+        Action_Osumitsuki();
+    }
+    public void Update_Osumitsuki_Cover()
+    {
+        Debug.Log("お墨付きアップデート");
+        Update_Osumitsuki();
+    }
+
+	//お墨付き時のアクション
+	public virtual void Action_Osumitsuki()
+    {
+        Action2Update();
     }
     //Action_Osumitsuki後にマイフレーム更新
     public virtual void Update_Osumitsuki()
     {
-
+        End();
     }
 
     //塗られたときの処理
@@ -47,12 +138,19 @@ public class Obj_Osumitsuki : MonoBehaviour
 
         if (InkRatio/100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
         {
-			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
-			GetComponent<MeshRenderer>().material = myMaterial;
+            //本来のマテリアルに変更
+            var meshRenderer = GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+                meshRenderer.material = myMaterial;
+
+            //お墨付きマネージャーに渡す
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
 
-            int childrenCount = transform.childCount;
+			//当たり判定レイヤーを変更
+			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+			//インクコライダーを削除する
+			int childrenCount = transform.childCount;
             if (childrenCount > 0)
             {
 			    GameObject[] childrenObj = new GameObject[childrenCount];
@@ -62,7 +160,7 @@ public class Obj_Osumitsuki : MonoBehaviour
                     childrenObj[i] = chiledTransform.gameObject;
 			    }
                 DestroyInkCollider(childrenObj);
-            }
+			}
 		}
 
         return osumitsukiTrg;
@@ -70,15 +168,46 @@ public class Obj_Osumitsuki : MonoBehaviour
 
     public void Action2Update()
     {
-        osumitsukiFlg = true;
+        //AllyEnemyの助けが不必要
+        if (allyEnemyTarget.Length == 0)
+        {
+            Debug.Log("ただのお墨付きだよ");
+            osumitsukiFlg = true;
+            return;
+        }
+
+        //AllyEnemyの助けの数が足りていない
+        if (helperAllyEnemys.Length <= 1) return;
+
+
+        //到着しているお助け墨袋をカウント
+        int arrivalCnt = 0;
+        for (int i = 0; i < helperEnemyStates.Length; i++)
+        {
+            if (helperEnemyStates[i] == null) break;
+            AllyEnemy_Func_Base_Obj_Osumitsuki func = (AllyEnemy_Func_Base_Obj_Osumitsuki)helperEnemyStates[i];
+
+            if (func.GetState() == AllyEnemy_Func_Base_Obj_Osumitsuki.AllyEnemy_Base_ObjOsumi_State.HELPER)
+                arrivalCnt++;
+        }
+
+        //全て到着していたら
+        if (arrivalCnt == helperEnemyStates.Length)
+            osumitsukiFlg = true;
     }
 
     public virtual void End()
     {
+        for (int i = 0; i < helperAllyEnemys.Length; i++)
+            helperAllyEnemys[i].ClearExternalState();
         endFlg = true;
     }
 
 
+    /**
+    * @brief    お墨付き前についているインク当たり判定を削除
+    * @param    GameObject[]    _gameObjects    子要素配列
+    */ 
     private void DestroyInkCollider(GameObject[] _gameObjects)
     {
 
@@ -87,8 +216,6 @@ public class Obj_Osumitsuki : MonoBehaviour
         for (int i =0; i < childrenCount; i++)
         { 
             colliders[i] = _gameObjects[i].GetComponent<Collider>();
-
-
 
 			if (colliders[i].gameObject.name == $"{gameObject.name}_InkCollision")
 			    Destroy(colliders[i].gameObject);
@@ -105,6 +232,44 @@ public class Obj_Osumitsuki : MonoBehaviour
         }
     }
 
+
+    /**
+    * @brief    プレイヤーからAllyEnemyを参照して保持する
+    */
+    private void SearchOsumitsuki_Obj()
+    {
+		//目標座標がなければ終了
+		if (allyEnemyTarget.Length == 0) return;
+        Debug.Log(allyEnemyTarget.Length);
+
+		IReadOnlyList<AllyEnemy> allyEnemys = allyEnemyManager.GetAllyEnemy();
+		//AllyEnemyがいなければ終了
+		if (allyEnemys.Count == 0) return;
+
+		//お助け墨袋
+		int cnt = 0;
+        for (int i = 0; i < helperAllyEnemys.Length; i++)
+        {
+            if (helperAllyEnemys[i] != null) cnt++;
+        }
+		if (cnt >= 2) return;
+
+		//まだ空の目標座標を検索して、AllyEnemyを割り当てる
+		for (int i = 0; i < allyEnemyTarget.Length; i++)
+        {
+            if (helperEnemyStates[i] != null) continue;
+            if (allyEnemys.Count <= i) break;
+
+            AllyEnemy.IAllyEnemyState newState = new AllyEnemy_Func_Base_Obj_Osumitsuki();
+            allyEnemys[i].SetExternalState(newState);
+			helperEnemyStates[i] = newState;
+            helperAllyEnemys[i] = allyEnemys[i];
+            Transform targetTrf = allyEnemyTarget[i].transform;
+
+			AllyEnemy_Func_Base_Obj_Osumitsuki func = (AllyEnemy_Func_Base_Obj_Osumitsuki)newState;
+			func.SetTarget(targetTrf);
+		}
+	}
 
 
 }

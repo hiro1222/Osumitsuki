@@ -1,4 +1,3 @@
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Stairs_Osumitsuki : Movement_Osumitsuki
