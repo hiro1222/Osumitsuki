@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patternName: "\u6A2A\u4E00\u6587\u5B57"
   direction: 0
-  length: 8
-  width: 12
+  inkColorId: 0
+  length: 3.45
+  width: 48.1
   arcAngle: 120
   speed: 25
   gravity: 2
@@ -23,12 +24,14 @@ MonoBehaviour:
   baseDamage: 30
   damageDecay: 0.3
   inkDensity: 120
-  trailInterval: 0.5
-  trailRadius: 0.3
+  trailInterval: 4.11
+  trailRadius: 3.15
+  trailDensity: 72
   impactRadius: 1.2
   inkCost: 0.15
   slashTexture: {fileID: 0}
   visualSize: {x: 3, y: 1.5}
+  visualRotation: 0
   fadeSpeed: 1
   trailWidth: 0.5
   trailTime: 0.3

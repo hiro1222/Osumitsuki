@@ -1580,6 +1580,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: patterns.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'patterns.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 44d605f0ed45ef64b9a8c2a4cf4a5996, type: 2}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'patterns.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 67afcd6b7f25a8b45a9306664d69e150, type: 2}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'patterns.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 4b2bfe382b0e4724fa92176c7872da7d, type: 2}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'patterns.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 4b2bfe382b0e4724fa92176c7872da7d, type: 2}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: slashTextures.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'slashTextures.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2800000, guid: e0cfa885a842f424e9a477f680847585, type: 3}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'slashTextures.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2800000, guid: 4a86861177e1a9b4fa30af478f0d7dd3, type: 3}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'slashTextures.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2800000, guid: 24933c9c963312544802f5be9b15d19f, type: 3}
+    - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: 'slashTextures.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2800000, guid: 24933c9c963312544802f5be9b15d19f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
