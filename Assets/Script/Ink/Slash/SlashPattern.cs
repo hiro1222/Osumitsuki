@@ -84,6 +84,17 @@ public class SlashPattern : ScriptableObject
     [Header("ビジュアル")]
     [Tooltip("斬撃テクスチャ（SlashTextureGeneratorで生成）")]
     public Texture2D slashTexture;
+    [Header("エフェクト設定")]
+
+    [Tooltip("斬撃に付けるエフェクトPrefab")]
+    public GameObject effectPrefab;
+    [Tooltip("エフェクトのローカル位置オフセット")]
+    public Vector3 effectOffset = Vector3.zero;
+    [Tooltip("エフェクトのローカル回転（XYZ）")]
+    public Vector3 effectRotation = Vector3.zero;
+    [Tooltip("エフェクトのローカルスケール")]
+    public Vector3 effectScale = Vector3.one;
+
     [Tooltip("Quadの表示サイズ（メートル）")]
     public Vector2 visualSize = new Vector2(3f, 1.5f);
     [Tooltip("Quadの回転角度（度）。0=そのまま, 90=縦, 45=斜め")]

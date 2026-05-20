@@ -113,6 +113,8 @@ public class InkSlashSystem : MonoBehaviour
             return;
         }
 
+        HideSlashVisual(obj);
+
         FlyingSlash slash = obj.GetComponent<FlyingSlash>();
         if (slash == null)
         {
@@ -366,5 +368,38 @@ public class InkSlashSystem : MonoBehaviour
         }
 
         return result;
+    }
+
+    private void HideSlashVisual(GameObject obj)
+    {
+        if (obj == null) return;
+
+        Transform visual = obj.transform.Find("Visual");
+
+        if (visual != null)
+        {
+            Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].enabled = false;
+            }
+
+            return;
+        }
+
+        // Visualという名前が無いPrefab対策
+        Renderer[] allRenderers = obj.GetComponentsInChildren<Renderer>(true);
+
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            // TrailRendererは残す
+            if (allRenderers[i] is TrailRenderer) continue;
+
+            // ParticleSystemRendererは残す
+            if (allRenderers[i] is ParticleSystemRenderer) continue;
+
+            allRenderers[i].enabled = false;
+        }
     }
 }

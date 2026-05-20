@@ -139,6 +139,7 @@ public class FlyingSlash : MonoBehaviour
 
     // ── 内部状態 ──
     private float age;
+    private GameObject effectObj;
     private float distSinceLastTrail;
 
     private void Start()
@@ -148,6 +149,24 @@ public class FlyingSlash : MonoBehaviour
             $"Pos:{transform.position} " +
             $"Vel:{velocity}"
         );
+
+        if (pattern != null && pattern.effectPrefab != null)
+        {
+            effectObj = Instantiate(pattern.effectPrefab, transform);
+
+            // 位置
+            effectObj.transform.localPosition = pattern.effectOffset;
+
+            // 回転（XYZ 全軸）
+            Quaternion baseRot = effectObj.transform.localRotation;
+
+            effectObj.transform.localRotation =
+                baseRot *
+                Quaternion.Euler(pattern.effectRotation);
+
+            // スケール
+            effectObj.transform.localScale = pattern.effectScale;
+        }
     }
 
     private void Update()
