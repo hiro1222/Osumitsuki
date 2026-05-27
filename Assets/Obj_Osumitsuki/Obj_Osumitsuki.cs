@@ -148,18 +148,18 @@ public class Obj_Osumitsuki : MonoBehaviour
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
 
-			//当たり判定レイヤーを変更
-			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+            gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
 			//インクコライダーを削除する
-			int childrenCount = transform.childCount;
-            if (childrenCount > 0)
+			var all = new List<Transform>();
+			GetAllChildren(transform, all);
+            if (all.Count > 0)
             {
-			    GameObject[] childrenObj = new GameObject[childrenCount];
-			    for (int i = 0; i < childrenCount; i++)
+				GameObject[] childrenObj = new GameObject[all.Count];
+                for (int i = 0; i < all.Count; i++)
                 {
-                    Transform chiledTransform = transform.GetChild(i);
-                    childrenObj[i] = chiledTransform.gameObject;
-			    }
+                    childrenObj[i] = all[i].gameObject;
+                    all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+                }
                 DestroyInkCollider(childrenObj);
 			}
 		}
@@ -167,7 +167,16 @@ public class Obj_Osumitsuki : MonoBehaviour
         return osumitsukiTrg;
     }
 
-    public void Action2Update()
+	void GetAllChildren(Transform parent, List<Transform> result)
+	{
+		foreach (Transform child in parent)
+		{
+			result.Add(child);
+			GetAllChildren(child, result); // 再帰
+		}
+	}
+
+	public void Action2Update()
     {
         //AllyEnemyの助けが不必要
         if (allyEnemyTarget.Length == 0)
