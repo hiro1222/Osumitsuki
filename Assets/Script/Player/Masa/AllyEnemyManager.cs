@@ -27,6 +27,9 @@ public class AllyEnemyManager : MonoBehaviour
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
+    // 累計の味方番号（リセットしない）
+    private int allyIndexCounter = 0;
+
     private static readonly Dictionary<PlayerActionManager.ActionKind,
         PlayerActionAnchorProvider.ActionAnchorType> anchorMap =
         new Dictionary<PlayerActionManager.ActionKind,
@@ -72,12 +75,10 @@ public class AllyEnemyManager : MonoBehaviour
         {
             if (followingAllies[i] == null) continue;
 
-            // ── アクション中かどうかで分岐 ──
             if (isActing
                 && anchorProvider != null
                 && anchorMap.TryGetValue(currentKind, out var anchorType))
             {
-                // アクション中: アンカー位置に移動
                 Transform anchor = anchorProvider.GetAnchor(anchorType, i);
                 Vector3 targetPos = anchor != null ? anchor.position : GetFormationPos(i);
 
@@ -86,7 +87,6 @@ public class AllyEnemyManager : MonoBehaviour
             }
             else
             {
-                // 通常時: プレイヤーの真後ろに一列縦隊
                 followingAllies[i].SetUseAnchorSpeed(false);
                 followingAllies[i].SetFollowTarget(GetFormationPos(i));
             }
@@ -122,6 +122,11 @@ public class AllyEnemyManager : MonoBehaviour
         }
 
         AllyEnemy newAlly = Instantiate(allyEnemyPrefab, spawnPos, Quaternion.identity);
+
+        // 番号を付ける（累計番号）
+        newAlly.SetAllyIndex(allyIndexCounter, this);
+        allyIndexCounter++;
+
         followingAllies.Add(newAlly);
         Debug.Log($"[AllyEnemyManager] AllyEnemy生成。追従中: {followingAllies.Count}体");
     }
@@ -140,6 +145,23 @@ public class AllyEnemyManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// AllyEnemyが自分自身でConsumeSelf()を呼んだときに通知される
+    /// リストから除去して後処理を行う
+    /// </summary>
+    public void OnAllyConsumedSelf(AllyEnemy ally)
+    {
+        if (followingAllies.Contains(ally))
+        {
+            followingAllies.Remove(ally);
+
+            if (paintStatus != null)
+                paintStatus.SubPaintLevel();
+
+            Debug.Log($"[AllyEnemyManager] 自己消費通知。番号: {ally.GetAllyIndex()} 残り: {followingAllies.Count}体");
+        }
+    }
+
     public void ConsumeAlly()
     {
         for (int i = 0; i < followingAllies.Count; i++)
@@ -149,7 +171,6 @@ public class AllyEnemyManager : MonoBehaviour
                 followingAllies[i].Consume();
                 followingAllies.RemoveAt(i);
 
-                // 消費時に塗り範囲を1段階下げる
                 if (paintStatus != null)
                     paintStatus.SubPaintLevel();
 
