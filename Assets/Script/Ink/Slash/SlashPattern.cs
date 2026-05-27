@@ -49,10 +49,23 @@ public class SlashPattern : ScriptableObject
     [Range(0f, 360f)]
     public float arcAngle = 120f;
 
+    [Header("扇形マルチ球")]
+    [Tooltip("扇形時に発射する塗り判定球の数")]
+    [Min(1)]
+    public int arcProjectileCount = 5;
+
+    [Tooltip("中央以外の球のVisualを非表示にする")]
+    public bool hideSubProjectiles = true;
+
     [Header("飛行")]
     public float speed = 25f;
     public float gravity = 2f;
     public float lifetime = 2f;
+
+    [Header("発射")]
+    [Tooltip("入力から斬撃球生成までの遅延秒数")]
+    [Min(0f)]
+    public float spawnDelay = 0f;
 
     [Header("ダメージ")]
     public float baseDamage = 30f;

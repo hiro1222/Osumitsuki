@@ -1,17 +1,6 @@
 using UnityEngine;
+using System.Collections;
 
-///// <summary>
-///// FlyingSlashの生成・管理（設計書セクション11: InkSlashSystem）
-///// - 複数のSlashPatternを保持
-///// - CreateSlash() で選択中のパターンの斬撃を発射
-/////
-///// ■ セットアップ:
-///// 1. このスクリプトをアタッチ
-///// 2. InkManager をドラッグ
-///// 3. Patterns 配列にSlashPatternアセットをドラッグ（なければデフォルトで生成される）
-///// </summary>
-/// FlyingSlashの生成・管理
-/// </summary>
 public class InkSlashSystem : MonoBehaviour
 {
     [Header("斬撃プレハブ（空ならQuadを自動生成）")]
@@ -83,47 +72,30 @@ public class InkSlashSystem : MonoBehaviour
             return;
         }
 
-        if (direction.sqrMagnitude <= 0.0001f)
+        if (pat.spawnDelay > 0f)
         {
-            Debug.LogWarning("[InkSlashSystem] direction が 0 なので transform.forward に補正します");
-            direction = transform.forward;
-        }
-
-        Debug.Log(
-            "[InkSlashSystem] CreateSlash " +
-            "Pos:" + position +
-            " Dir:" + direction +
-            " Speed:" + pat.speed
-        );
-
-        GameObject obj;
-
-        if (slashPrefab != null)
-        {
-            obj = Instantiate(slashPrefab, position, Quaternion.LookRotation(direction));
-        }
-        else
-        {
-            obj = CreateDefaultSlashObject(position, direction, pat);
-        }
-
-        if (obj == null)
-        {
-            Debug.LogError("[InkSlashSystem] 斬撃オブジェクト生成失敗");
+            StartCoroutine(CreateSlashDelayed(position, direction, pat));
             return;
         }
 
-        HideSlashVisual(obj);
+        CreateSlashAfterDelay(position, direction, pat);
+    }
 
-        FlyingSlash slash = obj.GetComponent<FlyingSlash>();
-        if (slash == null)
+    public void CreateSlash(Vector3 position, Vector3 direction, SlashPattern pattern)
+    {
+        if (pattern == null)
         {
-            slash = obj.AddComponent<FlyingSlash>();
+            Debug.LogError("[InkSlashSystem] 指定された SlashPattern が null です");
+            return;
         }
 
-        slash.velocity = direction.normalized * pat.speed;
-        slash.pattern = pat;
-        slash.hitMask = hitMask;
+        if (pattern.spawnDelay > 0f)
+        {
+            StartCoroutine(CreateSlashDelayed(position, direction, pattern));
+            return;
+        }
+
+        CreateSlashAfterDelay(position, direction, pattern);
     }
 
     private GameObject CreateDefaultSlashObject(Vector3 position, Vector3 direction, SlashPattern pat)
@@ -137,10 +109,7 @@ public class InkSlashSystem : MonoBehaviour
         quad.transform.SetParent(obj.transform, false);
 
         Collider col = quad.GetComponent<Collider>();
-        if (col != null)
-        {
-            Destroy(col);
-        }
+        if (col != null) Destroy(col);
 
         Vector2 size = pat.visualSize;
         if (size.sqrMagnitude < 0.01f)
@@ -232,20 +201,9 @@ public class InkSlashSystem : MonoBehaviour
     {
         Shader shader = Shader.Find("Ink/SlashVisual");
 
-        if (shader == null)
-        {
-            shader = Shader.Find("Universal Render Pipeline/Unlit");
-        }
-
-        if (shader == null)
-        {
-            shader = Shader.Find("Universal Render Pipeline/Lit");
-        }
-
-        if (shader == null)
-        {
-            shader = Shader.Find("Sprites/Default");
-        }
+        if (shader == null) shader = Shader.Find("Universal Render Pipeline/Unlit");
+        if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null) shader = Shader.Find("Sprites/Default");
 
         return shader;
     }
@@ -283,7 +241,7 @@ public class InkSlashSystem : MonoBehaviour
         horizontal.impactRadius = 2.0f;
         horizontal.inkCost = 0.1f;
         horizontal.visualSize = new Vector2(4f, 1.5f);
-        horizontal.visualRotation = 90f;    // 横向きそのまま
+        horizontal.visualRotation = 90f;
         horizontal.trailWidth = 0.6f;
         horizontal.trailTime = 0.25f;
         horizontal.fadeSpeed = 1.2f;
@@ -305,7 +263,7 @@ public class InkSlashSystem : MonoBehaviour
         vertical.impactRadius = 1.0f;
         vertical.inkCost = 0.2f;
         vertical.visualSize = new Vector2(1f, 3.5f);
-        vertical.visualRotation = 0f;      // サイズで既に縦長
+        vertical.visualRotation = 0f;
         vertical.trailWidth = 0.3f;
         vertical.trailTime = 0.35f;
         vertical.fadeSpeed = 0.8f;
@@ -327,7 +285,7 @@ public class InkSlashSystem : MonoBehaviour
         diagonal.impactRadius = 1.5f;
         diagonal.inkCost = 0.15f;
         diagonal.visualSize = new Vector2(3f, 3f);
-        diagonal.visualRotation = 45f;     // 斜め45°
+        diagonal.visualRotation = 45f;
         diagonal.trailWidth = 0.4f;
         diagonal.trailTime = 0.3f;
         diagonal.fadeSpeed = 1.0f;
@@ -349,7 +307,7 @@ public class InkSlashSystem : MonoBehaviour
         circle.impactRadius = 2.5f;
         circle.inkCost = 0.25f;
         circle.visualSize = new Vector2(3.5f, 3.5f);
-        circle.visualRotation = 0f;        // リング状なので回転不要
+        circle.visualRotation = 0f;
         circle.trailWidth = 0.5f;
         circle.trailTime = 0.2f;
         circle.fadeSpeed = 1.5f;
@@ -388,18 +346,144 @@ public class InkSlashSystem : MonoBehaviour
             return;
         }
 
-        // Visualという名前が無いPrefab対策
         Renderer[] allRenderers = obj.GetComponentsInChildren<Renderer>(true);
 
         for (int i = 0; i < allRenderers.Length; i++)
         {
-            // TrailRendererは残す
             if (allRenderers[i] is TrailRenderer) continue;
-
-            // ParticleSystemRendererは残す
             if (allRenderers[i] is ParticleSystemRenderer) continue;
 
             allRenderers[i].enabled = false;
         }
+    }
+
+    private IEnumerator CreateSlashDelayed(Vector3 position, Vector3 direction, SlashPattern pat)
+    {
+        yield return new WaitForSeconds(pat.spawnDelay);
+
+        CreateSlashImmediate(position, direction, pat);
+    }
+
+    private void CreateSlashImmediate(Vector3 position, Vector3 direction, SlashPattern pat)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            Debug.LogWarning("[InkSlashSystem] direction が0なので補正");
+            direction = transform.forward;
+        }
+
+        Debug.Log(
+            "[InkSlashSystem] CreateSlash " +
+            " Pos:" + position +
+            " Dir:" + direction +
+            " Speed:" + pat.speed
+        );
+
+        GameObject obj;
+
+        if (slashPrefab != null)
+        {
+            obj = Instantiate(
+                slashPrefab,
+                position,
+                Quaternion.LookRotation(direction)
+            );
+        }
+        else
+        {
+            obj = CreateDefaultSlashObject(position, direction, pat);
+        }
+
+        if (obj == null)
+        {
+            Debug.LogError("[InkSlashSystem] 斬撃オブジェクト生成失敗");
+            return;
+        }
+
+        FlyingSlash slash = obj.GetComponent<FlyingSlash>();
+
+        if (slash == null)
+        {
+            slash = obj.AddComponent<FlyingSlash>();
+        }
+
+        slash.velocity = direction.normalized * pat.speed;
+        slash.pattern = pat;
+        slash.hitMask = hitMask;
+    }
+
+    private void CreateArcSlash(Vector3 position, Vector3 direction, SlashPattern pat)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            direction = transform.forward;
+        }
+
+        direction.Normalize();
+
+        int count = Mathf.Max(1, pat.arcProjectileCount);
+        float totalAngle = Mathf.Max(1.0f, pat.arcAngle);
+
+        float startAngle = -totalAngle * 0.5f;
+        float step = count > 1 ? totalAngle / (count - 1) : 0.0f;
+
+        int centerIndex = count / 2;
+
+        for (int i = 0; i < count; ++i)
+        {
+            float angle = startAngle + step * i;
+
+            Vector3 dir =
+                Quaternion.AngleAxis(angle, Vector3.up) * direction;
+
+            GameObject obj;
+
+            if (slashPrefab != null)
+            {
+                obj = Instantiate(
+                    slashPrefab,
+                    position,
+                    Quaternion.LookRotation(dir)
+                );
+            }
+            else
+            {
+                obj = CreateDefaultSlashObject(position, dir, pat);
+            }
+
+            if (obj == null) continue;
+
+            bool isCenter = i == centerIndex;
+
+            FlyingSlash slash = obj.GetComponent<FlyingSlash>();
+
+            if (slash == null)
+            {
+                slash = obj.AddComponent<FlyingSlash>();
+            }
+
+            slash.velocity = dir.normalized * pat.speed;
+            slash.pattern = pat;
+            slash.hitMask = hitMask;
+
+            slash.spawnEffect = isCenter;
+
+            if (!isCenter && pat.hideSubProjectiles)
+            {
+                HideSlashVisual(obj);
+            }
+        }
+    }
+
+    private void CreateSlashAfterDelay(Vector3 position, Vector3 direction, SlashPattern pat)
+    {
+        if (pat.GetInkShape() == InkShape.Arc &&
+            pat.arcProjectileCount > 1)
+        {
+            CreateArcSlash(position, direction, pat);
+            return;
+        }
+
+        CreateSlashImmediate(position, direction, pat);
     }
 }

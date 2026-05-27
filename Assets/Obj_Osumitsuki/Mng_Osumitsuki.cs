@@ -11,6 +11,9 @@ public class Mng_Osumitsuki : MonoBehaviour
     private List<Obj_Osumitsuki> action_Objects;
     private List<Obj_Osumitsuki> update_Objects;
 
+
+    private int flameCnt = 0;
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -29,8 +32,7 @@ public class Mng_Osumitsuki : MonoBehaviour
         update_Objects = new List<Obj_Osumitsuki>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
         action_Objects.RemoveAll(obj => obj.OsumiFlg || obj.EndFlg);
         update_Objects.RemoveAll(obj => obj.EndFlg);
@@ -47,12 +49,17 @@ public class Mng_Osumitsuki : MonoBehaviour
             if (obj.OsumiFlg)
                 update_Objects.Add(obj);
         }
+
+        flameCnt++;
     }
 
 
-        public void AddObject(Obj_Osumitsuki _obj)
-        {
-            action_Objects.Add(_obj);
-            Debug.Log(_obj.name + "ÅAOsumitsuki!!");
-        }
+    public void AddObject(Obj_Osumitsuki _obj)
+    {
+        var ansObject = action_Objects.Find(obj => obj.name == _obj.name);
+        if (ansObject != null) return;
+
+        action_Objects.Add(_obj);
+        Debug.Log(_obj.name + "ÅAOsumitsuki!!");
+    }
 }

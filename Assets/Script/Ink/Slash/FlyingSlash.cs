@@ -136,6 +136,7 @@ public class FlyingSlash : MonoBehaviour
     [HideInInspector] public Vector3 velocity;
     [HideInInspector] public SlashPattern pattern;
     [HideInInspector] public LayerMask hitMask = ~0;
+    [HideInInspector] public bool spawnEffect = true;
 
     // ── 内部状態 ──
     private float age;
@@ -150,22 +151,42 @@ public class FlyingSlash : MonoBehaviour
             $"Vel:{velocity}"
         );
 
-        if (pattern != null && pattern.effectPrefab != null)
+        if (spawnEffect && pattern != null && pattern.effectPrefab != null)
         {
             effectObj = Instantiate(pattern.effectPrefab, transform);
 
-            // 位置
             effectObj.transform.localPosition = pattern.effectOffset;
 
-            // 回転（XYZ 全軸）
-            Quaternion baseRot = effectObj.transform.localRotation;
+            // Z軸 = 飛行方向
+            Vector3 slashZAxis = velocity.normalized;
 
-            effectObj.transform.localRotation =
-                baseRot *
-                Quaternion.Euler(pattern.effectRotation);
+            if (slashZAxis.sqrMagnitude < 0.0001f)
+            {
+                slashZAxis = transform.forward;
+            }
 
-            // スケール
-            effectObj.transform.localScale = pattern.effectScale;
+            // X軸 = 飛行方向に対する水平交差軸
+            Vector3 slashXAxis = Vector3.Cross(Vector3.up, slashZAxis);
+
+            if (slashXAxis.sqrMagnitude < 0.0001f)
+            {
+                slashXAxis = transform.right;
+            }
+
+            slashXAxis.Normalize();
+
+            // Y軸 = 鉛直交差軸
+            Vector3 slashYAxis =
+                Vector3.Cross(slashZAxis, slashXAxis).normalized;
+
+            Quaternion slashBasis =
+                Quaternion.LookRotation(slashZAxis, slashYAxis);
+
+            effectObj.transform.rotation =
+                slashBasis * Quaternion.Euler(pattern.effectRotation);
+
+            effectObj.transform.localScale =
+                pattern.effectScale;
         }
     }
 
