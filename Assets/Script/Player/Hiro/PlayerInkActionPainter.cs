@@ -7,32 +7,133 @@ public class PlayerInkActionPainter : MonoBehaviour
 
     [Header("Ground Paint Ray")]
     [SerializeField] private LayerMask paintRayMask = ~0;
+
     [SerializeField] private float rayStartHeight = 1.2f;
     [SerializeField] private float rayLength = 4.0f;
 
-    public void PaintGroundNearPlayer(Transform player, float forwardOffset, float radius, byte density)
+    private void Awake()
     {
-        if (player == null) return;
-
-        Vector3 origin = player.position + player.forward * forwardOffset + Vector3.up * rayStartHeight;
-
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength, paintRayMask, QueryTriggerInteraction.Collide))
+        if (slashSystem == null)
         {
-            InkPaintService.Paint(hit, radius, density);
+            slashSystem = FindObjectOfType<InkSlashSystem>();
         }
     }
 
-    public void FireSlashPattern(Transform player, int patternIndex, float forwardOffset, float heightOffset)
+    public void PaintGroundNearPlayer(
+        Transform player,
+        float forwardOffset,
+        float radius,
+        byte density
+    )
     {
-        if (player == null) return;
-        if (slashSystem == null) return;
+        if (player == null)
+        {
+            return;
+        }
+
+        Vector3 origin =
+            player.position +
+            player.forward * forwardOffset +
+            Vector3.up * rayStartHeight;
+
+        if (
+            Physics.Raycast(
+                origin,
+                Vector3.down,
+                out RaycastHit hit,
+                rayLength,
+                paintRayMask,
+                QueryTriggerInteraction.Collide
+            )
+        )
+        {
+            InkPaintService.Paint(
+                hit,
+                radius,
+                density
+            );
+        }
+    }
+
+    // ===========================
+    // 従来版（PatternIndex指定）
+    // ===========================
+
+    public void FireSlashPattern(
+        Transform player,
+        int patternIndex,
+        float forwardOffset,
+        float heightOffset
+    )
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (slashSystem == null)
+        {
+            return;
+        }
 
         if (patternIndex >= 0)
         {
             slashSystem.SelectPattern(patternIndex);
         }
 
-        Vector3 spawnPos = player.position + player.forward * forwardOffset + Vector3.up * heightOffset;
-        slashSystem.CreateSlash(spawnPos, player.forward);
+        Vector3 spawnPos =
+            player.position +
+            player.forward * forwardOffset +
+            Vector3.up * heightOffset;
+
+        slashSystem.CreateSlash(
+            spawnPos,
+            player.forward
+        );
+    }
+
+    // ===========================
+    // 新版（SlashPattern直接指定）
+    // ===========================
+
+    public void FireSlashPattern(
+        Transform player,
+        SlashPattern pattern,
+        float forwardOffset,
+        float heightOffset
+    )
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (slashSystem == null)
+        {
+            return;
+        }
+
+        if (pattern == null)
+        {
+            Debug.LogWarning(
+                "[PlayerInkActionPainter] SlashPattern が null"
+            );
+
+            return;
+        }
+
+        Vector3 spawnPos =
+            player.position +
+            player.forward * forwardOffset +
+            Vector3.up * heightOffset;
+
+        Vector3 direction =
+            player.forward.normalized;
+
+        slashSystem.CreateSlash(
+            spawnPos,
+            direction,
+            pattern
+        );
     }
 }

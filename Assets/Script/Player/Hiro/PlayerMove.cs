@@ -34,12 +34,20 @@ public class PlayerMove : MonoBehaviour
     [Tooltip("Ground Snapで判定するLayer")]
     [SerializeField] private LayerMask groundSnapMask = ~0;
 
+    [Header("Jump Delay")]
+    [SerializeField] private string jumpAnimationName = "Jump";
+    [SerializeField] private float jumpDelayTime = 0.12f;
+
+    [Header("Climb")]
+    [SerializeField] private float climbDuration = 0.12f;
+
     private Vector3 velocity;
     private bool jumpRequestedThisFrame;
     private float lastGroundedTime;
 
     private bool waitingJump;
     private float jumpTimer;
+    private bool hasJumpDelayStarted;
 
     private bool externalPositionLock;
     private bool externalGravityEnabled = true;
@@ -53,7 +61,16 @@ public class PlayerMove : MonoBehaviour
 
     public bool IsGrounded { get; private set; }
 
-    // アニメーションやStateMachine側はこっちを見るのがおすすめ
+    public bool IsJumpDelayWaiting
+    {
+        get { return waitingJump; }
+    }
+
+    public string JumpAnimationName
+    {
+        get { return jumpAnimationName; }
+    }
+
     public bool IsGroundedBuffered
     {
         get
@@ -150,7 +167,7 @@ public class PlayerMove : MonoBehaviour
 
             if (!waitingJump)
             {
-                HasJumpDelayStarted = false;
+                hasJumpDelayStarted = false;
             }
         }
 
@@ -181,8 +198,10 @@ public class PlayerMove : MonoBehaviour
             IsGroundedBuffered &&
             !controller.ActionManager.IsActing)
         {
-            return;
+            StartJumpDelay();
         }
+
+        TickJumpDelay();
 
         if (externalGravityEnabled)
         {
@@ -230,6 +249,45 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private void StartJumpDelay()
+    {
+        if (waitingJump) return;
+
+        waitingJump = true;
+        jumpTimer = 0.0f;
+        hasJumpDelayStarted = true;
+        jumpRequestedThisFrame = true;
+    }
+
+    private void TickJumpDelay()
+    {
+        if (!waitingJump) return;
+
+        jumpTimer += Time.deltaTime;
+
+        if (jumpTimer < jumpDelayTime) return;
+
+        DoJump();
+    }
+
+    private void DoJump()
+    {
+        PlayerStats stats = controller.Stats;
+
+        waitingJump = false;
+        hasJumpDelayStarted = false;
+        jumpRequestedThisFrame = true;
+
+        velocity.y = stats.jumpPower;
+
+        IsGrounded = false;
+    }
+
+    private bool HasJumpDelayStarted()
+    {
+        return hasJumpDelayStarted;
+    }
+
     private void ApplyStepOffset()
     {
         if (characterController == null) return;
@@ -252,7 +310,6 @@ public class PlayerMove : MonoBehaviour
 
         if (velocity.y > 0.0f) return;
 
-        // 大きく落下している時は吸着させない
         if (!IsGroundedBuffered &&
             velocity.y <= fallAnimationVelocityThreshold)
         {
@@ -333,5 +390,31 @@ public class PlayerMove : MonoBehaviour
 
         Quaternion targetRot = Quaternion.LookRotation(move, Vector3.up);
         tf.rotation = Quaternion.Slerp(tf.rotation, targetRot, rotateSpeed * Time.deltaTime);
+    }
+
+    private void TickClimb()
+    {
+        climbTimer += Time.deltaTime;
+
+        float t = climbDuration <= 0.0001f
+            ? 1.0f
+            : climbTimer / climbDuration;
+
+        t = Mathf.Clamp01(t);
+
+        Vector3 nextPos = Vector3.Lerp(climbStartPos, climbTargetPos, t);
+
+        Vector3 delta = nextPos - transform.position;
+
+        characterController.Move(delta);
+
+        if (t >= 1.0f)
+        {
+            isClimbing = false;
+            climbTimer = 0.0f;
+            velocity.y = controller.Stats.groundedY;
+            IsGrounded = characterController.isGrounded;
+            lastGroundedTime = Time.time;
+        }
     }
 }
