@@ -38,10 +38,18 @@ public class PlayerMove : MonoBehaviour
     private bool jumpRequestedThisFrame;
     private float lastGroundedTime;
 
+    private bool waitingJump;
+    private float jumpTimer;
+
     private bool externalPositionLock;
     private bool externalGravityEnabled = true;
     private bool lockHeightOnly;
     private Vector3 lockedPosition;
+
+    private bool isClimbing;
+    private float climbTimer;
+    private Vector3 climbStartPos;
+    private Vector3 climbTargetPos;
 
     public bool IsGrounded { get; private set; }
 
@@ -81,6 +89,13 @@ public class PlayerMove : MonoBehaviour
 
     public void Tick()
     {
+        if (isClimbing)
+        {
+            TickClimbInputRotation();
+            TickClimb();
+            return;
+        }
+
         UpdateMove();
     }
 
@@ -132,6 +147,11 @@ public class PlayerMove : MonoBehaviour
         if (IsGrounded && velocity.y < 0.0f)
         {
             velocity.y = stats.groundedY;
+
+            if (!waitingJump)
+            {
+                HasJumpDelayStarted = false;
+            }
         }
 
         Vector2 moveInput = controller.InputHandler.MoveInput;
@@ -161,9 +181,7 @@ public class PlayerMove : MonoBehaviour
             IsGroundedBuffered &&
             !controller.ActionManager.IsActing)
         {
-            velocity.y = stats.jumpPower;
-            jumpRequestedThisFrame = true;
-            IsGrounded = false;
+            return;
         }
 
         if (externalGravityEnabled)
@@ -291,5 +309,29 @@ public class PlayerMove : MonoBehaviour
         if (right.sqrMagnitude > 0.0001f) right.Normalize();
 
         return forward * moveInput.y + right * moveInput.x;
+    }
+
+    private void TickClimbInputRotation()
+    {
+        Vector2 moveInput = controller.InputHandler.MoveInput;
+        Vector3 move = BuildCameraRelativeMove(moveInput);
+
+        if (move.sqrMagnitude <= 0.0001f) return;
+
+        if (move.sqrMagnitude > 1.0f)
+        {
+            move.Normalize();
+        }
+
+        if (controller.ActionManager.CurrentMoveSpeedRate <= 0.0f) return;
+
+        if (controller.ActionManager.IsActing &&
+            !controller.ActionManager.IsNazori)
+        {
+            return;
+        }
+
+        Quaternion targetRot = Quaternion.LookRotation(move, Vector3.up);
+        tf.rotation = Quaternion.Slerp(tf.rotation, targetRot, rotateSpeed * Time.deltaTime);
     }
 }

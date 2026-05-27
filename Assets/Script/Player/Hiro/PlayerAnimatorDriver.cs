@@ -24,8 +24,6 @@ public class PlayerAnimatorDriver : MonoBehaviour
     [SerializeField] private float baseCrossFade = 0.12f;
     [SerializeField] private float actionCrossFade = 0.08f;
 
-    private string currentStateName = "";
-
     public void Initialize(PlayerController owner)
     {
         controller = owner;
@@ -52,13 +50,22 @@ public class PlayerAnimatorDriver : MonoBehaviour
     {
         if (anim == null) return;
 
-        float speed = controller.InputHandler.MoveInput.magnitude * controller.ActionManager.CurrentMoveSpeedRate;
+        anim.speed = 1.0f;
+
+        float speed = controller.InputHandler.MoveInput.magnitude *
+                      controller.ActionManager.CurrentMoveSpeedRate;
 
         SafeSetFloat(hashSpeed, speed);
         SafeSetBool(hashGrounded, controller.Move.IsGrounded);
         SafeSetBool(hashIsActing, controller.ActionManager.IsActing);
         SafeSetBool(hashIsNazori, controller.ActionManager.IsNazori);
         SafeSetInt(hashActionKind, (int)controller.ActionManager.CurrentAction);
+
+        if (controller.Move.IsJumpDelayWaiting)
+        {
+            PlayBaseAnimation(controller.Move.JumpAnimationName);
+            return;
+        }
 
         if (controller.ActionManager.IsActing)
         {
@@ -111,7 +118,6 @@ public class PlayerAnimatorDriver : MonoBehaviour
 
         float normalizedTime = Mathf.Clamp01(seconds / length);
 
-        currentStateName = stateName;
         anim.Play(hash, 0, normalizedTime);
         anim.speed = 0.0f;
     }
@@ -132,6 +138,8 @@ public class PlayerAnimatorDriver : MonoBehaviour
         if (anim == null) return;
         if (string.IsNullOrEmpty(stateName)) return;
 
+        anim.speed = 1.0f;
+
         int hash = Animator.StringToHash(stateName);
 
         if (!anim.HasState(0, hash))
@@ -140,28 +148,48 @@ public class PlayerAnimatorDriver : MonoBehaviour
             return;
         }
 
-        if (!forceRestart && currentStateName == stateName)
+        AnimatorStateInfo current = anim.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo next = anim.GetNextAnimatorStateInfo(0);
+
+        if (!forceRestart)
         {
-            return;
+            if (current.shortNameHash == hash)
+            {
+                return;
+            }
+
+            if (anim.IsInTransition(0) &&
+                next.shortNameHash == hash)
+            {
+                return;
+            }
         }
 
-        currentStateName = stateName;
         anim.CrossFadeInFixedTime(hash, fadeTime, 0);
     }
 
     private void SafeSetFloat(int hash, float value)
     {
-        if (HasParameter(hash)) anim.SetFloat(hash, value);
+        if (HasParameter(hash))
+        {
+            anim.SetFloat(hash, value);
+        }
     }
 
     private void SafeSetBool(int hash, bool value)
     {
-        if (HasParameter(hash)) anim.SetBool(hash, value);
+        if (HasParameter(hash))
+        {
+            anim.SetBool(hash, value);
+        }
     }
 
     private void SafeSetInt(int hash, int value)
     {
-        if (HasParameter(hash)) anim.SetInteger(hash, value);
+        if (HasParameter(hash))
+        {
+            anim.SetInteger(hash, value);
+        }
     }
 
     private bool HasParameter(int hash)
@@ -170,7 +198,10 @@ public class PlayerAnimatorDriver : MonoBehaviour
 
         foreach (AnimatorControllerParameter p in anim.parameters)
         {
-            if (p.nameHash == hash) return true;
+            if (p.nameHash == hash)
+            {
+                return true;
+            }
         }
 
         return false;
