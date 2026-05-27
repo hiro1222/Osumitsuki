@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 ///// <summary>
 ///// FlyingSlashの生成・管理（設計書セクション11: InkSlashSystem）
@@ -79,51 +80,32 @@ public class InkSlashSystem : MonoBehaviour
 
         if (pat == null)
         {
-            Debug.LogError("[InkSlashSystem] CurrentPattern が null です");
+            Debug.LogError(
+                "[InkSlashSystem] CurrentPattern が null です"
+            );
             return;
         }
 
-        if (direction.sqrMagnitude <= 0.0001f)
+        // 最初に必ずディレイ処理
+        if (pat.spawnDelay > 0f)
         {
-            Debug.LogWarning("[InkSlashSystem] direction が 0 なので transform.forward に補正します");
-            direction = transform.forward;
+            StartCoroutine(
+                CreateSlashDelayed(
+                    position,
+                    direction,
+                    pat
+                )
+            );
+
+            return;
         }
 
-        Debug.Log(
-            "[InkSlashSystem] CreateSlash " +
-            "Pos:" + position +
-            " Dir:" + direction +
-            " Speed:" + pat.speed
+        // ディレイ後処理へ
+        CreateSlashAfterDelay(
+            position,
+            direction,
+            pat
         );
-
-        GameObject obj;
-
-        if (slashPrefab != null)
-        {
-            obj = Instantiate(slashPrefab, position, Quaternion.LookRotation(direction));
-        }
-        else
-        {
-            obj = CreateDefaultSlashObject(position, direction, pat);
-        }
-
-        if (obj == null)
-        {
-            Debug.LogError("[InkSlashSystem] 斬撃オブジェクト生成失敗");
-            return;
-        }
-
-        HideSlashVisual(obj);
-
-        FlyingSlash slash = obj.GetComponent<FlyingSlash>();
-        if (slash == null)
-        {
-            slash = obj.AddComponent<FlyingSlash>();
-        }
-
-        slash.velocity = direction.normalized * pat.speed;
-        slash.pattern = pat;
-        slash.hitMask = hitMask;
     }
 
     private GameObject CreateDefaultSlashObject(Vector3 position, Vector3 direction, SlashPattern pat)
@@ -402,4 +384,186 @@ public class InkSlashSystem : MonoBehaviour
             allRenderers[i].enabled = false;
         }
     }
+
+    private IEnumerator CreateSlashDelayed(
+    Vector3 position,
+    Vector3 direction,
+    SlashPattern pat
+)
+    {
+        yield return new WaitForSeconds(
+            pat.spawnDelay
+        );
+
+        CreateSlashImmediate(
+            position,
+            direction,
+            pat
+        );
+    }
+
+    private void CreateSlashImmediate(
+    Vector3 position,
+    Vector3 direction,
+    SlashPattern pat
+)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            Debug.LogWarning(
+                "[InkSlashSystem] direction が0なので補正"
+            );
+
+            direction = transform.forward;
+        }
+
+        Debug.Log(
+            "[InkSlashSystem] CreateSlash " +
+            " Pos:" + position +
+            " Dir:" + direction +
+            " Speed:" + pat.speed
+        );
+
+        GameObject obj;
+
+        if (slashPrefab != null)
+        {
+            obj = Instantiate(
+                slashPrefab,
+                position,
+                Quaternion.LookRotation(direction)
+            );
+        }
+        else
+        {
+            obj = CreateDefaultSlashObject(
+                position,
+                direction,
+                pat
+            );
+        }
+
+        if (obj == null)
+        {
+            Debug.LogError(
+                "[InkSlashSystem] 斬撃オブジェクト生成失敗"
+            );
+            return;
+        }
+
+        FlyingSlash slash =
+            obj.GetComponent<FlyingSlash>();
+
+        if (slash == null)
+        {
+            slash = obj.AddComponent<FlyingSlash>();
+        }
+
+        slash.velocity =
+            direction.normalized * pat.speed;
+
+        slash.pattern = pat;
+        slash.hitMask = hitMask;
+    }
+
+    private void CreateArcSlash(
+    Vector3 position,
+    Vector3 direction,
+    SlashPattern pat
+)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            direction = transform.forward;
+        }
+
+        direction.Normalize();
+
+        int count = Mathf.Max(1, pat.arcProjectileCount);
+        float totalAngle = Mathf.Max(1.0f, pat.arcAngle);
+
+        float startAngle = -totalAngle * 0.5f;
+        float step = count > 1 ? totalAngle / (count - 1) : 0.0f;
+
+        int centerIndex = count / 2;
+
+        for (int i = 0; i < count; ++i)
+        {
+            float angle = startAngle + step * i;
+
+            Vector3 dir =
+                Quaternion.AngleAxis(angle, Vector3.up) * direction;
+
+            GameObject obj;
+
+            if (slashPrefab != null)
+            {
+                obj = Instantiate(
+                    slashPrefab,
+                    position,
+                    Quaternion.LookRotation(dir)
+                );
+            }
+            else
+            {
+                obj = CreateDefaultSlashObject(position, dir, pat);
+            }
+
+            if (obj == null)
+            {
+                continue;
+            }
+
+            bool isCenter = i == centerIndex;
+
+            FlyingSlash slash = obj.GetComponent<FlyingSlash>();
+
+            if (slash == null)
+            {
+                slash = obj.AddComponent<FlyingSlash>();
+            }
+
+            slash.velocity = dir.normalized * pat.speed;
+            slash.pattern = pat;
+            slash.hitMask = hitMask;
+
+            // Effectは中央の1個だけ
+            slash.spawnEffect = isCenter;
+
+            // 中央以外の見た目を消す
+            if (!isCenter && pat.hideSubProjectiles)
+            {
+                HideSlashVisual(obj);
+            }
+        }
+    }
+
+
+    private void CreateSlashAfterDelay(
+    Vector3 position,
+    Vector3 direction,
+    SlashPattern pat
+)
+    {
+        // 扇形複数球
+        if (pat.GetInkShape() == InkShape.Arc &&
+            pat.arcProjectileCount > 1)
+        {
+            CreateArcSlash(
+                position,
+                direction,
+                pat
+            );
+
+            return;
+        }
+
+        // 通常1球
+        CreateSlashImmediate(
+            position,
+            direction,
+            pat
+        );
+    }
 }
+

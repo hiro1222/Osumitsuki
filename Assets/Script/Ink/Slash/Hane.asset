@@ -17,19 +17,24 @@ MonoBehaviour:
   inkColorId: 0
   length: 3.45
   width: 48.1
-  arcAngle: 120
-  speed: 25
-  gravity: 2
-  lifetime: 2
+  arcAngle: 0
+  speed: 15
+  gravity: 0
+  lifetime: 0.8
+  spawnDelay: 0.3
   baseDamage: 30
   damageDecay: 0.3
-  inkDensity: 120
-  trailInterval: 4.11
-  trailRadius: 3.15
-  trailDensity: 72
+  inkDensity: 255
+  trailInterval: 0
+  trailRadius: 0.6
+  trailDensity: 255
   impactRadius: 1.2
   inkCost: 0.15
   slashTexture: {fileID: 0}
+  effectPrefab: {fileID: 8523647933905815968, guid: 55e69c86770de29488388f941bc8a5ab, type: 3}
+  effectOffset: {x: 0, y: 1, z: -2}
+  effectRotation: {x: 65, y: -190, z: -100}
+  effectScale: {x: 0.2, y: 0.1, z: 0.2}
   visualSize: {x: 3, y: 1.5}
   visualRotation: 0
   fadeSpeed: 1
