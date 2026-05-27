@@ -34,15 +34,22 @@ public class Act_DerivedHarai : PlayerActionBase
 
     public override bool CanStart()
     {
-        return manager.CurrentAction == PlayerActionManager.ActionKind.Nazori;
+        return manager.CurrentAction == PlayerActionManager.ActionKind.Nazori &&
+               controller.Stats.HasInk(controller.Stats.derivedHaraiInkCost);
     }
 
     protected override void OnStartEffect()
     {
+        if (!controller.Stats.ConsumeInk(controller.Stats.derivedHaraiInkCost)) return;
+
         if (!enableSlash) return;
         if (inkPainter == null) return;
 
-        inkPainter.FireSlashPattern(controller.transform, patternIndex, spawnForwardOffset, spawnHeightOffset);
+        inkPainter.FireSlashPattern(
+            controller.transform,
+            patternIndex,
+            spawnForwardOffset,
+            spawnHeightOffset);
     }
 
     protected override void OnTickEffect(float dt) { }

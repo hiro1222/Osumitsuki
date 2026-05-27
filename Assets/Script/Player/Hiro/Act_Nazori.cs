@@ -17,13 +17,15 @@ public class Act_Nazori : PlayerActionBase
     private PlayerPaintStatus paintStatus;
     private float paintTimer;
 
+    private Vector3 lastInkConsumePosition;
+    private float nazoriDistanceStock;
+
     public override string ActionName => "なぞり";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.Nazori;
     public override string AnimationName => animationName;
     public override float MoveSpeedRate => moveSpeedRate;
     public override bool IsHoldAction => true;
 
-    // なぞりは開始時にカメラ方向へ強制回転しない
     public override bool FaceCameraOnStart => false;
 
     public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
@@ -45,7 +47,9 @@ public class Act_Nazori : PlayerActionBase
 
     public override bool CanStart()
     {
-        return !manager.IsActing && controller.Move.IsGrounded;
+        return !manager.IsActing &&
+               controller.Move.IsGrounded &&
+               controller.Stats.HasInk(controller.Stats.nazoriInkCostPerDistance);
     }
 
     protected override void TickHold(float dt)
@@ -60,11 +64,21 @@ public class Act_Nazori : PlayerActionBase
     protected override void OnStartEffect()
     {
         paintTimer = 0.0f;
+
+        lastInkConsumePosition = controller.transform.position;
+        nazoriDistanceStock = 0.0f;
+
         Paint();
     }
 
     protected override void OnTickEffect(float dt)
     {
+        if (!UpdateInkByDistance())
+        {
+            EndAction();
+            return;
+        }
+
         if (!enablePaint) return;
 
         paintTimer += dt;
@@ -78,6 +92,48 @@ public class Act_Nazori : PlayerActionBase
 
     protected override void OnEndEffect()
     {
+    }
+
+    private bool UpdateInkByDistance()
+    {
+        Vector3 currentPos = controller.transform.position;
+
+        Vector3 prev = lastInkConsumePosition;
+        Vector3 now = currentPos;
+
+        prev.y = 0.0f;
+        now.y = 0.0f;
+
+        float movedDistance = Vector3.Distance(prev, now);
+
+        lastInkConsumePosition = currentPos;
+
+        if (movedDistance <= 0.0f)
+        {
+            return true;
+        }
+
+        nazoriDistanceStock += movedDistance;
+
+        float costDistance = controller.Stats.nazoriInkCostDistance;
+        float cost = controller.Stats.nazoriInkCostPerDistance;
+
+        if (costDistance <= 0.0f)
+        {
+            return true;
+        }
+
+        while (nazoriDistanceStock >= costDistance)
+        {
+            if (!controller.Stats.ConsumeInk(cost))
+            {
+                return false;
+            }
+
+            nazoriDistanceStock -= costDistance;
+        }
+
+        return true;
     }
 
     private void Paint()

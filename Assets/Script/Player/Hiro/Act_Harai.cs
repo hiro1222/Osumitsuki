@@ -75,11 +75,14 @@ public class Act_Harai : PlayerActionBase
 
     public override bool CanStart()
     {
-        return !manager.IsActing;
+        return !manager.IsActing &&
+               controller.Stats.HasInk(controller.Stats.haraiInkCost);
     }
 
     protected override void OnStartEffect()
     {
+        if (!controller.Stats.ConsumeInk(controller.Stats.haraiInkCost)) return;
+
         if (!enableSlash) return;
         if (inkPainter == null) return;
 

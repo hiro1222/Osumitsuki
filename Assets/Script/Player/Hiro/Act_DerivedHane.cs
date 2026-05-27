@@ -34,15 +34,22 @@ public class Act_DerivedHane : PlayerActionBase
 
     public override bool CanStart()
     {
-        return manager.CurrentAction == PlayerActionManager.ActionKind.Nazori;
+        return manager.CurrentAction == PlayerActionManager.ActionKind.Nazori &&
+               controller.Stats.HasInk(controller.Stats.derivedHaneInkCost);
     }
 
     protected override void OnStartEffect()
     {
+        if (!controller.Stats.ConsumeInk(controller.Stats.derivedHaneInkCost)) return;
+
         if (!enableSlash) return;
         if (inkPainter == null) return;
 
-        inkPainter.FireSlashPattern(controller.transform, patternIndex, spawnForwardOffset, spawnHeightOffset);
+        inkPainter.FireSlashPattern(
+            controller.transform,
+            patternIndex,
+            spawnForwardOffset,
+            spawnHeightOffset);
     }
 
     protected override void OnTickEffect(float dt) { }
