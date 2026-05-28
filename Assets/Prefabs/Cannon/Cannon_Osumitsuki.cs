@@ -12,6 +12,9 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     [SerializeField] private float coolTime;        //クールタイム
     [SerializeField] private float activeDist;      //起動する距離
 
+    [Header("発射されるオブジェクトプレハブ")]
+    [SerializeField] private GameObject bullet;
+
     [Header("参照オブジェクト")]
     [SerializeField] private Transform stage;       //つなぎ目
     [SerializeField] private Transform cannon;      //筒の部分
@@ -20,8 +23,11 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     private PaintableSurfaceGroup group;
     private bool changeFlg = false;
 
-    private float curAngle_V;
-    private float curAngle_H;
+
+    private float curAngle_V;   //大砲縦回転角度
+    private float curAngle_H;   //大砲横回転角度
+
+    private float lastFireTime = 0;
 
     private void Start()
     {
@@ -33,6 +39,7 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
             group.OnAnyPainted += HandleAnyPainted;
         }
 
+        //回転を180 ～ -180に変換
         curAngle_H = stage.transform.localEulerAngles.y;
         if (curAngle_H > 180f) curAngle_H -= 360f;
 
@@ -96,7 +103,18 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     //大砲発射
     private void Fire()
     {
-        //打つ
+        if (coolTime > Time.time - lastFireTime)
+            return;
+
+        lastFireTime = Time.time;
+
+        GameObject obj = Instantiate(bullet);
+        obj.transform.position = cannon.transform.position + cannon.forward * 1;
+        obj.transform.rotation.Equals(cannon);
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+
+        rb.AddForce(-cannon.right * power);
+
         Debug.Log("打った");
     }
 

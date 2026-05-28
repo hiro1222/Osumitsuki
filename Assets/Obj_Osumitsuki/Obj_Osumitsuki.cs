@@ -148,18 +148,18 @@ public class Obj_Osumitsuki : MonoBehaviour
             osumitsukiTrg = true;
             Mng_Osumitsuki.instance.AddObject(this);
 
-			//当たり判定レイヤーを変更
-			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+            gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
 			//インクコライダーを削除する
-			int childrenCount = transform.childCount;
-            if (childrenCount > 0)
+			var all = new List<Transform>();
+			GetAllChildren(transform, all);
+            if (all.Count > 0)
             {
-			    GameObject[] childrenObj = new GameObject[childrenCount];
-			    for (int i = 0; i < childrenCount; i++)
+				GameObject[] childrenObj = new GameObject[all.Count];
+                for (int i = 0; i < all.Count; i++)
                 {
-                    Transform chiledTransform = transform.GetChild(i);
-                    childrenObj[i] = chiledTransform.gameObject;
-			    }
+                    childrenObj[i] = all[i].gameObject;
+                    all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+                }
                 DestroyInkCollider(childrenObj);
 			}
 		}
@@ -167,7 +167,16 @@ public class Obj_Osumitsuki : MonoBehaviour
         return osumitsukiTrg;
     }
 
-    public void Action2Update()
+	void GetAllChildren(Transform _parent, List<Transform> _result)
+	{
+		foreach (Transform child in _parent)
+		{
+			_result.Add(child);
+			GetAllChildren(child, _result); // 再帰
+		}
+	}
+
+	public void Action2Update()
     {
         //AllyEnemyの助けが不必要
         if (allyEnemyTarget.Length == 0)
@@ -262,7 +271,7 @@ public class Obj_Osumitsuki : MonoBehaviour
         {
             if (helperAllyEnemys[i] != null) cnt++;
         }
-		if (cnt >= 2) return;
+		if (cnt >= allyEnemyTarget.Length) return;
 
 		//まだ空の目標座標を検索して、AllyEnemyを割り当てる
 		for (int i = 0; i < allyEnemyTarget.Length; i++)
@@ -281,5 +290,12 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 	}
 
+    /**
+    * @brief    お助けエネミーを開放する
+    */
+    private void ReleaseHelperEnemy()
+    {
+        End();
+    }
 
 }
