@@ -1536,10 +1536,18 @@ PrefabInstance:
       propertyPath: allyEnemyPrefab
       value: 
       objectReference: {fileID: 5082705703511291679, guid: e86eb7079285dd647b5bceaae29397fc, type: 3}
+    - target: {fileID: 1772133292167627231, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: baseSlashPattern
+      value: 
+      objectReference: {fileID: 11400000, guid: 192d4cb5d42ea3640bf4407f39e083a1, type: 2}
     - target: {fileID: 2905876424646477616, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: m_Name
       value: "Player \u03B1\u7248 5_14"
       objectReference: {fileID: 0}
+    - target: {fileID: 6787891444013307146, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
+      propertyPath: baseSlashPattern
+      value: 
+      objectReference: {fileID: 11400000, guid: f05ec061f3ca6dd49ad1c93f615c2943, type: 2}
     - target: {fileID: 7164566112254049714, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.85
@@ -1582,16 +1590,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: patterns.Array.size
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: 'patterns.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 44d605f0ed45ef64b9a8c2a4cf4a5996, type: 2}
+      objectReference: {fileID: 11400000, guid: 192d4cb5d42ea3640bf4407f39e083a1, type: 2}
     - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: 'patterns.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: 67afcd6b7f25a8b45a9306664d69e150, type: 2}
+      objectReference: {fileID: 11400000, guid: f05ec061f3ca6dd49ad1c93f615c2943, type: 2}
     - target: {fileID: 7972469862695264498, guid: 34a2dda86dee46d4da233ec341ea6154, type: 3}
       propertyPath: 'patterns.Array.data[2]'
       value: 
