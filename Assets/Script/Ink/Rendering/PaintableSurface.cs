@@ -13,7 +13,9 @@ using System.Collections.Generic;
 /// - 色は最新のものに上書き
 /// - UV島境界の3D距離チェック（別パーツへの染み出し防止）
 /// - 4セル揃ったときだけコリジョン生成（境界の飛び出し抑制）
-/// - OnPaintedイベントで外部に塗り通知（Obj_Osumitsuki / PaintableSurfaceGroup が購読）
+/// - OnPaintedイベントで外部に塗り通知
+/// - Erase（範囲消去）、ClearAll（全消去）
+/// - EnableInkCollider/DisableInkCollider（コリジョン制御）
 /// 
 /// ■ 前提条件:
 /// - メッシュのUV展開が重なっていないこと（ユニークUV）
@@ -32,7 +34,7 @@ public class PaintableSurface : MonoBehaviour
     [Header("Collision mesh")]
     [Tooltip("チャンクサイズ（セル数）")]
     [SerializeField] private int chunkSize = 16;
-    [Tooltip("コリジョンメッシュの厚み（両面）")]
+    [Tooltip("コリジョンメッシュの厚み")]
     [SerializeField] private float meshThickness = 0.15f;
 
     [Header("Rendering")]
@@ -40,33 +42,36 @@ public class PaintableSurface : MonoBehaviour
     [SerializeField] private int renderResolution = 256;
 
     // ── 内部データ ──
-    // 単一データソース（描画・判定・コリジョン全ての元）
     private byte[] density;
-    private byte[] colorId;      // 色番号配列（densityと同じサイズ）
-    private Vector3[] paintedNormals; // 塗ったときの法線（表/裏判定用）
+    private byte[] colorId;
+    private Vector3[] paintedNormals;
     private int gridW, gridH;
 
-    // UV→3D変換テーブル（Awake時にメッシュから構築）
-    private Vector3[] cellPositions;   // 各グリッドセルのローカル3D位置
-    private Vector3[] cellNormals;     // 各グリッドセルのローカル法線
-    private bool[] cellValid;          // そのセルにメッシュの面があるか
-    private float maxCellDistance;     // UV島境界判定用の距離閾値
+    // UV→3D変換テーブル
+    private Vector3[] cellPositions;
+    private Vector3[] cellNormals;
+    private bool[] cellValid;
+    private float maxCellDistance;
 
     // 描画用
     private Texture2D densityTexture;
-    private Texture2D colorTexture;     // 色番号を送るテクスチャ
+    private Texture2D colorTexture;
     private MaterialPropertyBlock propBlock;
     private Renderer meshRenderer;
     private bool visualDirty;
 
-    // コリジョン用（子オブジェクトに配置）
+    // コリジョン用
     private GameObject collisionChild;
     private MeshCollider inkCollider;
     private Mesh collisionMesh;
     private int chunksX, chunksY;
     private bool[] chunkDirty;
 
-    private Obj_Osumitsuki obj_osumi;   //お墨付きするスクリプト
+    // ── 旧互換用（DEPRECATED: 将来削除予定）──
+    // 新しいコードでは OnPainted イベントを購読してください
+    // 既存の Obj_Osumitsuki ベースのコードへの影響を避けるため一時的に残しています
+    [System.Obsolete("OnPainted イベントを購読する形に移行してください")]
+    private Obj_Osumitsuki obj_osumi;
 
     // ── プロパティ ──
     public int GridW => gridW;
@@ -79,16 +84,13 @@ public class PaintableSurface : MonoBehaviour
 
     /// <summary>
     /// 塗られたときに発火するイベント
-    /// 引数: (ブラシ範囲内のセル数, このPaintで加算しようとしたdensity値)
+    /// 引数: (ヒットしたセル数, 加算しようとしたdensity値)
+    /// 飽和済みでもヒットすれば発火する（重ね塗り対応）
     /// 
-    /// ■ 発火条件:
-    /// ブラシ範囲内に有効なセルが1つでもあれば発火する。
-    /// densityが既に飽和していても、ヒットさえすれば発火する（重ね塗りで加算したい用途のため）。
-    /// 
-    /// ■ 購読例（Obj_Osumitsuki継承クラスで）:
+    /// ■ 購読例:
     ///   ps.OnPainted += (cells, density) => Painted(0.5f);
     /// 
-    /// ■ 親オブジェクト側で集約したい場合は PaintableSurfaceGroup を使う
+    /// ■ 親オブジェクトで集約したい場合は PaintableSurfaceGroup を使う
     /// </summary>
     public event System.Action<int, byte> OnPainted;
 
@@ -106,7 +108,7 @@ public class PaintableSurface : MonoBehaviour
         colorId = new byte[gridW * gridH];
         paintedNormals = new Vector3[gridW * gridH];
 
-        // MeshColliderの確認
+        // MeshColliderチェック
         var mc = GetComponent<MeshCollider>();
         if (mc == null)
         {
@@ -115,12 +117,9 @@ public class PaintableSurface : MonoBehaviour
             return;
         }
 
-        // ── 親MeshColliderをTriggerにする ──
-        // Trigger: CharacterControllerが物理衝突しない（墨がなければ落ちる）
-        //          Raycast(QueryTriggerInteraction.Collide)では当たる（塗れる）
+        // 親MeshColliderをTrigger化（CharacterControllerが物理衝突しない、Raycastは当たる）
         mc.isTrigger = true;
 
-        // UV→3D変換テーブルを構築（設計書 3.3）
         BuildUVToWorldTable();
 
         // チャンク初期化
@@ -128,12 +127,11 @@ public class PaintableSurface : MonoBehaviour
         chunksY = Mathf.CeilToInt((float)gridH / chunkSize);
         chunkDirty = new bool[chunksX * chunksY];
 
-        // インクコリジョン用の子オブジェクト（設計書 2.2）
+        // インクコリジョン用の子オブジェクト
         collisionChild = new GameObject($"{gameObject.name}_InkCollision");
         collisionChild.transform.SetParent(transform, false);
 
-        // レイヤー設定: Player↔PlayerVSObject をON、Player↔Default をOFFにしておくことで
-        // CharacterControllerはインクコリジョンにだけ衝突する
+        // レイヤー: Player↔PlayerVSObject = ON、Player↔Default = OFF
         int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
         if (inkLayer >= 0)
         {
@@ -143,21 +141,19 @@ public class PaintableSurface : MonoBehaviour
         {
             Debug.LogWarning($"[PaintableSurface] 'PlayerVSObject' レイヤーが見つかりません。" +
                              "Edit > Project Settings > Tags and Layers で追加してください。");
-            collisionChild.layer = gameObject.layer; // フォールバック
+            collisionChild.layer = gameObject.layer;
         }
 
         inkCollider = collisionChild.AddComponent<MeshCollider>();
         collisionMesh = new Mesh { name = $"InkCol_{gameObject.name}" };
 
-        // 描画用テクスチャ（density配列をそのまま流し込む）
+        // 描画用テクスチャ
         densityTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
         {
             filterMode = FilterMode.Bilinear,
             wrapMode = TextureWrapMode.Clamp
         };
 
-        // 色番号テクスチャ（色番号をそのまま流し込む）
-        // Point filterで色番号がブレンドされないようにする
         colorTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
         {
             filterMode = FilterMode.Point,
@@ -167,8 +163,11 @@ public class PaintableSurface : MonoBehaviour
         propBlock = new MaterialPropertyBlock();
         visualDirty = false;
 
-
+        // ── 旧互換: Obj_Osumitsuki への直接通知用 ──
+        // 新しいコードは OnPainted イベントを使ってください
+#pragma warning disable CS0618
         obj_osumi = GetComponent<Obj_Osumitsuki>();
+#pragma warning restore CS0618
     }
 
     private void OnDestroy()
@@ -180,14 +179,9 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  UV→3D変換テーブルの構築（設計書 3.3）
+    //  UV→3D変換テーブルの構築
     // ====================================================================
 
-    /// <summary>
-    /// メッシュの全三角形をUV空間にラスタライズして、
-    /// 各グリッドセルの3D位置と法線を記録する。
-    /// コリジョンメッシュ生成時に「このUVセルの3D位置はどこか」を引くために使う。
-    /// </summary>
     private void BuildUVToWorldTable()
     {
         cellPositions = new Vector3[gridW * gridH];
@@ -218,7 +212,6 @@ public class PaintableSurface : MonoBehaviour
             Vector3 p0 = verts[i0], p1 = verts[i1], p2 = verts[i2];
             Vector3 n0 = norms[i0], n1 = norms[i1], n2 = norms[i2];
 
-            // この三角形がカバーするグリッドセルの範囲（AABB）
             float minU = Mathf.Min(uv0.x, uv1.x, uv2.x);
             float maxU = Mathf.Max(uv0.x, uv1.x, uv2.x);
             float minV = Mathf.Min(uv0.y, uv1.y, uv2.y);
@@ -233,11 +226,9 @@ public class PaintableSurface : MonoBehaviour
             {
                 for (int gx = startX; gx <= endX; gx++)
                 {
-                    // グリッドセルの中心UV
                     float cu = (gx + 0.5f) / gridW;
                     float cv = (gy + 0.5f) / gridH;
 
-                    // 重心座標で三角形内判定
                     if (BarycentricInTriangle(new Vector2(cu, cv), uv0, uv1, uv2,
                             out float w0, out float w1, out float w2))
                     {
@@ -250,7 +241,7 @@ public class PaintableSurface : MonoBehaviour
             }
         }
 
-        // 隣接セル間の平均3D距離を計算（UV島境界の判定閾値に使う）
+        // 隣接セル間の平均3D距離を計算（UV島境界の判定閾値）
         float totalDist = 0f;
         int distCount = 0;
         for (int gy = 0; gy < gridH; gy++)
@@ -273,7 +264,7 @@ public class PaintableSurface : MonoBehaviour
             }
         }
         float avgDist = distCount > 0 ? totalDist / distCount : 0.1f;
-        maxCellDistance = avgDist * 3f; // 平均の3倍を超えたらUV島の境界とみなす
+        maxCellDistance = avgDist * 3f;
 
 #if UNITY_EDITOR
         int validCount = 0;
@@ -284,7 +275,6 @@ public class PaintableSurface : MonoBehaviour
 #endif
     }
 
-    /// <summary>重心座標で点が三角形内にあるか判定</summary>
     private bool BarycentricInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c,
                                         out float w0, out float w1, out float w2)
     {
@@ -311,7 +301,7 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  Paint（設計書 3.4）
+    //  Paint
     // ====================================================================
 
     /// <summary>
@@ -320,24 +310,25 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void Paint(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
     {
-        // ヒット位置をローカル座標に変換（cellPositionsはローカル座標で保存されているため）
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
-        // ヒット法線もローカル空間に変換（表裏判定用）
         Vector3 hitNormalLocal = transform.InverseTransformDirection(hit.normal).normalized;
         Vector2 uv = hit.textureCoord;
         float uvRadius = WorldRadiusToUV(radius);
 
-        // ローカル空間での半径（lossyScaleで補正）
         Vector3 s = transform.lossyScale;
         float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
         float localRadiusSq = localRadius * localRadius;
 
+        // ── 旧互換: Obj_Osumitsuki への直接通知 ──
+        // DEPRECATED: 新コードは OnPainted イベントを使うこと
+#pragma warning disable CS0618
         if (obj_osumi != null)
         {
             float power = Mathf.Sqrt(localRadiusSq);
             obj_osumi.Painted(power);
         }
+#pragma warning restore CS0618
 
         PaintInternal(uv, uvRadius, hitLocal, hitNormalLocal, localRadiusSq, inkDensity, inkColorId);
     }
@@ -345,15 +336,9 @@ public class PaintableSurface : MonoBehaviour
     /// <summary>UV座標のみで塗る（3D距離チェックなし。互換用）</summary>
     public void PaintAtUV(Vector2 uv, float uvRadius, byte inkDensity, byte inkColorId = 0)
     {
-        // 3D距離チェックを無効化、法線はzero（保存される法線はそのセルのcellNormal）
         PaintInternal(uv, uvRadius, Vector3.zero, Vector3.zero, float.MaxValue, inkDensity, inkColorId);
     }
 
-    /// <summary>
-    /// 内部Paint処理
-    /// UV距離でブラシサイズを制御 + 3D距離でUVアイランド越えの染み出しを防ぐ
-    /// hit.normalを保存することで「表を塗ったら表だけ、裏を塗ったら裏だけ」コリジョンを生成
-    /// </summary>
     private void PaintInternal(Vector2 uv, float uvRadius,
                                Vector3 hitLocal, Vector3 hitNormalLocal,
                                float localRadiusSq,
@@ -363,11 +348,10 @@ public class PaintableSurface : MonoBehaviour
         int cv = Mathf.FloorToInt(uv.y * gridH);
         int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
 
-        // hit.normalがゼロならcellNormalをフォールバックとして使う
         bool useHitNormal = hitNormalLocal.sqrMagnitude > 0.01f;
 
         int painted = 0;       // 実際に変化したセル数（メッシュ再構築判定用）
-        int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む。OnPainted用）
+        int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む）
         for (int dv = -cellRadius; dv <= cellRadius; dv++)
         {
             for (int du = -cellRadius; du <= cellRadius; du++)
@@ -376,7 +360,6 @@ public class PaintableSurface : MonoBehaviour
                 int gy = cv + dv;
                 if (gx < 0 || gx >= gridW || gy < 0 || gy >= gridH) continue;
 
-                // UV空間での距離チェック（ブラシサイズ制御）
                 float distU = (float)du / gridW;
                 float distV = (float)dv / gridH;
                 if (Mathf.Sqrt(distU * distU + distV * distV) > uvRadius) continue;
@@ -384,14 +367,11 @@ public class PaintableSurface : MonoBehaviour
                 int idx = gy * gridW + gx;
                 if (!cellValid[idx]) continue;
 
-                // 3D距離チェック: UV上は近くても3Dで遠いセルは別のUVアイランド
                 float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
                 if (dist3DSq > localRadiusSq) continue;
 
-                // ブラシ範囲内のセル数（飽和済みでもカウント）
                 hitCells++;
 
-                // 重ね塗り: densityを加算（255で飽和）、色は最新のものに上書き
                 int newDensity = density[idx] + inkDensity;
                 if (newDensity > 255) newDensity = 255;
 
@@ -399,32 +379,25 @@ public class PaintableSurface : MonoBehaviour
                 {
                     density[idx] = (byte)newDensity;
                     colorId[idx] = inkColorId;
-
-                    // 塗ったときの法線を保存（表or裏どちらの面に塗ったか）
                     paintedNormals[idx] = useHitNormal ? hitNormalLocal : cellNormals[idx];
-
                     MarkChunkDirty(gx, gy);
                     painted++;
                 }
             }
         }
 
-        // メッシュ再構築は変化があったときだけ
         if (painted > 0)
         {
             RebuildDirtyChunks();
             visualDirty = true;
         }
-        // OnPaintedは「塗ろうとしたセルが1つでもあれば」発火
-        // 飽和済みセルにヒットしただけでも通知される（重ね塗りでも加算したい用途のため）
+
         if (hitCells > 0)
         {
             OnPainted?.Invoke(hitCells, inkDensity);
         }
-
     }
 
-    /// <summary>ワールド半径をUV空間の半径に概算変換（設計書 3.5）</summary>
     private float WorldRadiusToUV(float worldRadius)
     {
         var mf = GetComponent<MeshFilter>();
@@ -439,22 +412,123 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  判定（設計書 3.4）
+    //  Erase（消去）
     // ====================================================================
 
-    /// <summary>RaycastHitから通行可能か判定</summary>
+    /// <summary>
+    /// RaycastHitの位置を中心に塗りを消す
+    /// density と color と paintedNormal を 0 に戻す
+    /// コリジョンメッシュも自動的に消える
+    /// </summary>
+    public void Erase(RaycastHit hit, float radius)
+    {
+        Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
+        Vector2 uv = hit.textureCoord;
+        float uvRadius = WorldRadiusToUV(radius);
+
+        Vector3 s = transform.lossyScale;
+        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
+        float localRadiusSq = localRadius * localRadius;
+
+        EraseInternal(uv, uvRadius, hitLocal, localRadiusSq);
+    }
+
+    /// <summary>
+    /// ワールド座標を中心に塗りを消す（Raycast不要）
+    /// 範囲内のセルを全探索するので少し重い
+    /// </summary>
+    public void EraseAt(Vector3 worldCenter, float radius)
+    {
+        Vector3 localCenter = transform.InverseTransformPoint(worldCenter);
+
+        Vector3 s = transform.lossyScale;
+        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
+        float localRadiusSq = localRadius * localRadius;
+
+        int erased = 0;
+        for (int i = 0; i < cellValid.Length; i++)
+        {
+            if (!cellValid[i]) continue;
+            if (density[i] == 0) continue;
+
+            float dist3DSq = (cellPositions[i] - localCenter).sqrMagnitude;
+            if (dist3DSq > localRadiusSq) continue;
+
+            density[i] = 0;
+            colorId[i] = 0;
+            paintedNormals[i] = Vector3.zero;
+
+            int gx = i % gridW;
+            int gy = i / gridW;
+            MarkChunkDirty(gx, gy);
+            erased++;
+        }
+
+        if (erased > 0)
+        {
+            RebuildDirtyChunks();
+            visualDirty = true;
+        }
+    }
+
+    private void EraseInternal(Vector2 uv, float uvRadius,
+                               Vector3 hitLocal, float localRadiusSq)
+    {
+        int cu = Mathf.FloorToInt(uv.x * gridW);
+        int cv = Mathf.FloorToInt(uv.y * gridH);
+        int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
+
+        int erased = 0;
+        for (int dv = -cellRadius; dv <= cellRadius; dv++)
+        {
+            for (int du = -cellRadius; du <= cellRadius; du++)
+            {
+                int gx = cu + du;
+                int gy = cv + dv;
+                if (gx < 0 || gx >= gridW || gy < 0 || gy >= gridH) continue;
+
+                float distU = (float)du / gridW;
+                float distV = (float)dv / gridH;
+                if (Mathf.Sqrt(distU * distU + distV * distV) > uvRadius) continue;
+
+                int idx = gy * gridW + gx;
+                if (!cellValid[idx]) continue;
+                if (density[idx] == 0) continue;
+
+                float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
+                if (dist3DSq > localRadiusSq) continue;
+
+                density[idx] = 0;
+                colorId[idx] = 0;
+                paintedNormals[idx] = Vector3.zero;
+                MarkChunkDirty(gx, gy);
+                erased++;
+            }
+        }
+
+        if (erased > 0)
+        {
+            RebuildDirtyChunks();
+            visualDirty = true;
+        }
+    }
+
+    // ====================================================================
+    //  判定
+    // ====================================================================
+
     public bool CanWalk(RaycastHit hit)
     {
         return GetDensityAtUV(hit.textureCoord) >= walkThreshold;
     }
 
-    /// <summary>RaycastHitからdensityがあるか判定</summary>
     public bool HasDensityAt(RaycastHit hit)
     {
         return GetDensityAtUV(hit.textureCoord) > 0;
     }
 
-    /// <summary>RaycastHitからdensity値を取得</summary>
     public byte GetDensity(RaycastHit hit)
     {
         return GetDensityAtUV(hit.textureCoord);
@@ -467,7 +541,6 @@ public class PaintableSurface : MonoBehaviour
         float bestDist = float.MaxValue;
         byte bestDensity = 0;
 
-        // 全セルを探索（重い。頻繁に呼ぶ場合はキャッシュを検討）
         for (int i = 0; i < cellValid.Length; i++)
         {
             if (!cellValid[i]) continue;
@@ -490,22 +563,19 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  描画更新（設計書 1.3 パイプライン）
+    //  描画更新
     // ====================================================================
 
     private void LateUpdate()
     {
         if (!visualDirty || meshRenderer == null) return;
 
-        // density配列をテクスチャに流し込む
         densityTexture.SetPixelData(density, 0);
         densityTexture.Apply(false);
 
-        // 色番号配列をテクスチャに流し込む
         colorTexture.SetPixelData(colorId, 0);
         colorTexture.Apply(false);
 
-        // シェーダーに送信
         meshRenderer.GetPropertyBlock(propBlock);
         propBlock.SetTexture("_InkTex", densityTexture);
         propBlock.SetTexture("_InkColorTex", colorTexture);
@@ -516,7 +586,7 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  コリジョンメッシュ生成（設計書 第4章）
+    //  コリジョンメッシュ生成
     // ====================================================================
 
     private void MarkChunkDirty(int gx, int gy)
@@ -528,10 +598,9 @@ public class PaintableSurface : MonoBehaviour
     }
 
     /// <summary>
-    /// 隣接するcellPositionsを直接繋いでコリジョンメッシュを生成する。
-    /// 4セル全てがwalkThreshold以上のブロックのみquad化することで、
-    /// 塗り境界の「ふち」から飛び出すquadを抑える。
-    /// UV島の境界（3D距離が大きすぎるペア）はスキップする。
+    /// 隣接するcellPositionsを直接繋いでコリジョンメッシュを生成
+    /// 4セル全てがwalkThreshold以上のブロックのみquad化
+    /// UV島の境界（3D距離が大きすぎるペア）はスキップ
     /// </summary>
     private void RebuildDirtyChunks()
     {
@@ -545,7 +614,6 @@ public class PaintableSurface : MonoBehaviour
         float halfThick = meshThickness * 0.5f;
         float maxDistSq = maxCellDistance * maxCellDistance;
 
-        // 2x2セルブロックごとに処理
         for (int gy = 0; gy < gridH - 1; gy++)
         {
             for (int gx = 0; gx < gridW - 1; gx++)
@@ -555,8 +623,6 @@ public class PaintableSurface : MonoBehaviour
                 int i01 = i00 + gridW;
                 int i11 = i01 + 1;
 
-                // 4セル全部が有効でdensityがwalkThreshold以上のときだけquad化
-                // （3セル以下の境界処理は飛び出しの原因になるので無し）
                 bool v00 = cellValid[i00] && density[i00] >= walkThreshold;
                 bool v10 = cellValid[i10] && density[i10] >= walkThreshold;
                 bool v01 = cellValid[i01] && density[i01] >= walkThreshold;
@@ -564,22 +630,19 @@ public class PaintableSurface : MonoBehaviour
 
                 if (!(v00 && v10 && v01 && v11)) continue;
 
-                // UV島境界チェック: 4辺 + 2本の対角線で3D距離を確認
+                // UV島境界チェック: 4辺 + 2本の対角線
                 bool tooFar = false;
                 tooFar |= (cellPositions[i10] - cellPositions[i00]).sqrMagnitude > maxDistSq;
                 tooFar |= (cellPositions[i11] - cellPositions[i01]).sqrMagnitude > maxDistSq;
                 tooFar |= (cellPositions[i01] - cellPositions[i00]).sqrMagnitude > maxDistSq;
                 tooFar |= (cellPositions[i11] - cellPositions[i10]).sqrMagnitude > maxDistSq;
-                // 対角線（ローポリで1三角形が広範囲をカバーする場合の対策）
                 tooFar |= (cellPositions[i11] - cellPositions[i00]).sqrMagnitude > maxDistSq * 2f;
                 tooFar |= (cellPositions[i01] - cellPositions[i10]).sqrMagnitude > maxDistSq * 2f;
                 if (tooFar) continue;
 
-                // 4セルで塗ったときの法線の平均を使う（cellNormalsではなくpaintedNormalsを使うことで
-                // 「表を塗ったら表だけ、裏を塗ったら裏だけ」コリジョンを生成）
+                // 塗ったときの法線の平均（表/裏判定）
                 Vector3 avgNorm = (paintedNormals[i00] + paintedNormals[i10] +
                                    paintedNormals[i01] + paintedNormals[i11]).normalized;
-                // 塗られた法線が壊れているケースのフォールバック
                 if (avgNorm.sqrMagnitude < 0.01f)
                 {
                     avgNorm = (cellNormals[i00] + cellNormals[i10] +
@@ -587,17 +650,15 @@ public class PaintableSurface : MonoBehaviour
                 }
                 Vector3 offset = avgNorm * halfThick;
 
-                // 表面のみ生成（片面コリジョン）
-                // 4頂点を「メッシュ表面」と「少し外側」の2層で作って薄いシェル状にする
                 int bi = verts.Count;
 
-                // 内側の層（メッシュ表面）
+                // 内側の層
                 verts.Add(cellPositions[i00]);
                 verts.Add(cellPositions[i10]);
                 verts.Add(cellPositions[i11]);
                 verts.Add(cellPositions[i01]);
 
-                // 外側の層（法線方向）
+                // 外側の層
                 verts.Add(cellPositions[i00] + offset);
                 verts.Add(cellPositions[i10] + offset);
                 verts.Add(cellPositions[i11] + offset);
@@ -607,27 +668,22 @@ public class PaintableSurface : MonoBehaviour
                 tris.Add(bi + 4); tris.Add(bi + 5); tris.Add(bi + 6);
                 tris.Add(bi + 4); tris.Add(bi + 6); tris.Add(bi + 7);
 
-                // 内側（巻き順を逆に。プレイヤーが内側に入った場合の保険）
+                // 内側
                 tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
                 tris.Add(bi); tris.Add(bi + 3); tris.Add(bi + 2);
 
-                // 側面（外側と内側を繋ぐ。CharacterControllerのすり抜け防止）
-                // 辺1: 0-1
+                // 側面
                 tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 5);
                 tris.Add(bi); tris.Add(bi + 5); tris.Add(bi + 4);
-                // 辺2: 1-2
                 tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 6);
                 tris.Add(bi + 1); tris.Add(bi + 6); tris.Add(bi + 5);
-                // 辺3: 2-3
                 tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 7);
                 tris.Add(bi + 2); tris.Add(bi + 7); tris.Add(bi + 6);
-                // 辺4: 3-0
                 tris.Add(bi + 3); tris.Add(bi); tris.Add(bi + 4);
                 tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 7);
             }
         }
 
-        // MeshCollider更新
         collisionMesh.Clear();
         if (verts.Count > 0)
         {
@@ -645,10 +701,31 @@ public class PaintableSurface : MonoBehaviour
     }
 
     // ====================================================================
-    //  ユーティリティ
+    //  コリジョン制御
     // ====================================================================
 
-    /// <summary>全グリッドをクリアしてコリジョンを消す</summary>
+    /// <summary>インクコリジョンを有効化</summary>
+    public void EnableInkCollider()
+    {
+        if (inkCollider != null)
+            inkCollider.enabled = true;
+    }
+
+    /// <summary>
+    /// インクコリジョンを無効化
+    /// 塗りデータ自体は残るが、プレイヤーは塗った場所を通り抜けるようになる
+    /// </summary>
+    public void DisableInkCollider()
+    {
+        if (inkCollider != null)
+            inkCollider.enabled = false;
+    }
+
+    // ====================================================================
+    //  全消去
+    // ====================================================================
+
+    /// <summary>全グリッドをクリアしてコリジョンを消す（デバッグ用にも使える）</summary>
     public void ClearAll()
     {
         System.Array.Clear(density, 0, density.Length);
@@ -660,6 +737,10 @@ public class PaintableSurface : MonoBehaviour
         RebuildDirtyChunks();
         visualDirty = true;
     }
+
+    // ====================================================================
+    //  デバッグ
+    // ====================================================================
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
