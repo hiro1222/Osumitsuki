@@ -1,24 +1,34 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class NewEmptyCSharpScript : Obj_Osumitsuki
+public class Seesaw_Osumitsuki : Obj_Osumitsuki
 {
 
-    [Header("天秤ステータス")]
-    [SerializeField] private float impactLevel; //影響度
+	[Header("天秤ステータス")]
+	[SerializeField] private float rotationLimit;   //回転制限
+	[SerializeField] private float activeDist;		//発動距離
 
     [Header("参照オブジェクト")]
-    [SerializeField] private GameObject joint1;
-    [SerializeField] private GameObject joint2;
-    [SerializeField] private GameObject joint3;
+    [SerializeField] private GameObject joint_Center;
+    [SerializeField] private GameObject joint_Left;
+    [SerializeField] private GameObject joint_Rigth;
+	[SerializeField] private Transform playerTarget;
+	[SerializeField] private Transform player;
 
 
+	private float allJoint_rotation;
     private float leftWeight;
     private float rightWeight;
+
+	private int moveVec = 1;
+
+
 	private bool changeFlg = false;
 	private PaintableSurfaceGroup group;
 
 	private void Start()
 	{
+		activeDist *= activeDist;
 		group = GetComponent<PaintableSurfaceGroup>();
 		if (group != null)
 		{
@@ -60,6 +70,63 @@ public class NewEmptyCSharpScript : Obj_Osumitsuki
 
 	public override void Update_Osumitsuki()
 	{
-		base.Update_Osumitsuki();
+		allJoint_rotation += 0.1f * moveVec;
+		SynchroRotation();
+
+
+		Vector3 dif = player.transform.position - playerTarget.position;
+		if (dif.sqrMagnitude >= activeDist)
+		{
+			osumitsukiFlg = false;
+			End();
+		}
+	}
+
+	private void SynchroRotation()
+	{
+		if (allJoint_rotation > 180)
+			allJoint_rotation = allJoint_rotation - 360;
+
+		if (allJoint_rotation < -rotationLimit)
+			allJoint_rotation = -rotationLimit;
+		if (allJoint_rotation > rotationLimit)
+			allJoint_rotation = rotationLimit;
+
+		joint_Center.transform.localRotation = Quaternion.Euler(0, 0, allJoint_rotation);
+		joint_Left.transform.localRotation = Quaternion.Euler(0, 0, -allJoint_rotation);
+		joint_Rigth.transform.localRotation = Quaternion.Euler(0, 0, -allJoint_rotation);
+	}
+
+	private void FixedUpdate()
+	{
+		if (!osumitsukiTrg)
+			return;
+
+
+		Vector3 dif = player.transform.position - playerTarget.position;
+		if (osumitsukiFlg)
+		{
+			if (dif.sqrMagnitude > activeDist)
+			{
+				osumitsukiFlg = false;
+				End();
+			}
+		}
+		else
+		{
+			if (dif.sqrMagnitude <= activeDist)
+			{
+				osumitsukiFlg = false;
+				endFlg = false;
+				Mng_Osumitsuki.instance.AddObject(this);
+			}
+		}
+
+	}
+
+
+	private void SeesawFunc()
+	{
+	
 	}
 }

@@ -167,12 +167,12 @@ public class Obj_Osumitsuki : MonoBehaviour
         return osumitsukiTrg;
     }
 
-	void GetAllChildren(Transform parent, List<Transform> result)
+	void GetAllChildren(Transform _parent, List<Transform> _result)
 	{
-		foreach (Transform child in parent)
+		foreach (Transform child in _parent)
 		{
-			result.Add(child);
-			GetAllChildren(child, result); // 再帰
+			_result.Add(child);
+			GetAllChildren(child, _result); // 再帰
 		}
 	}
 
@@ -271,7 +271,7 @@ public class Obj_Osumitsuki : MonoBehaviour
         {
             if (helperAllyEnemys[i] != null) cnt++;
         }
-		if (cnt >= 2) return;
+		if (cnt >= allyEnemyTarget.Length) return;
 
 		//まだ空の目標座標を検索して、AllyEnemyを割り当てる
 		for (int i = 0; i < allyEnemyTarget.Length; i++)
@@ -290,5 +290,12 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 	}
 
+    /**
+    * @brief    お助けエネミーを開放する
+    */
+    private void ReleaseHelperEnemy()
+    {
+        End();
+    }
 
 }
