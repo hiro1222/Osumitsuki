@@ -329,7 +329,7 @@ public class FlyingSlash : MonoBehaviour
             "[FlyingSlash] GroundPaint"
         );
 
-        InkPaintService.Paint(hit, pattern);
+        InkPaintService.PaintArea(hit, pattern);
 
         Destroy(gameObject);
     }
@@ -354,7 +354,7 @@ public class FlyingSlash : MonoBehaviour
                 $"[FlyingSlash] TrailPaint:{groundHit.collider.name}"
             );
 
-            InkPaintService.Paint(
+            InkPaintService.PaintArea(
                 groundHit,
                 trailRadius,
                 trailDensity);

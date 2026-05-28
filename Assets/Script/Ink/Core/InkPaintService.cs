@@ -294,6 +294,8 @@ public static class InkPaintService
         Collider[] colliders = Physics.OverlapSphere(
             hitPoint, radius, ~0, QueryTriggerInteraction.Collide);
 
+        Debug.Log($"[PaintArea] hitPoint={hitPoint} radius={radius} → {colliders.Length}個検出");
+
         // 重複処理防止
         var processed = new HashSet<PaintableSurface>();
         if (excludeSurface != null) processed.Add(excludeSurface);
@@ -301,7 +303,16 @@ public static class InkPaintService
         foreach (var col in colliders)
         {
             var surface = FindSurface(col);
-            if (surface == null || processed.Contains(surface)) continue;
+            if (surface == null)
+            {
+                Debug.Log($"[PaintArea]   {col.name}: PaintableSurfaceなし → スキップ");
+                continue;
+            }
+            if (processed.Contains(surface))
+            {
+                Debug.Log($"[PaintArea]   {surface.name}: 処理済み(メイン or 重複) → スキップ");
+                continue;
+            }
             processed.Add(surface);
 
             // このコライダーへの最寄り点を求める
@@ -309,24 +320,37 @@ public static class InkPaintService
 
             // 同一点(コライダー内部)の場合、textureCoordが取れないのでスキップ
             Vector3 toClosest = closestPoint - hitPoint;
-            if (toClosest.sqrMagnitude < 0.0001f) continue;
+            if (toClosest.sqrMagnitude < 0.0001f)
+            {
+                Debug.Log($"[PaintArea]   {surface.name}: 最寄り点が同一(内部) → スキップ");
+                continue;
+            }
 
             Vector3 direction = toClosest.normalized;
 
             // 最寄り点の少し手前から、最寄り点を通り過ぎる方向にRaycast
-            // (ClosestPoint直接Raycastだと表面ヒットが不安定なため)
             Vector3 rayOrigin = closestPoint - direction * 0.05f;
             float rayDistance = 0.1f;
+
+            Debug.Log($"[PaintArea]   {surface.name}: closest={closestPoint} へRaycast");
 
             if (Physics.Raycast(rayOrigin, direction, out RaycastHit subHit,
                 rayDistance, ~0, QueryTriggerInteraction.Collide))
             {
-                // 同じサーフェスにヒットしたかチェック
                 var subSurface = FindSurface(subHit.collider);
                 if (subSurface == surface)
                 {
+                    Debug.Log($"[PaintArea]   {surface.name}: 塗り成功 uv={subHit.textureCoord}");
                     onSurfaceFound(subHit, surface);
                 }
+                else
+                {
+                    Debug.Log($"[PaintArea]   {surface.name}: Raycastが別物({subHit.collider.name})にヒット");
+                }
+            }
+            else
+            {
+                Debug.Log($"[PaintArea]   {surface.name}: Raycast当たらず");
             }
         }
     }
