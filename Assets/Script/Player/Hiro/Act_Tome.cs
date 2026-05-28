@@ -5,7 +5,7 @@ public class Act_Tome : PlayerActionBase
     private enum TomePhase
     {
         None,
-        Freeze,
+        Rise,
         Falling,
         LandingResume,
         Finished
@@ -16,26 +16,42 @@ public class Act_Tome : PlayerActionBase
     [SerializeField] private float duration = 1.2f;
     [SerializeField] private float moveSpeedRate = 0.0f;
 
-    [Header("Freeze Position")]
-    [SerializeField] private float freezeTime = 0.25f;
-    [SerializeField] private bool freezePosition = true;
-    [SerializeField] private bool freezeHeightOnly = true;
+    [Header("Frame Control")]
+    [SerializeField] private float animationFps = 60.0f;
+    [SerializeField] private int riseEndFrame = 13;
+    [SerializeField] private int fallingHoldFrame = 14;
 
-    [Header("Animation Pause")]
-    [SerializeField] private float pauseAnimationAtSeconds = 0.30f;
+    [Header("Rise Motion")]
+    [SerializeField] private float riseHeight = 0.45f;
+
+    [Header("Foot Slash")]
+    [SerializeField] private bool enableSlash = true;
+    [SerializeField] private SlashPattern footSlashPattern;
+
+    [Tooltip("足元からのローカル位置。Yをマイナスにすると足元寄り")]
+    [SerializeField] private Vector3 footLocalPositionOffset = new Vector3(0.0f, -0.6f, 0.0f);
+
+    [Tooltip("球の向き。下方向に撃ちたい場合は X=90 付近で調整")]
+    [SerializeField] private Vector3 footLocalEulerOffset = new Vector3(90.0f, 0.0f, 0.0f);
+
+    [SerializeField] private float footForwardOffset = 0.0f;
+    [SerializeField] private float footHeightOffset = 0.0f;
+
+    [Header("Landing")]
     [SerializeField] private float resumeAfterGroundedTime = 0.0f;
-
-    [Header("Paint")]
-    [SerializeField] private bool enablePaint = true;
-    [SerializeField] private float paintForwardOffset = 0.5f;
-    [SerializeField] private float paintRadius = 0.9f;
-    [SerializeField] private byte paintDensity = 200;
 
     private TomePhase phase;
     private float timer;
+    private float phaseTimer;
     private float groundedTimer;
-    private Vector3 fixedPosition;
+
+    private Vector3 riseStartPosition;
+    private Vector3 riseTargetPosition;
+
+    private bool slashSpawned;
+
     private PlayerInkActionPainter inkPainter;
+    private Transform shotAnchor;
 
     public override string ActionName => "止め";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.Tome;
@@ -52,6 +68,10 @@ public class Act_Tome : PlayerActionBase
         {
             inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
         }
+
+        GameObject anchorObj = new GameObject("TomeFootSlashAnchor");
+        anchorObj.transform.SetParent(owner.transform);
+        shotAnchor = anchorObj.transform;
     }
 
     public override bool CanStart()
@@ -70,23 +90,13 @@ public class Act_Tome : PlayerActionBase
 
         base.StartAction();
 
-        phase = TomePhase.Freeze;
+        phase = TomePhase.Rise;
         timer = 0.0f;
+        phaseTimer = 0.0f;
         groundedTimer = 0.0f;
-        fixedPosition = controller.transform.position;
+        slashSpawned = false;
 
-        PaintTome();
-
-        if (controller.Move != null)
-        {
-            controller.Move.ClearVerticalVelocity();
-            controller.Move.SetExternalGravityEnabled(false);
-
-            if (freezePosition)
-            {
-                controller.Move.SetExternalPositionLock(true, fixedPosition, freezeHeightOnly);
-            }
-        }
+        StartRise();
     }
 
     public override void Tick(float dt)
@@ -94,11 +104,12 @@ public class Act_Tome : PlayerActionBase
         if (!IsRunning) return;
 
         timer += dt;
+        phaseTimer += dt;
 
         switch (phase)
         {
-            case TomePhase.Freeze:
-                TickFreeze();
+            case TomePhase.Rise:
+                TickRise();
                 break;
 
             case TomePhase.Falling:
@@ -115,32 +126,83 @@ public class Act_Tome : PlayerActionBase
         }
     }
 
-    private void TickFreeze()
+    private void StartRise()
     {
-        if (timer < freezeTime) return;
+        phase = TomePhase.Rise;
+        phaseTimer = 0.0f;
+
+        riseStartPosition = controller.transform.position;
+        riseTargetPosition = riseStartPosition + Vector3.up * riseHeight;
+
+        if (controller.Move != null)
+        {
+            controller.Move.ClearVerticalVelocity();
+            controller.Move.SetExternalGravityEnabled(false);
+            controller.Move.SetExternalPositionLock(true, riseStartPosition, false);
+        }
+    }
+
+    private void TickRise()
+    {
+        float riseTime = GetFrameTime(riseEndFrame);
+
+        float t = riseTime <= 0.0001f
+            ? 1.0f
+            : phaseTimer / riseTime;
+
+        t = Mathf.Clamp01(t);
+
+        Vector3 pos = Vector3.Lerp(
+            riseStartPosition,
+            riseTargetPosition,
+            Smooth01(t)
+        );
+
+        controller.transform.position = pos;
+
+        if (controller.Move != null)
+        {
+            controller.Move.SetExternalPositionLock(true, pos, false);
+        }
+
+        if (t >= 1.0f)
+        {
+            StartFalling();
+        }
+    }
+
+    private void StartFalling()
+    {
+        phase = TomePhase.Falling;
+        phaseTimer = 0.0f;
 
         if (controller.AnimatorDriver != null)
         {
-            controller.AnimatorDriver.PauseCurrentAnimationAt(animationName, pauseAnimationAtSeconds);
+            controller.AnimatorDriver.PauseCurrentAnimationAt(
+                animationName,
+                GetFrameTime(fallingHoldFrame)
+            );
         }
 
         if (controller.Move != null)
         {
-            controller.Move.SetExternalPositionLock(false, fixedPosition, freezeHeightOnly);
+            controller.Move.SetExternalPositionLock(false, controller.transform.position, false);
+            controller.Move.ClearVerticalVelocity();
             controller.Move.SetExternalGravityEnabled(true);
         }
 
-        phase = TomePhase.Falling;
+        SpawnFootSlash();
     }
 
     private void TickFalling()
     {
+        if (controller.Move == null) return;
+
         if (!controller.Move.IsGrounded) return;
 
-        groundedTimer = 0.0f;
-        PaintTome();
-
         phase = TomePhase.LandingResume;
+        phaseTimer = 0.0f;
+        groundedTimer = 0.0f;
     }
 
     private void TickLandingResume(float dt)
@@ -155,6 +217,7 @@ public class Act_Tome : PlayerActionBase
         }
 
         phase = TomePhase.Finished;
+        phaseTimer = 0.0f;
     }
 
     private void TickFinished()
@@ -165,25 +228,55 @@ public class Act_Tome : PlayerActionBase
         }
     }
 
-    private void PaintTome()
+    private void SpawnFootSlash()
     {
-        if (!enablePaint) return;
+        if (slashSpawned) return;
+        if (!enableSlash) return;
         if (inkPainter == null) return;
+        if (footSlashPattern == null) return;
 
-        float radius = controller.ActionManager.GetPaintRadius(paintRadius);
+        Transform baseTf = controller.transform;
 
-        inkPainter.PaintGroundNearPlayer(
-            controller.transform,
-            paintForwardOffset,
-            radius,
-            paintDensity);
+        shotAnchor.position =
+            baseTf.position +
+            baseTf.right * footLocalPositionOffset.x +
+            baseTf.up * footLocalPositionOffset.y +
+            baseTf.forward * footLocalPositionOffset.z;
+
+        shotAnchor.rotation =
+            baseTf.rotation *
+            Quaternion.Euler(footLocalEulerOffset);
+
+        inkPainter.FireSlashPattern(
+            shotAnchor,
+            footSlashPattern,
+            footForwardOffset,
+            footHeightOffset
+        );
+
+        slashSpawned = true;
+    }
+
+    private float GetFrameTime(int frame)
+    {
+        if (animationFps <= 0.0001f)
+        {
+            return 0.0f;
+        }
+
+        return frame / animationFps;
+    }
+
+    private float Smooth01(float t)
+    {
+        return t * t * (3.0f - 2.0f * t);
     }
 
     public override void EndAction()
     {
         if (controller.Move != null)
         {
-            controller.Move.SetExternalPositionLock(false, fixedPosition, freezeHeightOnly);
+            controller.Move.SetExternalPositionLock(false, controller.transform.position, false);
             controller.Move.SetExternalGravityEnabled(true);
         }
 
