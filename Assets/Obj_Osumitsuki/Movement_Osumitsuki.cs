@@ -71,6 +71,7 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
         //ã‰º‚ÌˆÊ’uŠÖŒW‚ğ–³‹
         dir.y = 0;
         dir *= -1;
+        dir = dir.normalized;
 
         //•ûŒü‚ªƒ[ƒ‚Å‚È‚¢‚©Šm”F
         if (dir.sqrMagnitude < 0.0001f)
