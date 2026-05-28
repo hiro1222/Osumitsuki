@@ -15,7 +15,7 @@ public class Obj_Osumitsuki : MonoBehaviour
     [SerializeField] private float InkRatio = 70;       //お墨付き
 
     [Header("お墨付き後のテクスチャ")]
-    [SerializeField] private Material myMaterial;
+    [SerializeField] protected Material myMaterial;
 
     [Header("お助け用オブジェクト")]
     [SerializeField] private Transform[] allyEnemyTarget;    //AllyEnemy目標座標
@@ -24,15 +24,17 @@ public class Obj_Osumitsuki : MonoBehaviour
     private AllyEnemy[] helperAllyEnemys;   //Osumitsuki_Objがお墨付き後移動補助やく墨袋
     private AllyEnemy.IAllyEnemyState[] helperEnemyStates;
 
-	private bool osumitsukiTrg = false; //お墨付きした時にtrueへ
-    private bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
-    private bool endFlg = false;        //終了フラグ
+	protected bool osumitsukiTrg = false; //お墨付きした時にtrueへ
+    protected bool osumitsukiFlg = false; //Action_Osumitsuki後にtrueへ
+    protected bool endFlg = false;        //終了フラグ
 
 
     //プロパティ
     public bool OsumiTrg => osumitsukiTrg;
     public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
     public bool EndFlg => endFlg;           //処理が終了したかどうか
+
+    public void SetEndFlg(bool _is) { endFlg = _is; } 
 
 
 	private class AllyEnemy_Func_Base_Obj_Osumitsuki : AllyEnemy.IAllyEnemyState
@@ -79,7 +81,6 @@ public class Obj_Osumitsuki : MonoBehaviour
         private void Chase_Update(AllyEnemy _owner, float _deltaTime)
         {
             if (target == null) return;
-            Debug.Log("目標座標に向かってるよ");
             _owner.transform.position = Vector3.MoveTowards(
 			_owner.transform.position,
             target.position,
@@ -107,13 +108,13 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 	public void Action_Osumitsuki_Cover()
     {
-        Debug.Log("お墨付きアクション");
+        Debug.Log(gameObject.name + "：お墨付きアクション");
         SearchOsumitsuki_Obj();
         Action_Osumitsuki();
     }
     public void Update_Osumitsuki_Cover()
     {
-        Debug.Log("お墨付きアップデート");
+        Debug.Log(gameObject.name + "：お墨付きアップデート");
         Update_Osumitsuki();
     }
 
@@ -198,9 +199,19 @@ public class Obj_Osumitsuki : MonoBehaviour
 
     public virtual void End()
     {
+        endFlg = true;
+
+        if (helperAllyEnemys == null)
+            return;
+
         for (int i = 0; i < helperAllyEnemys.Length; i++)
             helperAllyEnemys[i].ClearExternalState();
-        endFlg = true;
+
+        if (allyEnemyTarget != null)
+        {
+            helperAllyEnemys = new AllyEnemy[allyEnemyTarget.Length];
+            helperEnemyStates = new AllyEnemy.IAllyEnemyState[allyEnemyTarget.Length];
+        } 
     }
 
 
@@ -240,7 +251,6 @@ public class Obj_Osumitsuki : MonoBehaviour
     {
 		//目標座標がなければ終了
 		if (allyEnemyTarget.Length == 0) return;
-        Debug.Log(allyEnemyTarget.Length);
 
 		IReadOnlyList<AllyEnemy> allyEnemys = allyEnemyManager.GetAllyEnemy();
 		//AllyEnemyがいなければ終了

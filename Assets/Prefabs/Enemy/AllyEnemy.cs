@@ -11,8 +11,11 @@ using UnityEngine;
 ///
 /// 【外部から呼ぶ関数】
 /// ・SetFollowTarget()    : Managerから毎フレーム呼ぶ
+/// ・SetAllyIndex()       : Managerから生成時に呼ぶ（番号付け）
 /// ・Consume()            : Managerから消費時に呼ぶ
+/// ・ConsumeSelf()        : 自分自身から消費するときに呼ぶ（Manager経由なし）
 /// ・GetIsConsumed()      : Managerから消費済み確認に呼ぶ
+/// ・GetAllyIndex()       : 番号を取得する
 /// ・SetExternalState()   : 外部ステートをセット
 /// ・ClearExternalState() : 外部ステートを解除してFollowに戻る
 /// </summary>
@@ -20,18 +23,12 @@ public class AllyEnemy : MonoBehaviour
 {
     // ====================================================================
     //  外部ステートのインターフェース
-    //  他のスクリプトでこれを実装して SetExternalState() に渡す
     // ====================================================================
 
     public interface IAllyEnemyState
     {
-        /// <summary>ステート開始時に1回呼ばれる</summary>
         void OnEnter(AllyEnemy owner);
-
-        /// <summary>毎フレーム呼ばれる。falseを返すとステート終了→Followに戻る</summary>
         bool OnTick(AllyEnemy owner, float dt);
-
-        /// <summary>ステート終了時に1回呼ばれる</summary>
         void OnExit(AllyEnemy owner);
     }
 
@@ -41,10 +38,10 @@ public class AllyEnemy : MonoBehaviour
 
     private enum AllyState
     {
-        Bounce,   // 跳ねアニメーション（生成直後）
-        Follow,   // 追従
-        External, // 外部ステートに委ねる
-        Consumed, // 消費済み
+        Bounce,
+        Follow,
+        External,
+        Consumed,
     }
 
     // ====================================================================
@@ -76,8 +73,14 @@ public class AllyEnemy : MonoBehaviour
     // 外部ステート
     private IAllyEnemyState externalState;
 
+    // 味方番号（何番目の味方か）
+    private int allyIndex = -1;
+
+    // Managerの参照（ConsumeSelf用）
+    private AllyEnemyManager manager;
+
     // ====================================================================
-    //  公開プロパティ（外部ステートから位置などを参照するため）
+    //  公開プロパティ
     // ====================================================================
 
     public Vector3 Position => transform.position;
@@ -113,6 +116,24 @@ public class AllyEnemy : MonoBehaviour
             case AllyState.Consumed: break;
         }
     }
+
+    // ====================================================================
+    //  番号付け
+    // ====================================================================
+
+    /// <summary>
+    /// 味方番号を設定する
+    /// AllyEnemyManagerから生成時に呼ぶ
+    /// </summary>
+    public void SetAllyIndex(int index, AllyEnemyManager allyManager)
+    {
+        allyIndex = index;
+        manager = allyManager;
+        Debug.Log($"[AllyEnemy] 味方番号: {allyIndex}");
+    }
+
+    /// <summary>味方番号を返す</summary>
+    public int GetAllyIndex() => allyIndex;
 
     // ====================================================================
     //  追従（通常）
@@ -152,26 +173,16 @@ public class AllyEnemy : MonoBehaviour
     //  外部ステート
     // ====================================================================
 
-    /// <summary>
-    /// 外部ステートをセットする。
-    /// 即座に External ステートに切り替わり、IAllyEnemyState.OnEnter が呼ばれる。
-    /// </summary>
     public void SetExternalState(IAllyEnemyState newState)
     {
         if (state == AllyState.Consumed) return;
 
-        // 既存の外部ステートを終了
         externalState?.OnExit(this);
-
         externalState = newState;
         state = AllyState.External;
-
         externalState?.OnEnter(this);
     }
 
-    /// <summary>
-    /// 外部ステートを解除して Follow に戻る。
-    /// </summary>
     public void ClearExternalState()
     {
         if (externalState != null)
@@ -192,7 +203,6 @@ public class AllyEnemy : MonoBehaviour
             return;
         }
 
-        // OnTick が false を返したらステート終了
         bool continueState = externalState.OnTick(this, Time.deltaTime);
         if (!continueState)
         {
@@ -201,7 +211,7 @@ public class AllyEnemy : MonoBehaviour
     }
 
     // ====================================================================
-    //  位置・回転を外部ステートから直接操作するためのヘルパー
+    //  位置・回転ヘルパー
     // ====================================================================
 
     public void MoveTo(Vector3 pos) => transform.position = pos;
@@ -217,6 +227,10 @@ public class AllyEnemy : MonoBehaviour
     //  消費処理
     // ====================================================================
 
+    /// <summary>
+    /// 消費処理
+    /// Managerから呼ぶ
+    /// </summary>
     public void Consume()
     {
         if (state == AllyState.Consumed) return;
@@ -225,34 +239,69 @@ public class AllyEnemy : MonoBehaviour
         externalState = null;
 
         state = AllyState.Consumed;
+        Debug.Log($"[AllyEnemy] 消費（番号: {allyIndex}）");
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 自分自身から消費する
+    /// Manager経由せずに消えたいときに呼ぶ
+    /// Managerにも通知する
+    /// </summary>
+    public void ConsumeSelf()
+    {
+        if (state == AllyState.Consumed) return;
+
+        // Managerに通知して後処理をしてもらう
+        if (manager != null)
+        {
+            manager.OnAllyConsumedSelf(this);
+        }
+
+        Consume();
     }
 
     public bool GetIsConsumed() => state == AllyState.Consumed;
 
     // ====================================================================
+
     //  跳ねアニメーション
+
     // ====================================================================
 
     private void StartBounce()
+
     {
+
         state = AllyState.Bounce;
+
         bounceTimer = 0f;
+
         bounceBasePos = transform.position;
+
     }
 
     private void UpdateBounce()
+
     {
+
         bounceTimer += Time.deltaTime;
+
         float t = bounceTimer / bounceDuration;
 
         float yOffset = Mathf.Sin(t * Mathf.PI) * bounceHeight;
+
         transform.position = bounceBasePos + Vector3.up * yOffset;
 
         if (bounceTimer >= bounceDuration)
+
         {
+
             transform.position = bounceBasePos;
+
             state = AllyState.Follow;
+
         }
+
     }
 }

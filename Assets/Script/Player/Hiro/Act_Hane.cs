@@ -75,11 +75,14 @@ public class Act_Hane : PlayerActionBase
 
     public override bool CanStart()
     {
-        return !manager.IsActing;
+        return !manager.IsActing &&
+               controller.Stats.HasInk(controller.Stats.haneInkCost);
     }
 
     protected override void OnStartEffect()
     {
+        if (!controller.Stats.ConsumeInk(controller.Stats.haneInkCost)) return;
+
         if (!enableSlash) return;
         if (inkPainter == null) return;
 

@@ -56,11 +56,18 @@ public class Act_Tome : PlayerActionBase
 
     public override bool CanStart()
     {
-        return !manager.IsActing && !controller.Move.IsGrounded;
+        return !manager.IsActing &&
+               !controller.Move.IsGrounded &&
+               controller.Stats.HasInk(controller.Stats.tomeInkCost);
     }
 
     public override void StartAction()
     {
+        if (!controller.Stats.ConsumeInk(controller.Stats.tomeInkCost))
+        {
+            return;
+        }
+
         base.StartAction();
 
         phase = TomePhase.Freeze;
