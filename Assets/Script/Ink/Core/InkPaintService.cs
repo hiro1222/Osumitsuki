@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// 墨システムの唯一の公開API（安定版）
@@ -17,10 +18,21 @@ using UnityEngine;
 /// 【墨を塗る】
 ///   InkPaintService.Paint(hit, radius, density);
 ///   InkPaintService.Paint(hit, pattern);
+///   InkPaintService.PaintArea(hit, radius, density);  // 隣接サーフェスも巻き込む
+/// 
+/// 【墨を消す】
+///   InkPaintService.Erase(hit, radius);
+///   InkPaintService.EraseAt(surface, worldCenter, radius);
+///   InkPaintService.EraseArea(hit, radius);  // 隣接サーフェスも巻き込む
+///   InkPaintService.ClearAll(surface);
 /// 
 /// 【墨があるか調べる】
 ///   bool hasInk = InkPaintService.HasInkAt(hit);
 ///   byte d = InkPaintService.GetDensity(hit);
+/// 
+/// 【コリジョン制御】
+///   InkPaintService.EnableInkCollider(surface);
+///   InkPaintService.DisableInkCollider(surface);
 /// 
 /// 【Raycastの注意】
 ///   全てのRaycastに QueryTriggerInteraction.Collide を付けてください。
@@ -59,6 +71,38 @@ public static class InkPaintService
             surface.Paint(hit, pattern.impactRadius,
                           (byte)pattern.inkDensity,
                           pattern.inkColorId);
+    }
+
+    // ================================================================
+    //  範囲塗り（隣接サーフェス対応）
+    // ================================================================
+
+    /// <summary>
+    /// ヒット地点周辺の全PaintableSurfaceに塗る
+    /// オブジェクトの境界（隣接した別オブジェクト）を撃ったときに
+    /// 両方のサーフェスが塗られる
+    /// </summary>
+    public static void PaintArea(RaycastHit hit, float radius, byte inkDensity, byte colorId = 0)
+    {
+        var mainSurface = FindSurface(hit.collider);
+        if (mainSurface != null)
+            mainSurface.Paint(hit, radius, inkDensity, colorId);
+
+        PaintNeighborSurfaces(hit.point, radius, mainSurface,
+            (subHit, surface) => surface.Paint(subHit, radius, inkDensity, colorId));
+    }
+
+    /// <summary>SlashPatternベースの範囲塗り</summary>
+    public static void PaintArea(RaycastHit hit, SlashPattern pattern)
+    {
+        var mainSurface = FindSurface(hit.collider);
+        if (mainSurface != null)
+            mainSurface.Paint(hit, pattern.impactRadius,
+                              (byte)pattern.inkDensity, pattern.inkColorId);
+
+        PaintNeighborSurfaces(hit.point, pattern.impactRadius, mainSurface,
+            (subHit, surface) => surface.Paint(subHit, pattern.impactRadius,
+                                                (byte)pattern.inkDensity, pattern.inkColorId));
     }
 
     // ================================================================
@@ -123,6 +167,97 @@ public static class InkPaintService
     }
 
     // ================================================================
+    //  消去（Erase）
+    // ================================================================
+
+    /// <summary>
+    /// RaycastHitの位置を中心に塗りを消す
+    /// 範囲内の色とコリジョンが両方消える
+    /// </summary>
+    public static void Erase(RaycastHit hit, float radius)
+    {
+        var surface = FindSurface(hit.collider);
+        if (surface != null) surface.Erase(hit, radius);
+    }
+
+    /// <summary>
+    /// ヒット地点周辺の全PaintableSurfaceから塗りを消す
+    /// 隣接したサーフェスもまとめて消す
+    /// </summary>
+    public static void EraseArea(RaycastHit hit, float radius)
+    {
+        var mainSurface = FindSurface(hit.collider);
+        if (mainSurface != null)
+            mainSurface.Erase(hit, radius);
+
+        var processed = new HashSet<PaintableSurface>();
+        if (mainSurface != null) processed.Add(mainSurface);
+
+        Collider[] colliders = Physics.OverlapSphere(
+            hit.point, radius, ~0, QueryTriggerInteraction.Collide);
+
+        foreach (var col in colliders)
+        {
+            var surface = FindSurface(col);
+            if (surface == null || processed.Contains(surface)) continue;
+            processed.Add(surface);
+
+            // EraseAtはワールド座標+半径なのでRaycast不要
+            surface.EraseAt(hit.point, radius);
+        }
+    }
+
+    /// <summary>
+    /// ワールド座標を中心に塗りを消す（Raycast不要）
+    /// 指定オブジェクトのPaintableSurfaceから直接消す
+    /// </summary>
+    public static void EraseAt(PaintableSurface surface, Vector3 worldCenter, float radius)
+    {
+        if (surface != null) surface.EraseAt(worldCenter, radius);
+    }
+
+    /// <summary>指定オブジェクトの塗りを全消去（デバッグ用）</summary>
+    public static void ClearAll(PaintableSurface surface)
+    {
+        if (surface != null) surface.ClearAll();
+    }
+
+    // ================================================================
+    //  コリジョン制御
+    // ================================================================
+
+    /// <summary>
+    /// 指定したPaintableSurfaceのインクコリジョンを有効化
+    /// </summary>
+    public static void EnableInkCollider(PaintableSurface surface)
+    {
+        if (surface != null) surface.EnableInkCollider();
+    }
+
+    /// <summary>
+    /// 指定したPaintableSurfaceのインクコリジョンを無効化
+    /// 塗りの見た目は残るがプレイヤーは通り抜けられるようになる
+    /// </summary>
+    public static void DisableInkCollider(PaintableSurface surface)
+    {
+        if (surface != null) surface.DisableInkCollider();
+    }
+
+    /// <summary>RaycastHitの先のオブジェクトのインクコリジョンを有効化</summary>
+    public static void EnableInkCollider(RaycastHit hit)
+    {
+        var surface = FindSurface(hit.collider);
+        if (surface != null) surface.EnableInkCollider();
+    }
+
+    /// <summary>RaycastHitの先のオブジェクトのインクコリジョンを無効化</summary>
+    public static void DisableInkCollider(RaycastHit hit)
+    {
+        var surface = FindSurface(hit.collider);
+        if (surface != null) surface.DisableInkCollider();
+    }
+
+    // ================================================================
     //  内部実装（このセクションはチームメンバーが触る必要なし）
     // ================================================================
 
@@ -135,9 +270,64 @@ public static class InkPaintService
         return col.GetComponent<PaintableSurface>()
             ?? col.GetComponentInParent<PaintableSurface>();
     }
+
+    /// <summary>
+    /// HF_PaintableSurfaceを探す（チームメンバー追加の別塗りシステム用）
+    /// 注意: 現在の実装は GetComponent を2回呼んでいる可能性あり（要確認）
+    /// </summary>
     private static HF_PaintableSurface FindHFSurface(Collider col)
     {
         return col.GetComponent<HF_PaintableSurface>()
             ?? col.GetComponent<HF_PaintableSurface>();
+    }
+
+    /// <summary>
+    /// ヒット地点を中心に近傍のPaintableSurfaceを探し、
+    /// 各々に対して最寄り点へのRaycastを撃ってコールバックを呼ぶ
+    /// (隣接サーフェスへの範囲塗り用)
+    /// </summary>
+    private static void PaintNeighborSurfaces(Vector3 hitPoint, float radius,
+        PaintableSurface excludeSurface,
+        System.Action<RaycastHit, PaintableSurface> onSurfaceFound)
+    {
+        // 近傍のコライダーを取得
+        Collider[] colliders = Physics.OverlapSphere(
+            hitPoint, radius, ~0, QueryTriggerInteraction.Collide);
+
+        // 重複処理防止
+        var processed = new HashSet<PaintableSurface>();
+        if (excludeSurface != null) processed.Add(excludeSurface);
+
+        foreach (var col in colliders)
+        {
+            var surface = FindSurface(col);
+            if (surface == null || processed.Contains(surface)) continue;
+            processed.Add(surface);
+
+            // このコライダーへの最寄り点を求める
+            Vector3 closestPoint = col.ClosestPoint(hitPoint);
+
+            // 同一点(コライダー内部)の場合、textureCoordが取れないのでスキップ
+            Vector3 toClosest = closestPoint - hitPoint;
+            if (toClosest.sqrMagnitude < 0.0001f) continue;
+
+            Vector3 direction = toClosest.normalized;
+
+            // 最寄り点の少し手前から、最寄り点を通り過ぎる方向にRaycast
+            // (ClosestPoint直接Raycastだと表面ヒットが不安定なため)
+            Vector3 rayOrigin = closestPoint - direction * 0.05f;
+            float rayDistance = 0.1f;
+
+            if (Physics.Raycast(rayOrigin, direction, out RaycastHit subHit,
+                rayDistance, ~0, QueryTriggerInteraction.Collide))
+            {
+                // 同じサーフェスにヒットしたかチェック
+                var subSurface = FindSurface(subHit.collider);
+                if (subSurface == surface)
+                {
+                    onSurfaceFound(subHit, surface);
+                }
+            }
+        }
     }
 }
