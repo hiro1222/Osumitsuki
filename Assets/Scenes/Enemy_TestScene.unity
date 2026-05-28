@@ -192,8 +192,9 @@ MonoBehaviour:
   patrolPointB: {fileID: 1992818306}
   patrolSpeed: 2
   chaseSpeed: 4
-  collideDistance: 2
+  collideDistance: 1
   stopDuration: 3
+  bodyTransform: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
@@ -555,8 +556,8 @@ Transform:
   m_GameObject: {fileID: 236881975}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1167, y: 0, z: 0.5912}
-  m_LocalScale: {x: 50, y: 1, z: 50}
+  m_LocalPosition: {x: 0.44, y: 0, z: -5.86}
+  m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1135,6 +1136,7 @@ MonoBehaviour:
   chaseSpeed: 4
   collideDistance: 2
   stopDuration: 3
+  bodyTransform: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
@@ -2374,6 +2376,7 @@ MonoBehaviour:
   chaseSpeed: 4
   collideDistance: 2
   stopDuration: 3
+  bodyTransform: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
