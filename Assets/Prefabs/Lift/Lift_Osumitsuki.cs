@@ -110,7 +110,6 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
         else
         {
             boardObj.transform.position = Vector3.MoveTowards(boardObj.transform.position, initboardPos, speed * Time.deltaTime);
-            Debug.Log("‰º‚è‚Ü‚·");
         }
     }
 

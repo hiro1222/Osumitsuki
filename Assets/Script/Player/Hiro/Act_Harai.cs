@@ -33,13 +33,11 @@ public class Act_Harai : PlayerActionBase
     [SerializeField] private float baseForwardOffset = 1.5f;
     [SerializeField] private float baseHeightOffset = 0.4f;
 
-    [Header("Paint Level")]
-    [SerializeField, Range(0, 4)] private int paintLevel = 0;
-
     [Header("Extra Shots")]
     [SerializeField] private ExtraShotSetting[] extraShots = new ExtraShotSetting[4];
 
     private PlayerInkActionPainter inkPainter;
+    private PlayerPaintStatus paintStatus;
     private Transform shotAnchor;
 
     public override string ActionName => "はらい";
@@ -47,16 +45,6 @@ public class Act_Harai : PlayerActionBase
     public override string AnimationName => animationName;
     public override float Duration => duration;
     public override float MoveSpeedRate => moveSpeedRate;
-
-    public void SetPaintLevel(int level)
-    {
-        paintLevel = Mathf.Clamp(level, 0, 4);
-    }
-
-    public int GetPaintLevel()
-    {
-        return paintLevel;
-    }
 
     public override void Initialize(PlayerController owner, PlayerActionManager actionManager)
     {
@@ -66,6 +54,12 @@ public class Act_Harai : PlayerActionBase
         if (inkPainter == null)
         {
             inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
+        }
+
+        paintStatus = owner.GetComponent<PlayerPaintStatus>();
+        if (paintStatus == null)
+        {
+            paintStatus = owner.gameObject.AddComponent<PlayerPaintStatus>();
         }
 
         GameObject anchorObj = new GameObject("HaraiShotAnchor");
@@ -90,6 +84,12 @@ public class Act_Harai : PlayerActionBase
         FireExtraShots();
     }
 
+    private int GetCurrentPaintLevel()
+    {
+        if (paintStatus == null) return 0;
+        return Mathf.Clamp(paintStatus.PaintLevel, 0, paintStatus.MaxPaintLevel);
+    }
+
     private void FireBaseShot()
     {
         if (baseSlashPattern == null) return;
@@ -106,7 +106,7 @@ public class Act_Harai : PlayerActionBase
     {
         if (extraShots == null) return;
 
-        int level = Mathf.Clamp(paintLevel, 0, 4);
+        int level = GetCurrentPaintLevel();
 
         for (int i = 0; i < extraShots.Length; ++i)
         {
@@ -131,8 +131,7 @@ public class Act_Harai : PlayerActionBase
             baseTf.forward * shot.localPositionOffset.z;
 
         shotAnchor.rotation =
-            baseTf.rotation *
-            Quaternion.Euler(shot.localEulerOffset);
+            baseTf.rotation * Quaternion.Euler(shot.localEulerOffset);
 
         inkPainter.FireSlashPattern(
             shotAnchor,
