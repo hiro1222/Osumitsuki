@@ -24,34 +24,36 @@ public class Act_Tome : PlayerActionBase
     [Header("Rise Motion")]
     [SerializeField] private float riseHeight = 0.45f;
 
-    [Header("Foot Slash")]
-    [SerializeField] private bool enableSlash = true;
-    [SerializeField] private SlashPattern footSlashPattern;
+    [Header("Pre Landing Paint")]
+    [SerializeField] private bool enablePreLandingPaint = true;
 
-    [Tooltip("足元からのローカル位置。Yをマイナスにすると足元寄り")]
-    [SerializeField] private Vector3 footLocalPositionOffset = new Vector3(0.0f, -0.6f, 0.0f);
+    [Tooltip("Playerの下にこの距離以内で地面があれば、着地前に塗る")]
+    [SerializeField] private float paintTriggerDistance = 0.6f;
 
-    [Tooltip("球の向き。下方向に撃ちたい場合は X=90 付近で調整")]
-    [SerializeField] private Vector3 footLocalEulerOffset = new Vector3(90.0f, 0.0f, 0.0f);
+    [Tooltip("なぞりと同じ PaintGroundNearPlayer の前方オフセット")]
+    [SerializeField] private float paintForwardOffset = 0.0f;
 
-    [SerializeField] private float footForwardOffset = 0.0f;
-    [SerializeField] private float footHeightOffset = 0.0f;
+    [SerializeField] private float paintRadius = 0.9f;
+    [SerializeField] private byte paintDensity = 180;
+
+    [Tooltip("地面検出用。基本はGround系Layerを指定")]
+    [SerializeField] private LayerMask groundCheckMask = ~0;
 
     [Header("Landing")]
     [SerializeField] private float resumeAfterGroundedTime = 0.0f;
 
     private TomePhase phase;
-    private float timer;
+    private float actionTimer;
     private float phaseTimer;
     private float groundedTimer;
 
     private Vector3 riseStartPosition;
     private Vector3 riseTargetPosition;
 
-    private bool slashSpawned;
+    private bool preLandingPainted;
 
     private PlayerInkActionPainter inkPainter;
-    private Transform shotAnchor;
+    private PlayerPaintStatus paintStatus;
 
     public override string ActionName => "止め";
     public override PlayerActionManager.ActionKind Kind => PlayerActionManager.ActionKind.Tome;
@@ -69,9 +71,11 @@ public class Act_Tome : PlayerActionBase
             inkPainter = owner.gameObject.AddComponent<PlayerInkActionPainter>();
         }
 
-        GameObject anchorObj = new GameObject("TomeFootSlashAnchor");
-        anchorObj.transform.SetParent(owner.transform);
-        shotAnchor = anchorObj.transform;
+        paintStatus = owner.GetComponent<PlayerPaintStatus>();
+        if (paintStatus == null)
+        {
+            paintStatus = owner.gameObject.AddComponent<PlayerPaintStatus>();
+        }
     }
 
     public override bool CanStart()
@@ -91,10 +95,10 @@ public class Act_Tome : PlayerActionBase
         base.StartAction();
 
         phase = TomePhase.Rise;
-        timer = 0.0f;
+        actionTimer = 0.0f;
         phaseTimer = 0.0f;
         groundedTimer = 0.0f;
-        slashSpawned = false;
+        preLandingPainted = false;
 
         StartRise();
     }
@@ -103,7 +107,7 @@ public class Act_Tome : PlayerActionBase
     {
         if (!IsRunning) return;
 
-        timer += dt;
+        actionTimer += dt;
         phaseTimer += dt;
 
         switch (phase)
@@ -190,19 +194,49 @@ public class Act_Tome : PlayerActionBase
             controller.Move.ClearVerticalVelocity();
             controller.Move.SetExternalGravityEnabled(true);
         }
-
-        SpawnFootSlash();
     }
 
     private void TickFalling()
     {
-        if (controller.Move == null) return;
+        TryPreLandingPaint();
 
+        if (controller.Move == null) return;
         if (!controller.Move.IsGrounded) return;
 
         phase = TomePhase.LandingResume;
         phaseTimer = 0.0f;
         groundedTimer = 0.0f;
+    }
+
+    private void TryPreLandingPaint()
+    {
+        if (preLandingPainted) return;
+        if (!enablePreLandingPaint) return;
+        if (inkPainter == null) return;
+
+        Vector3 origin = controller.transform.position;
+        Ray ray = new Ray(origin, Vector3.down);
+
+        if (!Physics.Raycast(ray, out RaycastHit hit, paintTriggerDistance, groundCheckMask))
+        {
+            return;
+        }
+
+        float scaledRadius = paintRadius;
+
+        if (paintStatus != null)
+        {
+            scaledRadius = paintStatus.GetPaintRadius(paintRadius);
+        }
+
+        inkPainter.PaintGroundNearPlayer(
+            controller.transform,
+            paintForwardOffset,
+            scaledRadius,
+            paintDensity
+        );
+
+        preLandingPainted = true;
     }
 
     private void TickLandingResume(float dt)
@@ -222,39 +256,10 @@ public class Act_Tome : PlayerActionBase
 
     private void TickFinished()
     {
-        if (timer >= duration)
+        if (actionTimer >= duration)
         {
             EndAction();
         }
-    }
-
-    private void SpawnFootSlash()
-    {
-        if (slashSpawned) return;
-        if (!enableSlash) return;
-        if (inkPainter == null) return;
-        if (footSlashPattern == null) return;
-
-        Transform baseTf = controller.transform;
-
-        shotAnchor.position =
-            baseTf.position +
-            baseTf.right * footLocalPositionOffset.x +
-            baseTf.up * footLocalPositionOffset.y +
-            baseTf.forward * footLocalPositionOffset.z;
-
-        shotAnchor.rotation =
-            baseTf.rotation *
-            Quaternion.Euler(footLocalEulerOffset);
-
-        inkPainter.FireSlashPattern(
-            shotAnchor,
-            footSlashPattern,
-            footForwardOffset,
-            footHeightOffset
-        );
-
-        slashSpawned = true;
     }
 
     private float GetFrameTime(int frame)

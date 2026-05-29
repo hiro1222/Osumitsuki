@@ -3,8 +3,8 @@ using UnityEngine;
 public class PlayerPaintStatus : MonoBehaviour
 {
     [Header("Paint Level")]
-    [SerializeField] private int paintLevel;
-    [SerializeField] private int maxPaintLevel = 4;
+    [SerializeField, Range(0, 4)] private int paintLevel = 0;
+    [SerializeField, Range(1, 4)] private int maxPaintLevel = 4;
     [SerializeField] private float radiusBonusPerLevel = 0.25f;
 
     public int PaintLevel => paintLevel;
@@ -17,7 +17,7 @@ public class PlayerPaintStatus : MonoBehaviour
 
     public void SubPaintLevel(int amount = 1)
     {
-        paintLevel = Mathf.Clamp(paintLevel - amount, 0, 0);
+        paintLevel = Mathf.Clamp(paintLevel - amount, 0, maxPaintLevel);
     }
 
     public void SetPaintLevel(int level)
