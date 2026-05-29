@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class PlayerInkActionPainter : MonoBehaviour
 {
@@ -19,6 +19,16 @@ public class PlayerInkActionPainter : MonoBehaviour
         }
     }
 
+    public InkSlashSystem GetSlashSystem()
+    {
+        if (slashSystem == null)
+        {
+            slashSystem = FindObjectOfType<InkSlashSystem>();
+        }
+
+        return slashSystem;
+    }
+
     public void PaintGroundNearPlayer(
         Transform player,
         float forwardOffset,
@@ -26,26 +36,21 @@ public class PlayerInkActionPainter : MonoBehaviour
         byte density
     )
     {
-        if (player == null)
-        {
-            return;
-        }
+        if (player == null) return;
 
         Vector3 origin =
             player.position +
             player.forward * forwardOffset +
             Vector3.up * rayStartHeight;
 
-        if (
-            Physics.Raycast(
-                origin,
-                Vector3.down,
-                out RaycastHit hit,
-                rayLength,
-                paintRayMask,
-                QueryTriggerInteraction.Collide
-            )
-        )
+        if (Physics.Raycast(
+            origin,
+            Vector3.down,
+            out RaycastHit hit,
+            rayLength,
+            paintRayMask,
+            QueryTriggerInteraction.Collide
+        ))
         {
             InkPaintService.Paint(
                 hit,
@@ -55,10 +60,6 @@ public class PlayerInkActionPainter : MonoBehaviour
         }
     }
 
-    // ===========================
-    // è]óàî≈ÅiPatternIndexéwíËÅj
-    // ===========================
-
     public void FireSlashPattern(
         Transform player,
         int patternIndex,
@@ -66,19 +67,14 @@ public class PlayerInkActionPainter : MonoBehaviour
         float heightOffset
     )
     {
-        if (player == null)
-        {
-            return;
-        }
+        if (player == null) return;
 
-        if (slashSystem == null)
-        {
-            return;
-        }
+        InkSlashSystem system = GetSlashSystem();
+        if (system == null) return;
 
         if (patternIndex >= 0)
         {
-            slashSystem.SelectPattern(patternIndex);
+            system.SelectPattern(patternIndex);
         }
 
         Vector3 spawnPos =
@@ -86,15 +82,11 @@ public class PlayerInkActionPainter : MonoBehaviour
             player.forward * forwardOffset +
             Vector3.up * heightOffset;
 
-        slashSystem.CreateSlash(
+        system.CreateSlash(
             spawnPos,
             player.forward
         );
     }
-
-    // ===========================
-    // êVî≈ÅiSlashPatterníºê⁄éwíËÅj
-    // ===========================
 
     public void FireSlashPattern(
         Transform player,
@@ -103,22 +95,14 @@ public class PlayerInkActionPainter : MonoBehaviour
         float heightOffset
     )
     {
-        if (player == null)
-        {
-            return;
-        }
+        if (player == null) return;
 
-        if (slashSystem == null)
-        {
-            return;
-        }
+        InkSlashSystem system = GetSlashSystem();
+        if (system == null) return;
 
         if (pattern == null)
         {
-            Debug.LogWarning(
-                "[PlayerInkActionPainter] SlashPattern Ç™ null"
-            );
-
+            Debug.LogWarning("[PlayerInkActionPainter] SlashPattern ÔøΩÔøΩ null");
             return;
         }
 
@@ -130,7 +114,7 @@ public class PlayerInkActionPainter : MonoBehaviour
         Vector3 direction =
             player.forward.normalized;
 
-        slashSystem.CreateSlash(
+        system.CreateSlash(
             spawnPos,
             direction,
             pattern

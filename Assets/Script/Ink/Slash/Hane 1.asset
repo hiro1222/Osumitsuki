@@ -18,6 +18,8 @@ MonoBehaviour:
   length: 3.45
   width: 48.1
   arcAngle: 0
+  arcProjectileCount: 1
+  hideSubProjectiles: 1
   speed: 15
   gravity: 0
   lifetime: 0.8
@@ -31,11 +33,11 @@ MonoBehaviour:
   impactRadius: 1.2
   inkCost: 0.15
   slashTexture: {fileID: 0}
-  effectPrefab: {fileID: 8523647933905815968, guid: 55e69c86770de29488388f941bc8a5ab, type: 3}
-  effectOffset: {x: 0, y: 1, z: -2}
-  effectRotation: {x: 65, y: -190, z: -100}
-  effectScale: {x: 0.2, y: 0.1, z: 0.2}
-  visualSize: {x: 3, y: 1.5}
+  effectPrefab: {fileID: 1446626579872362356, guid: 0ad6bea0045daaa44aadfb33d896f2b2, type: 3}
+  effectOffset: {x: 0, y: 0, z: 0}
+  effectRotation: {x: 0, y: 0, z: 0}
+  effectScale: {x: 0.4, y: 0.4, z: 0.4}
+  visualSize: {x: 0, y: 0}
   visualRotation: 0
   fadeSpeed: 1
   trailWidth: 0.5

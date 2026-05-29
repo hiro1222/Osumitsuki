@@ -33,7 +33,12 @@ public class InkSlashSystem : MonoBehaviour
     private void Start()
     {
         int playerLayer = LayerMask.NameToLayer("Player");
-        hitMask = playerLayer >= 0 ? ~(1 << playerLayer) : ~0;
+        int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+
+        int mask = ~0;
+        if (playerLayer >= 0) mask &= ~(1 << playerLayer);
+        if (inkLayer >= 0) mask &= ~(1 << inkLayer);  // インクコリジョンも除外
+        hitMask = mask;
 
         if (patterns == null || patterns.Length == 0)
         {
