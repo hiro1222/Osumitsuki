@@ -20,9 +20,9 @@ MonoBehaviour:
   arcAngle: 0
   arcProjectileCount: 1
   hideSubProjectiles: 1
-  speed: 6
-  gravity: 3
-  lifetime: 0.8
+  speed: 0
+  gravity: 100
+  lifetime: 5
   spawnDelay: 0.3
   baseDamage: 30
   damageDecay: 0.3

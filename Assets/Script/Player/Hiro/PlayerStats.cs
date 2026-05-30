@@ -26,6 +26,10 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int stock = 3;
     [SerializeField] private int maxStock = 99;
 
+    [Header("Damage / Invincible")]
+    [SerializeField] private float invincibleTime = 1.0f;
+    [SerializeField] private bool debugDamageLog = true;
+
     [Header("Ink")]
     [SerializeField] private float maxInk = 100.0f;
     [SerializeField] private float currentInk = 100.0f;
@@ -44,14 +48,42 @@ public class PlayerStats : MonoBehaviour
     public float derivedHaneInkCost = 1.0f;
     public float tomeInkCost = 1.0f;
 
-    [Header("ƒŠƒXƒ|[ƒ“")]
+    [Header("Respawn")]
     [SerializeField] private float respawnY = -10f;
+    [SerializeField] private float fallRespawnHeightOffset = 1.0f;
+    [SerializeField] private float safePositionUpdateInterval = 0.1f;
 
     private Vector3 spawnPosition;
+    private Vector3 lastSafeGroundedPosition;
+
+    private float safePositionTimer;
 
     private float noInputTimer;
     private float repeatRecoverTimer;
     private bool firstRecovered;
+
+    private float invincibleTimer;
+
+    private bool baseStatsCached;
+
+    private float baseWalkSpeed;
+    private float baseRotationSensitivity;
+    private float baseLookSensitivity;
+    private float baseJumpPower;
+    private float baseGravity;
+    private int baseMaxHP;
+    private float baseMaxInk;
+    private float baseRecoverAmount;
+
+    private float baseNazoriInkCostPerDistance;
+    private float baseNazoriInkCostDistance;
+    private float baseHaraiInkCost;
+    private float baseHaneInkCost;
+    private float baseDerivedHaraiInkCost;
+    private float baseDerivedHaneInkCost;
+    private float baseTomeInkCost;
+
+    private float powerBoostMultiplier = 1.0f;
 
     public int MaxHP => maxHP;
     public int CurrentHP => currentHP;
@@ -61,6 +93,9 @@ public class PlayerStats : MonoBehaviour
 
     public float MaxInk => maxInk;
     public float CurrentInk => currentInk;
+
+    public bool IsInvincible => invincibleTimer > 0.0f;
+    public float PowerBoostMultiplier => powerBoostMultiplier;
 
     public float HpRate
     {
@@ -80,30 +115,151 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        CacheBaseStatsIfNeeded();
+    }
+
     public void Initialize(PlayerController owner)
     {
         controller = owner;
 
-        maxHP = 3;
+        CacheBaseStatsIfNeeded();
+        ApplyPowerBoostValues();
+
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
-
-        maxStock = 99;
         stock = Mathf.Clamp(stock, 0, maxStock);
-
-        maxInk = 100.0f;
         currentInk = Mathf.Clamp(currentInk, 0.0f, maxInk);
 
         spawnPosition = transform.position;
+        lastSafeGroundedPosition = transform.position;
+
+        invincibleTimer = 0.0f;
+        safePositionTimer = 0.0f;
+    }
+
+    private void CacheBaseStatsIfNeeded()
+    {
+        if (baseStatsCached) return;
+
+        baseWalkSpeed = walkSpeed;
+        baseRotationSensitivity = rotationSensitivity;
+        baseLookSensitivity = lookSensitivity;
+        baseJumpPower = jumpPower;
+        baseGravity = gravity;
+        baseMaxHP = maxHP;
+        baseMaxInk = maxInk;
+        baseRecoverAmount = recoverAmount;
+
+        baseNazoriInkCostPerDistance = nazoriInkCostPerDistance;
+        baseNazoriInkCostDistance = nazoriInkCostDistance;
+        baseHaraiInkCost = haraiInkCost;
+        baseHaneInkCost = haneInkCost;
+        baseDerivedHaraiInkCost = derivedHaraiInkCost;
+        baseDerivedHaneInkCost = derivedHaneInkCost;
+        baseTomeInkCost = tomeInkCost;
+
+        baseStatsCached = true;
+    }
+
+    public void SetPowerBoostMultiplier(float multiplier)
+    {
+        CacheBaseStatsIfNeeded();
+
+        if (multiplier < 1.0f)
+        {
+            multiplier = 1.0f;
+        }
+
+        powerBoostMultiplier = multiplier;
+
+        ApplyPowerBoostValues();
+
+        if (powerBoostMultiplier > 1.0f)
+        {
+            currentHP = maxHP;
+            currentInk = maxInk;
+        }
+        else
+        {
+            currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+            currentInk = Mathf.Clamp(currentInk, 0.0f, maxInk);
+        }
+
+        Debug.Log(
+            "[PlayerStats] Boost x" +
+            powerBoostMultiplier +
+            " / Speed:" +
+            walkSpeed +
+            " / Jump:" +
+            jumpPower +
+            " / MaxHP:" +
+            maxHP +
+            " / MaxInk:" +
+            maxInk
+        );
+    }
+
+    private void ApplyPowerBoostValues()
+    {
+        walkSpeed = baseWalkSpeed * powerBoostMultiplier;
+        rotationSensitivity = baseRotationSensitivity * powerBoostMultiplier;
+        lookSensitivity = baseLookSensitivity * powerBoostMultiplier;
+        jumpPower = baseJumpPower * powerBoostMultiplier;
+
+        gravity = baseGravity * powerBoostMultiplier;
+
+        maxHP = Mathf.RoundToInt(baseMaxHP * powerBoostMultiplier);
+        maxInk = baseMaxInk * powerBoostMultiplier;
+        recoverAmount = baseRecoverAmount * powerBoostMultiplier;
+
+        nazoriInkCostPerDistance = baseNazoriInkCostPerDistance / powerBoostMultiplier;
+        nazoriInkCostDistance = baseNazoriInkCostDistance;
+        haraiInkCost = baseHaraiInkCost / powerBoostMultiplier;
+        haneInkCost = baseHaneInkCost / powerBoostMultiplier;
+        derivedHaraiInkCost = baseDerivedHaraiInkCost / powerBoostMultiplier;
+        derivedHaneInkCost = baseDerivedHaneInkCost / powerBoostMultiplier;
+        tomeInkCost = baseTomeInkCost / powerBoostMultiplier;
     }
 
     private void Update()
     {
+        UpdateInvincibleTimer();
+        UpdateLastSafeGroundedPosition();
+
         if (transform.position.y < respawnY)
         {
-            Respawn();
+            FallRespawn();
+            return;
         }
 
         UpdateInkRecoveryByNoInput();
+    }
+
+    private void UpdateInvincibleTimer()
+    {
+        if (invincibleTimer <= 0.0f) return;
+
+        invincibleTimer -= Time.deltaTime;
+
+        if (invincibleTimer < 0.0f)
+        {
+            invincibleTimer = 0.0f;
+        }
+    }
+
+    private void UpdateLastSafeGroundedPosition()
+    {
+        if (controller == null) return;
+        if (controller.Move == null) return;
+        if (!controller.Move.IsGrounded) return;
+
+        safePositionTimer += Time.deltaTime;
+
+        if (safePositionTimer < safePositionUpdateInterval) return;
+
+        safePositionTimer = 0.0f;
+        lastSafeGroundedPosition = transform.position;
     }
 
     private void UpdateInkRecoveryByNoInput()
@@ -185,12 +341,19 @@ public class PlayerStats : MonoBehaviour
     public void Damage(int amount)
     {
         if (amount <= 0) return;
+        if (invincibleTimer > 0.0f) return;
 
         currentHP = Mathf.Clamp(currentHP - amount, 0, maxHP);
+        invincibleTimer = invincibleTime;
+
+        if (debugDamageLog)
+        {
+            Debug.Log("[PlayerStats] Damage : " + amount + " / HP : " + currentHP);
+        }
 
         if (currentHP <= 0)
         {
-            OnDead();
+            DeathRespawn();
         }
     }
 
@@ -212,34 +375,64 @@ public class PlayerStats : MonoBehaviour
         stock = Mathf.Clamp(stock - amount, 0, maxStock);
     }
 
-    private void OnDead()
+    private void DeathRespawn()
     {
-        if (stock > 0)
-        {
-            stock--;
-            Respawn();
-            currentHP = maxHP;
-        }
-        else
-        {
-            currentHP = 0;
-            Debug.Log("Game Over");
-        }
-    }
-
-    private void Respawn()
-    {
-        controller.enabled = false;
-        transform.position = spawnPosition;
-        controller.enabled = true;
+        MoveToRespawnPosition(spawnPosition);
 
         currentHP = maxHP;
         currentInk = maxInk;
+        invincibleTimer = invincibleTime;
 
         ResetRecoveryState();
+
+        if (debugDamageLog)
+        {
+            Debug.Log("[PlayerStats] Death Respawn");
+        }
+    }
+
+    private void FallRespawn()
+    {
+        SubStock(1);
+
+        Vector3 respawnPos = lastSafeGroundedPosition + Vector3.up * fallRespawnHeightOffset;
+        MoveToRespawnPosition(respawnPos);
+
+        currentHP = maxHP;
+        currentInk = maxInk;
+        invincibleTimer = invincibleTime;
+
+        ResetRecoveryState();
+
+        if (debugDamageLog)
+        {
+            Debug.Log("[PlayerStats] Fall Respawn / Stock : " + stock);
+        }
+    }
+
+    private void MoveToRespawnPosition(Vector3 position)
+    {
+        CharacterController cc = GetComponent<CharacterController>();
+
+        if (cc != null)
+        {
+            cc.enabled = false;
+        }
+
+        transform.position = position;
+
+        if (cc != null)
+        {
+            cc.enabled = true;
+        }
     }
 
     public void SetspawnPosition(Vector3 position)
+    {
+        spawnPosition = position;
+    }
+
+    public void SetSpawnPosition(Vector3 position)
     {
         spawnPosition = position;
     }

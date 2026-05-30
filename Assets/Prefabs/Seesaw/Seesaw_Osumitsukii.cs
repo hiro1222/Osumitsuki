@@ -6,21 +6,21 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 
 	[Header("天秤ステータス")]
 	[SerializeField] private float rotationLimit;   //回転制限
-	[SerializeField] private float activeDist;		//発動距離
+	[SerializeField] private float activeDist;      //発動距離
 
-    [Header("参照オブジェクト")]
-    [SerializeField] private GameObject joint_Center;
-    [SerializeField] private GameObject joint_Left;
-    [SerializeField] private GameObject joint_Rigth;
+	[Header("参照オブジェクト")]
+	[SerializeField] private GameObject joint_Center;
+	[SerializeField] private GameObject joint_Left;
+	[SerializeField] private GameObject joint_Rigth;
 	[SerializeField] private Transform playerTarget;
 	[SerializeField] private Transform player;
 
 
 	private float allJoint_rotation;
-    private float leftWeight;
-    private float rightWeight;
+	private float leftWeight;
+	private float rightWeight;
 
-	private int moveVec = 1;
+	private int moveVec = 0;
 
 
 	private bool changeFlg = false;
@@ -65,21 +65,17 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 			changeFlg = true;
 		}
 
+		Vector3 dif = player.transform.position - playerTarget.position;
+		if (dif.sqrMagnitude > activeDist)
+		{
+			osumitsukiFlg = false;
+			End();
+		}
 		Action2Update();
 	}
 
 	public override void Update_Osumitsuki()
 	{
-		allJoint_rotation += 0.1f * moveVec;
-		SynchroRotation();
-
-
-		Vector3 dif = player.transform.position - playerTarget.position;
-		if (dif.sqrMagnitude >= activeDist)
-		{
-			osumitsukiFlg = false;
-			End();
-		}
 	}
 
 	private void SynchroRotation()
@@ -103,7 +99,9 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 			return;
 
 
+		SeesawFunc();
 		Vector3 dif = player.transform.position - playerTarget.position;
+
 		if (osumitsukiFlg)
 		{
 			if (dif.sqrMagnitude > activeDist)
@@ -112,21 +110,38 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 				End();
 			}
 		}
-		else
+		else if (dif.sqrMagnitude <= activeDist)
 		{
-			if (dif.sqrMagnitude <= activeDist)
+			osumitsukiFlg = false;
+			endFlg = false;
+			SearchOsumitsuki_Obj();
+			Mng_Osumitsuki.instance.AddObject(this);
+			Debug.Log("傾いていくよ");
+			if (GetHelperNum() == 4)
 			{
-				osumitsukiFlg = false;
-				endFlg = false;
-				Mng_Osumitsuki.instance.AddObject(this);
+				moveVec = -1;
 			}
+			else
+			{
+				moveVec = 1;
+			}
+			return;
 		}
 
+		if (!osumitsukiFlg)
+		{
+			Debug.Log("傾き直し");
+			if (allJoint_rotation < 0)
+				moveVec = 1;
+			else if (allJoint_rotation > 0)
+				moveVec = -1;
+		}
 	}
 
 
 	private void SeesawFunc()
 	{
-	
+		allJoint_rotation += 0.1f * moveVec;
+		SynchroRotation();
 	}
 }
