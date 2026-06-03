@@ -79,6 +79,8 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float attackPower = 2f;
     [Tooltip("上方向のノックバック強さ")]
     [SerializeField] private float knockbackUpForce = 5f;
+    [Tooltip("ノックバックの持続時間（秒）")]
+    [SerializeField] private float knockbackDuration = 0.8f; //
     [Tooltip("お墨付きに必要な塗り回数")]
     [SerializeField] private int requiredInkCount = 1;
     [Tooltip("お墨付き時にプレイヤーのインクを回復する量")]
@@ -119,7 +121,10 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
     private bool isPlayerKnockedBack;
-    private float knockbackDuration = 0.3f;
+
+    // コライダー制御
+    private Collider enemyCollider;
+    private PlayerMove playerMove;
 
     // ====================================================================
     //  初期化
@@ -157,6 +162,21 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
         if (allyManager == null)
             allyManager = FindObjectOfType<AllyEnemyManager>();
+
+        // コライダーを取得
+        enemyCollider = GetComponent<Collider>();
+        if (enemyCollider == null)
+            enemyCollider = GetComponentInChildren<Collider>();
+
+
+        if (player != null)
+        {
+            playerMove = player.GetComponent<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInChildren<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInParent<PlayerMove>();
+        }
     }
 
     // ====================================================================
@@ -296,10 +316,14 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
     private void StartHipDrop()
     {
-        // X・Z座標を固定してドロップ開始
         hipDropTargetXZ = new Vector3(transform.position.x, 0, transform.position.z);
         state = EnemyState.HipDrop;
         hipDropReady = false;
+
+        // コライダーをOFFにする（押し出しをなくす）
+        if (enemyCollider != null)
+            enemyCollider.enabled = false;
+
         Debug.Log("[Wing_SB] ヒップドロップ開始");
     }
 
@@ -318,6 +342,10 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
         if (hitPlayer || hitGround)
         {
+            // コライダーをONに戻す
+            if (enemyCollider != null)
+                enemyCollider.enabled = true;
+
             if (hitPlayer)
             {
                 ApplyKnockbackToPlayer();
@@ -326,11 +354,17 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
             // Raycastで実際の地面のY座標を取得
             float landY = groundY; // デフォルトはInspectorのgroundY
+                                   // Playerレイヤーを除外したRaycast
+            int playerLayer = LayerMask.NameToLayer("Player");
+            int layerMask = playerLayer >= 0 ? ~(1 << playerLayer) : ~0;
+
             if (Physics.Raycast(
                     new Vector3(hipDropTargetXZ.x, transform.position.y, hipDropTargetXZ.z),
                     Vector3.down,
                     out RaycastHit hit,
-                    10f))
+                    10f,
+                    layerMask,
+                    QueryTriggerInteraction.Collide))
             {
                 landY = hit.point.y;
             }
@@ -424,15 +458,35 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         if (playerController == null) return;
 
         float knockbackDistance = attackPower * 0.5f;
-        Vector3 knockDir = (player.position - transform.position).normalized;
-        knockDir.y = 0f;
 
-        Vector3 knockbackForce = knockDir * knockbackDistance * 10f
-                               + Vector3.up * knockbackUpForce;
+        // ヒップドロップ中は真上からなのでプレイヤーの向きと逆方向に飛ばす
+        Vector3 knockDir;
+        if (state == EnemyState.HipDrop || state == EnemyState.Stop)
+        {
+            // プレイヤーが向いている方向の逆に飛ばす
+            knockDir = -player.forward;
+            knockDir.y = 0f;
+            if (knockDir.sqrMagnitude < 0.01f)
+                knockDir = Vector3.back; // フォールバック
+        }
+        else
+        {
+            knockDir = (player.position - transform.position).normalized;
+            knockDir.y = 0f;
+        }
 
-        knockbackVelocity = knockbackForce;
+        knockbackVelocity = knockDir.normalized * knockbackDistance * 10f
+                          + Vector3.up * knockbackUpForce;
         knockbackTimer = 0f;
         isPlayerKnockedBack = true;
+
+        if (playerMove != null)
+        {
+            playerMove.SetExternalGravityEnabled(false);
+            playerMove.ClearVerticalVelocity();
+        }
+
+        Debug.Log($"[Wing_SB] ノックバック発動！knockDir={knockDir} velocity={knockbackVelocity}");
     }
 
     private void UpdatePlayerKnockback()
@@ -440,11 +494,18 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         if (!isPlayerKnockedBack) return;
         if (playerController == null) return;
 
+        knockbackVelocity.y += Physics.gravity.y * Time.deltaTime;
         playerController.Move(knockbackVelocity * Time.deltaTime);
         knockbackTimer += Time.deltaTime;
 
         if (knockbackTimer >= knockbackDuration)
+        {
             isPlayerKnockedBack = false;
+
+            // 重力をONに戻す
+            if (playerMove != null)
+                playerMove.SetExternalGravityEnabled(true);
+        }
     }
 
     // ====================================================================
