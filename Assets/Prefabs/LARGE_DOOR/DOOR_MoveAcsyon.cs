@@ -123,7 +123,7 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
             rightDone = Quaternion.Angle(rightDoor.localRotation, rightOpenRot) < 0.5f;
         }
 
-        if (leftDone && rightDone && !OsumiFlg)
+        if (leftDone && rightDone)
         {
             End();
         }
