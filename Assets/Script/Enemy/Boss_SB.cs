@@ -3,40 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// ボスエネミー「墨袋ボス（Boss_SB）」
+/// ボスエネミー「鎧墨袋（Boss_SB）」フェーズ1
 ///
 /// 【状態遷移】
-/// Idle → Chase → Charge（溜め）→ Tackle（急直進）→ Stop → Chase
-/// お墨付き時: Sealed（6秒停止）→ Roar（咆哮）→ Chase
+/// Idle → Chase → Charge → Tackle → Stop → Chase
+/// 木箱衝突時: Stun（10秒・攻撃ヒットでタイマーリセット）
+/// お墨付き完了時: Roar（咆哮）→ Chase
 ///
 /// 【仕様変更・追加時のガイド】
 /// ・新しい状態を追加 → BossState に追加 → Enter/Update メソッドを追加
 /// ・既存の状態を変更 → 対応する Enter/Update メソッドだけ変更
 /// ・ステータス変更   → Inspector で調整（[SerializeField]）
-/// ・他スクリプトとの連携 → 外部から呼ぶ関数セクションに追加
 ///
 /// 【外部から呼ぶ関数】
-/// ・StartBossBattle()   : BossAreaTriggerから呼ぶ
-/// ・ReceiveInk()        : EnemyHitReceiverから呼ぶ
-/// ・GetIsAlly()         : 外部からお墨付き状態を確認する
-/// ・ReceiveCannonBall() : 砲弾担当から呼ぶ
+/// ・StartBossBattle()  : BossAreaTriggerから呼ぶ
+/// ・ReceiveInk()       : EnemyHitReceiverから呼ぶ（スタン中のみ有効）
+/// ・GetIsAlly()        : 外部からお墨付き状態を確認する
+/// ・NotifyHitCrate()   : 木箱スクリプトからタックル衝突時に呼ぶ
 /// </summary>
 public class Boss_SB : MonoBehaviour, IF_Enemy
 {
     // ====================================================================
     //  状態定義
-    //  新しい状態を追加するときはここに追加する
+    //  ★新しい状態を追加するときはここに追加する
     // ====================================================================
 
     private enum BossState
     {
         Idle,    // 待機（ボス戦開始前）
-        Chase,   // 追従（プレイヤーを追いかける）
-        Charge,  // チャージ（タックル前の溜め・プレイヤー方向を固定）
-        Tackle,  // タックル（急直進・方向は固定）
-        Stop,    // 停止（タックル後）
-        Sealed,  // お墨付き停止
-        Roar,    // 咆哮（リセット）
+        Chase,   // 追従
+        Charge,  // チャージ（タックル前の溜め）
+        Tackle,  // タックル（急直進）
+        Stop,    // 停止（タックル後3秒）
+        Stun,    // スタン（木箱衝突・10秒）
+        Roar,    // 咆哮
         Defeated // 撃破
     }
 
@@ -48,6 +48,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── プレイヤー参照 ──")]
     [SerializeField] private Transform player;
 
+    [Header("── モデル参照 ──")]
+    [Tooltip("距離判定の基準にするモデルのTransform（子オブジェクト）")]
+    [SerializeField] private Transform bodyTransform;
+
     [Header("── 移動 ──")]
     [Tooltip("追従速度")]
     [SerializeField] private float chaseSpeed = 3f;
@@ -57,10 +61,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float collideDistance = 2f;
     [Tooltip("タックル中の衝突判定距離")]
     [SerializeField] private float tackleCollideDistance = 3.5f;
-
-    [Header("── モデル参照 ──")]
-    [Tooltip("距離判定の基準にするモデルのTransform（子オブジェクト）")]
-    [SerializeField] private Transform bodyTransform;
+    [Tooltip("タックルの最大移動距離（m）")]
+    [SerializeField] private float tackleMaxDistance = 20f;
 
     [Header("── タックルタイミング ──")]
     [Tooltip("追従開始からタックルまでの待機時間（最小・秒）")]
@@ -69,34 +71,52 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float tackleDelayMax = 8f;
 
     [Header("── チャージ ──")]
-    [Tooltip("チャージ時間（秒）この間プレイヤー方向を向いて溜める")]
+    [Tooltip("チャージ時間（秒）")]
     [SerializeField] private float chargeDuration = 1f;
 
     [Header("── 停止（タックル後） ──")]
     [Tooltip("タックル後の停止時間（秒）")]
     [SerializeField] private float stopDuration = 3f;
 
+    [Header("── スタン ──")]
+    [Tooltip("スタン時間（秒）")]
+    [SerializeField] private float stunDuration = 10f;
+    [Tooltip("攻撃ヒット時にタイマーをリセットするか")]
+    [SerializeField] private bool resetStunTimerOnHit = true;
+
     [Header("── ステータス ──")]
     [Tooltip("攻撃力（ノックバック距離 = 攻撃力 × 0.5m）攻撃力:5")]
     [SerializeField] private float attackPower = 5f;
     [Tooltip("上方向のノックバック強さ")]
     [SerializeField] private float knockbackUpForce = 5f;
-    [Tooltip("お墨付き停止時間（秒）")]
-    [SerializeField] private float sealedDuration = 6f;
-    [Tooltip("回復量")]
+    [Tooltip("ノックバックの持続時間（秒）")]
+    [SerializeField] private float knockbackDuration = 0.8f;
+    [Tooltip("お墨付きに必要な塗り回数")]
+    [SerializeField] private int requiredInkCount = 10;
+    [Tooltip("お墨付き時にプレイヤーのインクを回復する量")]
     [SerializeField] private float inkRecovery = 2f;
 
-    [Header("── フェーズ別ステータス ──")]
-    [Tooltip("必要塗り回数（フェーズ1・2・3）")]
-    [SerializeField] private int[] requiredInkCounts = { 10, 12, 15 };
-    [Tooltip("咆哮量・直径（フェーズ1・2・3）単位:m")]
-    [SerializeField] private float[] roarRanges = { 5f, 7f, 10f };
+    [Header("── 咆哮 ──")]
+    [Tooltip("咆哮量・直径（m）")]
+    [SerializeField] private float roarRange = 5f;
+    [Tooltip("咆哮時にジャンプするフィールド中央の座標")]
+    [SerializeField] private Transform fieldCenter;
+    [Tooltip("咆哮ジャンプの高さ")]
+    [SerializeField] private float roarJumpHeight = 5f;
+    [Tooltip("咆哮ジャンプの速度")]
+    [SerializeField] private float roarJumpSpeed = 10f;
 
     [Header("── 咆哮リセット対象 ──")]
     [Tooltip("ボス自身のPaintableSurface")]
     [SerializeField] private List<PaintableSurface> bossSurfaces = new List<PaintableSurface>();
     [Tooltip("ボスエリア内オブジェクトのPaintableSurface")]
     [SerializeField] private List<PaintableSurface> areaSurfaces = new List<PaintableSurface>();
+
+    [Header("── 木箱 ──")]
+    [Tooltip("木箱オブジェクト（咆哮で飛ばす対象）")]
+    [SerializeField] private List<GameObject> crateObjects = new List<GameObject>();
+    [Tooltip("木箱を飛ばす方向と強さ")]
+    [SerializeField] private Vector3 crateBlastForce = new Vector3(0f, 10f, 20f);
 
     [Header("── 地面追従 ──")]
     [SerializeField] private float groundFollowSpeed = 10f;
@@ -106,11 +126,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // ====================================================================
 
     private BossState state = BossState.Idle;
-    private int currentPhase = 0;
     private int inkHitCount = 0;
-    private int cannonBallHitCount = 0;
     private bool isAlly = false;
-    private int roarCount = 0;
 
     // Chase用
     private float tackleTimer = 0f;
@@ -118,26 +135,24 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     // Charge用
     private float chargeTimer = 0f;
-    private Vector3 chargeTargetDir; // チャージ中に固定するプレイヤー方向
+    private Vector3 chargeTargetDir;
 
     // Tackle用
-    private Vector3 tackleDirection; // タックル開始時に固定した方向
-    private Vector3 tackleStartPos; // タックル開始位置
+    private Vector3 tackleDirection;
+    private Vector3 tackleStartPos;
 
     // Stop用
     private float stopTimer = 0f;
 
-    // Sealed用
-    private float sealedTimer = 0f;
+    // Stun用
+    private float stunTimer = 0f;
 
     // ノックバック
     private CharacterController playerController;
+    private PlayerMove playerMove;
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
     private bool isPlayerKnockedBack;
-    private float knockbackDuration = 0.8f;
-
-    private PlayerMove playerMove;
 
     // ====================================================================
     //  初期化
@@ -145,12 +160,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void Start()
     {
-        Debug.Log($"[Boss_SB] Start() player={player}");
-
         if (player == null)
         {
             var go = GameObject.FindGameObjectWithTag("Player");
-            Debug.Log($"[Boss_SB] FindGameObjectWithTag Player={go}");
             if (go != null)
             {
                 player = go.transform;
@@ -170,13 +182,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 playerController = player.GetComponentInParent<CharacterController>();
         }
 
-        playerMove = player.GetComponent<PlayerMove>();
-        if (playerMove == null)
-            playerMove = player.GetComponentInChildren<PlayerMove>();
-        if (playerMove == null)
-            playerMove = player.GetComponentInParent<PlayerMove>();
-
-        Debug.Log($"[Boss_SB] PlayerMove={playerMove}");
+        if (player != null)
+        {
+            playerMove = player.GetComponent<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInChildren<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInParent<PlayerMove>();
+        }
 
         state = BossState.Idle;
     }
@@ -200,7 +213,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Charge: UpdateCharge(); break;
             case BossState.Tackle: UpdateTackle(); break;
             case BossState.Stop: UpdateStop(); break;
-            case BossState.Sealed: UpdateSealed(); break;
+            case BossState.Stun: UpdateStun(); break;
             case BossState.Roar: break; // コルーチンで処理
             case BossState.Defeated: break;
         }
@@ -208,68 +221,68 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     // ====================================================================
     //  外部から呼ぶ関数
-    //  他スクリプトとの連携はここに追加する
+    //  ★他スクリプトとの連携はここに追加する
     // ====================================================================
 
     /// <summary>ボス戦を開始する（BossAreaTriggerから呼ぶ）</summary>
     public void StartBossBattle()
     {
         if (state != BossState.Idle) return;
-
-        currentPhase = 0;
         inkHitCount = 0;
-        cannonBallHitCount = 0;
-        roarCount = 0;
-
         Debug.Log("[Boss_SB] ボス戦開始！");
         EnterChase();
     }
 
-    /// <summary>墨を塗られたときの処理（EnemyHitReceiverから呼ぶ）</summary>
+    /// <summary>
+    /// 墨を塗られたときの処理（EnemyHitReceiverから呼ぶ）
+    /// スタン中のみ有効・スタン中以外は規定数-1までしか増えない
+    /// </summary>
     public void ReceiveInk()
     {
         if (isAlly) return;
-        if (state == BossState.Sealed) return;
         if (state == BossState.Roar) return;
         if (state == BossState.Defeated) return;
 
-        inkHitCount++;
-        int required = requiredInkCounts[currentPhase];
-        Debug.Log($"[Boss_SB] 塗り回数: {inkHitCount} / {required} (フェーズ{currentPhase + 1})");
+        // スタン中以外は規定数-1までしか増えない
+        if (state != BossState.Stun)
+        {
+            if (inkHitCount >= requiredInkCount - 1) return;
+            inkHitCount++;
+            Debug.Log($"[Boss_SB] 塗り回数: {inkHitCount} / {requiredInkCount - 1}（スタン外上限）");
+            return;
+        }
 
-        if (inkHitCount >= required)
+        // スタン中
+        inkHitCount++;
+        Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {requiredInkCount}");
+
+        // スタンタイマーをリセット
+        if (resetStunTimerOnHit)
+            stunTimer = 0f;
+
+        if (inkHitCount >= requiredInkCount)
         {
             inkHitCount = 0;
-            EnterSealed();
+            EnterRoar();
         }
     }
 
     /// <summary>お墨付き状態を返す</summary>
     public bool GetIsAlly() => isAlly;
 
-    /// <summary>砲弾が当たったときに呼ぶ（砲弾担当から呼ぶ）</summary>
-    public void ReceiveCannonBall()
+    /// <summary>
+    /// 木箱に衝突したときに呼ぶ（木箱スクリプトから呼ぶ）
+    /// タックル中のみスタンに移行する
+    /// </summary>
+    public void NotifyHitCrate()
     {
-        if (state != BossState.Sealed) return;
-        if (state == BossState.Defeated) return;
-
-        cannonBallHitCount++;
-        Debug.Log($"[Boss_SB] 砲弾被弾: {cannonBallHitCount} / 3");
-
-        if (cannonBallHitCount >= 3)
-        {
-            EnterDefeated();
-        }
-        else
-        {
-            currentPhase = Mathf.Min(cannonBallHitCount, 2);
-            Debug.Log($"[Boss_SB] フェーズ{currentPhase + 1}へ移行");
-        }
+        if (state != BossState.Tackle) return;
+        Debug.Log("[Boss_SB] 木箱に衝突！スタン開始");
+        EnterStun();
     }
 
     // ====================================================================
     //  Chase（追従）
-    //  追従の挙動を変えたいときはここを編集
     // ====================================================================
 
     private void EnterChase()
@@ -285,69 +298,60 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 toPlayer = player.position - transform.position;
         toPlayer.y = 0f;
 
-        // タックルタイマー
         tackleTimer += Time.deltaTime;
         if (tackleTimer >= tackleDelay)
         {
-            EnterCharge(); // Chargeへ移行
+            EnterCharge();
             return;
         }
 
-        // プレイヤーを追いかける
-        if (toPlayer.magnitude > collideDistance)
-        {
+        Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        Vector3 playerPos = player.position;
+        bossPos.y = 0f;
+        playerPos.y = 0f;
+        float dist = Vector3.Distance(bossPos, playerPos);
+
+        if (dist > collideDistance)
             transform.position += toPlayer.normalized * chaseSpeed * Time.deltaTime;
-        }
         else
         {
             ApplyKnockbackToPlayer();
             EnterStop();
             return;
         }
+
         LookAt(toPlayer);
     }
 
     // ====================================================================
-    //  Charge（チャージ・溜め）
-    //  チャージの挙動を変えたいときはここを編集
+    //  Charge（チャージ）
     // ====================================================================
 
     private void EnterCharge()
     {
         state = BossState.Charge;
         chargeTimer = 0f;
-
-        // チャージ開始時にプレイヤー方向を固定する
         chargeTargetDir = (player.position - transform.position).normalized;
         chargeTargetDir.y = 0f;
-
         Debug.Log("[Boss_SB] チャージ開始！");
     }
 
     private void UpdateCharge()
     {
         chargeTimer += Time.deltaTime;
-
-        // チャージ中はプレイヤーの方向を向いて止まる
         LookAt(chargeTargetDir);
 
-        // チャージ完了でタックルへ
         if (chargeTimer >= chargeDuration)
-        {
             EnterTackle();
-        }
     }
 
     // ====================================================================
-    //  Tackle（タックル・急直進）
-    //  タックルの挙動を変えたいときはここを編集
+    //  Tackle（タックル）
     // ====================================================================
 
     private void EnterTackle()
     {
         state = BossState.Tackle;
-
-        // チャージ中に固定した方向でタックル（プレイヤーに吸い付かない）
         tackleDirection = chargeTargetDir;
         tackleStartPos = transform.position;
         Debug.Log("[Boss_SB] タックル開始！");
@@ -355,35 +359,31 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void UpdateTackle()
     {
-        // 固定した方向に急直進
         transform.position += tackleDirection * tackleSpeed * Time.deltaTime;
         LookAt(tackleDirection);
 
-        // プレイヤーとの距離チェック（衝突判定）
+        // プレイヤーとの衝突判定
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
-        float dist = Vector3.Distance(bossPos, player.position);
+        Vector3 playerPos = player.position;
+        bossPos.y = 0f;
+        playerPos.y = 0f;
+        float dist = Vector3.Distance(bossPos, playerPos);
 
-        Debug.Log($"[Boss_SB] Tackle中 dist={dist:F2} collideDistance={collideDistance}");
-        Debug.Log($"[Boss_SB] bossPos={bossPos} playerPos={player.position} dist={dist:F2}");
         if (dist <= tackleCollideDistance)
         {
-            Debug.Log("[Boss_SB] 衝突判定！ノックバック発生");
             ApplyKnockbackToPlayer();
             EnterStop();
             return;
         }
 
-        // 開始位置からの移動距離で判定（シンプル）
+        // 最大距離で停止
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
-        if (travelDist > 20f) // ← 最大タックル距離
-        {
+        if (travelDist > tackleMaxDistance)
             EnterStop();
-        }
     }
 
     // ====================================================================
     //  Stop（停止）
-    //  停止の挙動を変えたいときはここを編集
     // ====================================================================
 
     private void EnterStop()
@@ -396,93 +396,130 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void UpdateStop()
     {
         stopTimer += Time.deltaTime;
-
         if (stopTimer >= stopDuration)
             EnterChase();
     }
 
     // ====================================================================
-    //  Sealed（お墨付き停止）
-    //  お墨付きの挙動を変えたいときはここを編集
+    //  Stun（スタン・木箱衝突）
+    //  ★スタンの挙動を変えたいときはここを編集
     // ====================================================================
 
-    private void EnterSealed()
+    private void EnterStun()
     {
-        state = BossState.Sealed;
-        sealedTimer = 0f;
-
-        // お墨付き回数を加算
-        cannonBallHitCount++;
-        Debug.Log($"[Boss_SB] お墨付き！{cannonBallHitCount}回目 / 3");
-
-        // 3回お墨付きされたら撃破
-        if (cannonBallHitCount >= 3)
-        {
-            EnterDefeated();
-            return;
-        }
-
-        // フェーズ移行
-        currentPhase = Mathf.Min(cannonBallHitCount, 2);
-        Debug.Log($"[Boss_SB] フェーズ{currentPhase + 1}へ移行");
+        state = BossState.Stun;
+        stunTimer = 0f;
+        Debug.Log("[Boss_SB] スタン！10秒間停止");
     }
 
-    private void UpdateSealed()
+    private void UpdateStun()
     {
-        sealedTimer += Time.deltaTime;
+        stunTimer += Time.deltaTime;
 
-        if (sealedTimer >= sealedDuration)
+        if (stunTimer >= stunDuration)
         {
-            // 咆哮は二回まで
-            if(roarCount < 2)
-            {
-                EnterRoar();
-            }
-            else
-            {
-                EnterChase();
-            }
+            // スタン解除（塗りは引き継ぎ・リセットしない）
+            Debug.Log("[Boss_SB] スタン解除。塗り引き継ぎ");
+            EnterChase();
         }
     }
 
     // ====================================================================
-    //  Roar（咆哮・リセット）
-    //  咆哮の挙動を変えたいときはここを編集
+    //  Roar（咆哮）
+    //  ★咆哮の挙動を変えたいときはここを編集
     // ====================================================================
 
     private void EnterRoar()
     {
         state = BossState.Roar;
-        roarCount++;
-        Debug.Log($"[Boss_SB] 咆哮！({roarCount}回目)");
+        Debug.Log("[Boss_SB] 咆哮！");
         StartCoroutine(RoarCoroutine());
     }
 
     private IEnumerator RoarCoroutine()
     {
+        // フィールド中央にジャンプ
+        if (fieldCenter != null)
+        {
+            yield return StartCoroutine(JumpToCenter());
+        }
+
         yield return new WaitForSeconds(0.5f);
 
+        // ボス自身の墨をリセット
         foreach (var surface in bossSurfaces)
         {
             if (surface == null || !surface.enabled) continue;
-            try { InkPaintService.ClearAll(surface); }
-            catch { }
+            try { InkPaintService.ClearAll(surface); } catch { }
         }
 
+        // エリア内オブジェクトの墨をリセット
         foreach (var surface in areaSurfaces)
         {
             if (surface == null || !surface.enabled) continue;
-            try { InkPaintService.ClearAll(surface); }
-            catch { }
+            try { InkPaintService.ClearAll(surface); } catch { }
         }
 
-        float roarRange = roarRanges[currentPhase];
+        // フィールドを円形にリセット
         ResetFieldInRange(roarRange * 0.5f);
+
+        // 木箱を飛ばす
+        BlastCrates();
+
+        Debug.Log($"[Boss_SB] 咆哮リセット完了。範囲: {roarRange}m（直径）");
 
         yield return new WaitForSeconds(0.5f);
 
+        // 塗り回数リセット
         inkHitCount = 0;
         EnterChase();
+    }
+
+    /// <summary>フィールド中央にジャンプするコルーチン</summary>
+    private IEnumerator JumpToCenter()
+    {
+        Vector3 startPos = transform.position;
+        Vector3 endPos = fieldCenter.position;
+        float elapsed = 0f;
+        float duration = Vector3.Distance(startPos, endPos) / roarJumpSpeed;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+
+            // 放物線を描いてジャンプ
+            Vector3 pos = Vector3.Lerp(startPos, endPos, t);
+            pos.y += Mathf.Sin(t * Mathf.PI) * roarJumpHeight;
+            transform.position = pos;
+
+            yield return null;
+        }
+
+        transform.position = endPos;
+    }
+
+    /// <summary>木箱を画面外に飛ばす</summary>
+    private void BlastCrates()
+    {
+        foreach (var crate in crateObjects)
+        {
+            if (crate == null) continue;
+
+            var rb = crate.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                // Rigidbodyがあれば力を加える
+                rb.AddForce(crateBlastForce, ForceMode.Impulse);
+            }
+            else
+            {
+                // なければ非表示にする
+                crate.SetActive(false);
+            }
+
+            Debug.Log($"[Boss_SB] 木箱を飛ばす: {crate.name}");
+        }
     }
 
     private void ResetFieldInRange(float radius)
@@ -494,15 +531,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             var surface = col.GetComponent<PaintableSurface>()
                        ?? col.GetComponentInParent<PaintableSurface>();
-            if (surface == null) continue;
-            if (!surface.enabled) continue;
-            InkPaintService.ClearAll(surface);
+            if (surface == null || !surface.enabled) continue;
+            try { InkPaintService.ClearAll(surface); } catch { }
         }
     }
 
     // ====================================================================
     //  Defeated（撃破）
-    //  撃破演出を変えたいときはここを編集
     // ====================================================================
 
     private void EnterDefeated()
@@ -530,12 +565,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         knockbackTimer = 0f;
         isPlayerKnockedBack = true;
 
-        // PlayerMoveの重力をOFFにする
         if (playerMove != null)
         {
             playerMove.SetExternalGravityEnabled(false);
             playerMove.ClearVerticalVelocity();
-            Debug.Log("[Boss_SB] 重力OFF");
         }
     }
 
@@ -551,13 +584,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (knockbackTimer >= knockbackDuration)
         {
             isPlayerKnockedBack = false;
-
-            // PlayerMoveの重力をONに戻す
             if (playerMove != null)
-            {
                 playerMove.SetExternalGravityEnabled(true);
-                Debug.Log("[Boss_SB] 重力ON");
-            }
         }
     }
 
@@ -600,17 +628,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void OnDrawGizmosSelected()
     {
-        // bodyTransformがあればその位置を基準にする
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(bossPos, collideDistance);
 
-        if (roarRanges != null && roarRanges.Length > 0)
-        {
-            Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
-            float range = roarRanges[Mathf.Min(currentPhase, roarRanges.Length - 1)];
-            Gizmos.DrawWireSphere(transform.position, range * 0.5f);
-        }
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
+        Gizmos.DrawWireSphere(transform.position, roarRange * 0.5f);
     }
 }
