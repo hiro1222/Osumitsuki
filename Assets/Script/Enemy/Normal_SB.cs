@@ -54,6 +54,10 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     [Tooltip("衝突後の停止時間（秒）")]
     [SerializeField] private float stopDuration = 3f;
 
+    [Header("モデル参照")]
+    [Tooltip("距離判定の基準にするモデルのTransform（子オブジェクト）")]
+    [SerializeField] private Transform bodyTransform;
+
     [Header("ステータス")]
     [Tooltip("攻撃力（ノックバック距離 = 攻撃力 × 0.5m）")]
     [SerializeField] private float attackPower = 1f;
@@ -200,6 +204,7 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         float distToPlayer = Vector3.Distance(transform.position, player.position);
         if (distToPlayer <= engageDistance)
         {
+            StartBounce();
             state = EnemyState.Chase;
             return;
         }
@@ -232,6 +237,16 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     {
         Vector3 toPlayer = player.position - transform.position;
         float dist = toPlayer.magnitude;
+
+        // bodyTransformがあればその位置を基準にする
+        if (bodyTransform != null)
+        {
+            Vector3 bossPos = bodyTransform.position;
+            Vector3 playerPos = player.position;
+            bossPos.y = 0f;
+            playerPos.y = 0f;
+            dist = Vector3.Distance(bossPos, playerPos);
+        }
 
         if (dist > engageDistance)
         {
@@ -373,6 +388,8 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
 
     private void OnDrawGizmosSelected()
     {
+        Vector3 pos = bodyTransform != null ? bodyTransform.position : transform.position;
+
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, engageDistance);
 
