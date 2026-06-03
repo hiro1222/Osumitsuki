@@ -26,7 +26,14 @@ public class PaintableSurface : MonoBehaviour
 {
     // ── Inspector設定 ──
     [Header("Grid settings")]
-    [Tooltip("density/コリジョングリッドの解像度（1辺）")]
+    [Tooltip("ONにすると、メッシュサイズと目標セルサイズから自動で解像度を計算する")]
+    [SerializeField] private bool autoGridResolution = true;
+    [Tooltip("自動計算時の目標セルサイズ（メートル）。小さいほど細かく塗れる。デフォルト=5cm")]
+    [SerializeField] private float targetCellSize = 0.05f;
+    [Tooltip("自動計算時の最小/最大解像度（メモリ節約のための上限）")]
+    [SerializeField] private int minGridResolution = 32;
+    [SerializeField] private int maxGridResolution = 512;
+    [Tooltip("固定モード時の解像度（autoGridResolution=OFFのときに使う）")]
     [SerializeField] private int gridResolution = 64;
     [Tooltip("通行可能の閾値（0〜255）")]
     [SerializeField] private byte walkThreshold = 50;
@@ -60,10 +67,10 @@ public class PaintableSurface : MonoBehaviour
     private Renderer meshRenderer;
     private bool visualDirty;
 
-    // コリジョン用
-    private GameObject collisionChild;
-    private MeshCollider inkCollider;
-    private Mesh collisionMesh;
+    // コリジョン用（チャンクごとに別MeshCollider）
+    private GameObject collisionChild;        // 親（空）
+    private MeshCollider[] chunkColliders;    // チャンクごとのMeshCollider
+    private Mesh[] chunkMeshes;               // チャンクごとのMesh
     private int chunksX, chunksY;
     private bool[] chunkDirty;
 
@@ -102,8 +109,13 @@ public class PaintableSurface : MonoBehaviour
     {
         meshRenderer = GetComponent<Renderer>();
 
-        gridW = gridResolution;
-        gridH = gridResolution;
+        // 解像度を決定（自動 or 固定）
+        int finalResolution = autoGridResolution
+            ? CalculateAutoResolution()
+            : gridResolution;
+
+        gridW = finalResolution;
+        gridH = finalResolution;
         density = new byte[gridW * gridH];
         colorId = new byte[gridW * gridH];
         paintedNormals = new Vector3[gridW * gridH];
@@ -117,8 +129,19 @@ public class PaintableSurface : MonoBehaviour
             return;
         }
 
-        // 親MeshColliderをTrigger化（CharacterControllerが物理衝突しない、Raycastは当たる）
-        mc.isTrigger = true;
+        // 親メッシュを SumiVSObject レイヤーに入れる
+        // （Player↔SumiVSObject の衝突をOFFにしておくことで、isTriggerなしでも
+        //   CharacterControllerは親メッシュをすり抜ける。凹メッシュはisTriggerにできないため）
+        int sumiLayer = LayerMask.NameToLayer("SumiVSObject");
+        if (sumiLayer >= 0)
+        {
+            gameObject.layer = sumiLayer;
+        }
+        else
+        {
+            Debug.LogWarning($"[PaintableSurface] 'SumiVSObject' レイヤーが見つかりません。" +
+                             "Edit > Project Settings > Tags and Layers で追加してください。");
+        }
 
         BuildUVToWorldTable();
 
@@ -127,25 +150,41 @@ public class PaintableSurface : MonoBehaviour
         chunksY = Mathf.CeilToInt((float)gridH / chunkSize);
         chunkDirty = new bool[chunksX * chunksY];
 
-        // インクコリジョン用の子オブジェクト
+        // インクコリジョン用の親オブジェクト（空）
         collisionChild = new GameObject($"{gameObject.name}_InkCollision");
         collisionChild.transform.SetParent(transform, false);
 
-        // レイヤー: Player↔PlayerVSObject = ON、Player↔Default = OFF
+        // レイヤー: Player↔PlayerVSObject = ON
         int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
-        if (inkLayer >= 0)
-        {
-            collisionChild.layer = inkLayer;
-        }
-        else
+        if (inkLayer < 0)
         {
             Debug.LogWarning($"[PaintableSurface] 'PlayerVSObject' レイヤーが見つかりません。" +
                              "Edit > Project Settings > Tags and Layers で追加してください。");
-            collisionChild.layer = gameObject.layer;
+            inkLayer = gameObject.layer;
         }
+        collisionChild.layer = inkLayer;
 
-        inkCollider = collisionChild.AddComponent<MeshCollider>();
-        collisionMesh = new Mesh { name = $"InkCol_{gameObject.name}" };
+        // チャンクごとにMeshCollider子オブジェクトを作成
+        int chunkCount = chunksX * chunksY;
+        chunkColliders = new MeshCollider[chunkCount];
+        chunkMeshes = new Mesh[chunkCount];
+
+        for (int i = 0; i < chunkCount; i++)
+        {
+            var chunkObj = new GameObject($"InkChunk_{i}");
+            chunkObj.transform.SetParent(collisionChild.transform, false);
+            chunkObj.layer = inkLayer;
+
+            var chunkMc = chunkObj.AddComponent<MeshCollider>();
+            chunkColliders[i] = chunkMc;
+
+            // 32bitインデックス対応（念のため、チャンク内で65535を超えても安全）
+            chunkMeshes[i] = new Mesh
+            {
+                name = $"InkCol_{gameObject.name}_chunk{i}",
+                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
+            };
+        }
 
         // 描画用テクスチャ
         densityTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
@@ -174,7 +213,11 @@ public class PaintableSurface : MonoBehaviour
     {
         if (densityTexture != null) Destroy(densityTexture);
         if (colorTexture != null) Destroy(colorTexture);
-        if (collisionMesh != null) Destroy(collisionMesh);
+        if (chunkMeshes != null)
+        {
+            for (int i = 0; i < chunkMeshes.Length; i++)
+                if (chunkMeshes[i] != null) Destroy(chunkMeshes[i]);
+        }
         if (collisionChild != null) Destroy(collisionChild);
     }
 
@@ -310,6 +353,13 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void Paint(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
     {
+        // インクコリジョン子オブジェクトに当たったRaycastHitは弾く
+        // （InkCol_xxxメッシュにはUVがないのでtextureCoordが読めずエラーになる）
+        if (IsInkChunkCollider(hit.collider))
+        {
+            return;
+        }
+
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         Vector3 hitNormalLocal = transform.InverseTransformDirection(hit.normal).normalized;
         Vector2 uv = hit.textureCoord;
@@ -337,6 +387,25 @@ public class PaintableSurface : MonoBehaviour
     public void PaintAtUV(Vector2 uv, float uvRadius, byte inkDensity, byte inkColorId = 0)
     {
         PaintInternal(uv, uvRadius, Vector3.zero, Vector3.zero, float.MaxValue, inkDensity, inkColorId);
+    }
+
+    /// <summary>
+    /// 隣接Plane用のPaint（PaintAreaから呼ばれる）
+    /// 3D距離チェックを無効化することで、ヒット地点から少し離れていても
+    /// そのサーフェスの該当UVエリア全体を塗れるようにする
+    /// hit.normalは使ってpaintedNormalsに記録（表/裏判定は機能する）
+    /// </summary>
+    public void PaintNeighbor(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
+    {
+        if (IsInkChunkCollider(hit.collider)) return;
+
+        Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
+        Vector3 hitNormalLocal = transform.InverseTransformDirection(hit.normal).normalized;
+        Vector2 uv = hit.textureCoord;
+        float uvRadius = WorldRadiusToUV(radius);
+
+        // 3D距離チェック無効化（float.MaxValue を渡す）
+        PaintInternal(uv, uvRadius, hitLocal, hitNormalLocal, float.MaxValue, inkDensity, inkColorId);
     }
 
     private void PaintInternal(Vector2 uv, float uvRadius,
@@ -422,6 +491,8 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void Erase(RaycastHit hit, float radius)
     {
+        if (IsInkChunkCollider(hit.collider)) return;
+
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         Vector2 uv = hit.textureCoord;
         float uvRadius = WorldRadiusToUV(radius);
@@ -521,16 +592,19 @@ public class PaintableSurface : MonoBehaviour
 
     public bool CanWalk(RaycastHit hit)
     {
+        if (IsInkChunkCollider(hit.collider)) return false;
         return GetDensityAtUV(hit.textureCoord) >= walkThreshold;
     }
 
     public bool HasDensityAt(RaycastHit hit)
     {
+        if (IsInkChunkCollider(hit.collider)) return false;
         return GetDensityAtUV(hit.textureCoord) > 0;
     }
 
     public byte GetDensity(RaycastHit hit)
     {
+        if (IsInkChunkCollider(hit.collider)) return 0;
         return GetDensityAtUV(hit.textureCoord);
     }
 
@@ -598,25 +672,42 @@ public class PaintableSurface : MonoBehaviour
     }
 
     /// <summary>
-    /// 隣接するcellPositionsを直接繋いでコリジョンメッシュを生成
-    /// 4セル全てがwalkThreshold以上のブロックのみquad化
-    /// UV島の境界（3D距離が大きすぎるペア）はスキップ
+    /// dirtyなチャンクだけ、それぞれのMeshColliderを再生成する。
+    /// チャンク単位なので1メッシュの頂点数が抑えられ、65535制限を回避できる。
     /// </summary>
     private void RebuildDirtyChunks()
     {
-        bool anyDirty = false;
-        for (int i = 0; i < chunkDirty.Length; i++)
-            if (chunkDirty[i]) { anyDirty = true; break; }
-        if (!anyDirty) return;
-
-        var verts = new List<Vector3>();
-        var tris = new List<int>();
         float halfThick = meshThickness * 0.5f;
         float maxDistSq = maxCellDistance * maxCellDistance;
 
-        for (int gy = 0; gy < gridH - 1; gy++)
+        for (int cy = 0; cy < chunksY; cy++)
         {
-            for (int gx = 0; gx < gridW - 1; gx++)
+            for (int cx = 0; cx < chunksX; cx++)
+            {
+                int chunkIdx = cy * chunksX + cx;
+                if (!chunkDirty[chunkIdx]) continue;
+
+                RebuildChunk(cx, cy, chunkIdx, halfThick, maxDistSq);
+                chunkDirty[chunkIdx] = false;
+            }
+        }
+    }
+
+    /// <summary>1チャンク分のコリジョンメッシュを生成</summary>
+    private void RebuildChunk(int cx, int cy, int chunkIdx, float halfThick, float maxDistSq)
+    {
+        var verts = new List<Vector3>();
+        var tris = new List<int>();
+
+        // このチャンクが担当するセル範囲
+        int startX = cx * chunkSize;
+        int startY = cy * chunkSize;
+        int endX = Mathf.Min(startX + chunkSize, gridW - 1);
+        int endY = Mathf.Min(startY + chunkSize, gridH - 1);
+
+        for (int gy = startY; gy < endY; gy++)
+        {
+            for (int gx = startX; gx < endX; gx++)
             {
                 int i00 = gy * gridW + gx;
                 int i10 = i00 + 1;
@@ -630,7 +721,6 @@ public class PaintableSurface : MonoBehaviour
 
                 if (!(v00 && v10 && v01 && v11)) continue;
 
-                // UV島境界チェック: 4辺 + 2本の対角線
                 bool tooFar = false;
                 tooFar |= (cellPositions[i10] - cellPositions[i00]).sqrMagnitude > maxDistSq;
                 tooFar |= (cellPositions[i11] - cellPositions[i01]).sqrMagnitude > maxDistSq;
@@ -640,7 +730,6 @@ public class PaintableSurface : MonoBehaviour
                 tooFar |= (cellPositions[i01] - cellPositions[i10]).sqrMagnitude > maxDistSq * 2f;
                 if (tooFar) continue;
 
-                // 塗ったときの法線の平均（表/裏判定）
                 Vector3 avgNorm = (paintedNormals[i00] + paintedNormals[i10] +
                                    paintedNormals[i01] + paintedNormals[i11]).normalized;
                 if (avgNorm.sqrMagnitude < 0.01f)
@@ -650,75 +739,166 @@ public class PaintableSurface : MonoBehaviour
                 }
                 Vector3 offset = avgNorm * halfThick;
 
-                int bi = verts.Count;
-
-                // 内側の層
-                verts.Add(cellPositions[i00]);
-                verts.Add(cellPositions[i10]);
-                verts.Add(cellPositions[i11]);
-                verts.Add(cellPositions[i01]);
-
-                // 外側の層
-                verts.Add(cellPositions[i00] + offset);
-                verts.Add(cellPositions[i10] + offset);
-                verts.Add(cellPositions[i11] + offset);
-                verts.Add(cellPositions[i01] + offset);
-
-                // 表面（外側）
-                tris.Add(bi + 4); tris.Add(bi + 5); tris.Add(bi + 6);
-                tris.Add(bi + 4); tris.Add(bi + 6); tris.Add(bi + 7);
-
-                // 内側
-                tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
-                tris.Add(bi); tris.Add(bi + 3); tris.Add(bi + 2);
-
-                // 側面
-                tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 5);
-                tris.Add(bi); tris.Add(bi + 5); tris.Add(bi + 4);
-                tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 6);
-                tris.Add(bi + 1); tris.Add(bi + 6); tris.Add(bi + 5);
-                tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 7);
-                tris.Add(bi + 2); tris.Add(bi + 7); tris.Add(bi + 6);
-                tris.Add(bi + 3); tris.Add(bi); tris.Add(bi + 4);
-                tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 7);
+                BuildQuadCell(verts, tris,
+                    cellPositions[i00], cellPositions[i10],
+                    cellPositions[i11], cellPositions[i01],
+                    offset);
             }
         }
 
-        collisionMesh.Clear();
+        Mesh mesh = chunkMeshes[chunkIdx];
+        mesh.Clear();
         if (verts.Count > 0)
         {
-            collisionMesh.SetVertices(verts);
-            collisionMesh.SetTriangles(tris, 0);
-            collisionMesh.RecalculateNormals();
-            collisionMesh.RecalculateBounds();
+            mesh.SetVertices(verts);
+            mesh.SetTriangles(tris, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
         }
 
-        inkCollider.sharedMesh = null;
-        inkCollider.sharedMesh = collisionMesh;
+        var mc = chunkColliders[chunkIdx];
+        mc.sharedMesh = null;
+        mc.sharedMesh = (verts.Count > 0) ? mesh : null;
+    }
 
-        for (int i = 0; i < chunkDirty.Length; i++)
-            chunkDirty[i] = false;
+    /// <summary>当たったコライダーが自分のインクチャンクのどれかか判定</summary>
+    private bool IsInkChunkCollider(Collider col)
+    {
+        if (chunkColliders == null || col == null) return false;
+        for (int i = 0; i < chunkColliders.Length; i++)
+        {
+            if (chunkColliders[i] == col) return true;
+        }
+        return false;
+    }
+
+    /// <summary>4頂点のquadを生成（表+裏+側面）</summary>
+    private void BuildQuadCell(System.Collections.Generic.List<Vector3> verts,
+                                 System.Collections.Generic.List<int> tris,
+                                 Vector3 p00, Vector3 p10, Vector3 p11, Vector3 p01,
+                                 Vector3 offset)
+    {
+        int bi = verts.Count;
+
+        // 内側
+        verts.Add(p00); verts.Add(p10); verts.Add(p11); verts.Add(p01);
+        // 外側
+        verts.Add(p00 + offset); verts.Add(p10 + offset);
+        verts.Add(p11 + offset); verts.Add(p01 + offset);
+
+        // 表面（外）
+        tris.Add(bi + 4); tris.Add(bi + 5); tris.Add(bi + 6);
+        tris.Add(bi + 4); tris.Add(bi + 6); tris.Add(bi + 7);
+        // 内面
+        tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
+        tris.Add(bi); tris.Add(bi + 3); tris.Add(bi + 2);
+        // 側面
+        tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 5);
+        tris.Add(bi); tris.Add(bi + 5); tris.Add(bi + 4);
+        tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 6);
+        tris.Add(bi + 1); tris.Add(bi + 6); tris.Add(bi + 5);
+        tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 7);
+        tris.Add(bi + 2); tris.Add(bi + 7); tris.Add(bi + 6);
+        tris.Add(bi + 3); tris.Add(bi); tris.Add(bi + 4);
+        tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 7);
+    }
+
+    /// <summary>3頂点の三角形を生成（表+裏+側面）</summary>
+    private void BuildTriangleCell(System.Collections.Generic.List<Vector3> verts,
+                                     System.Collections.Generic.List<int> tris,
+                                     Vector3 p0, Vector3 p1, Vector3 p2,
+                                     Vector3 offset)
+    {
+        int bi = verts.Count;
+
+        // 内側
+        verts.Add(p0); verts.Add(p1); verts.Add(p2);
+        // 外側
+        verts.Add(p0 + offset); verts.Add(p1 + offset); verts.Add(p2 + offset);
+
+        // 表面（外）
+        tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 5);
+        // 内面（巻き順逆）
+        tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
+        // 側面（3辺）
+        tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 4);
+        tris.Add(bi); tris.Add(bi + 4); tris.Add(bi + 3);
+        tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 5);
+        tris.Add(bi + 1); tris.Add(bi + 5); tris.Add(bi + 4);
+        tris.Add(bi + 2); tris.Add(bi); tris.Add(bi + 3);
+        tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 5);
+    }
+
+    // ====================================================================
+    //  解像度の自動計算
+    // ====================================================================
+
+    /// <summary>
+    /// メッシュサイズと targetCellSize から解像度を自動計算
+    /// 例: 10m × 10m のオブジェクトで targetCellSize=0.05m なら
+    ///     必要な解像度 = 10 / 0.05 = 200 → NextPowerOfTwo(200) = 256
+    /// </summary>
+    private int CalculateAutoResolution()
+    {
+        var mf = GetComponent<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
+        {
+            Debug.LogWarning($"[PaintableSurface] {gameObject.name}: MeshFilterなし、デフォルト解像度を使用");
+            return Mathf.Clamp(gridResolution, minGridResolution, maxGridResolution);
+        }
+
+        // メッシュのワールド空間でのサイズ（lossyScale適用）
+        Bounds b = mf.sharedMesh.bounds;
+        Vector3 worldSize = Vector3.Scale(b.size, transform.lossyScale);
+        float maxDimension = Mathf.Max(Mathf.Abs(worldSize.x),
+                                        Mathf.Abs(worldSize.y),
+                                        Mathf.Abs(worldSize.z));
+
+        if (maxDimension < 0.001f || targetCellSize < 0.001f)
+        {
+            return Mathf.Clamp(gridResolution, minGridResolution, maxGridResolution);
+        }
+
+        // 目標セルサイズから必要な解像度を逆算
+        int desired = Mathf.CeilToInt(maxDimension / targetCellSize);
+
+        // 2の累乗に切り上げ（テクスチャ的に効率的）
+        int powerOfTwo = Mathf.NextPowerOfTwo(desired);
+
+        // 範囲クランプ
+        int clamped = Mathf.Clamp(powerOfTwo, minGridResolution, maxGridResolution);
+
+#if UNITY_EDITOR
+        Debug.Log($"[PaintableSurface] {gameObject.name}: " +
+                  $"size={maxDimension:F2}m, target={targetCellSize}m → " +
+                  $"desired={desired} → resolution={clamped} " +
+                  $"(1セル={maxDimension / clamped * 100:F1}cm)");
+#endif
+
+        return clamped;
     }
 
     // ====================================================================
     //  コリジョン制御
     // ====================================================================
 
-    /// <summary>インクコリジョンを有効化</summary>
+    /// <summary>インクコリジョンを有効化（全チャンク）</summary>
     public void EnableInkCollider()
     {
-        if (inkCollider != null)
-            inkCollider.enabled = true;
+        if (chunkColliders == null) return;
+        for (int i = 0; i < chunkColliders.Length; i++)
+            if (chunkColliders[i] != null) chunkColliders[i].enabled = true;
     }
 
     /// <summary>
-    /// インクコリジョンを無効化
+    /// インクコリジョンを無効化（全チャンク）
     /// 塗りデータ自体は残るが、プレイヤーは塗った場所を通り抜けるようになる
     /// </summary>
     public void DisableInkCollider()
     {
-        if (inkCollider != null)
-            inkCollider.enabled = false;
+        if (chunkColliders == null) return;
+        for (int i = 0; i < chunkColliders.Length; i++)
+            if (chunkColliders[i] != null) chunkColliders[i].enabled = false;
     }
 
     // ====================================================================
