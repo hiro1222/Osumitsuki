@@ -677,7 +677,11 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     private void RebuildDirtyChunks()
     {
-        float halfThick = meshThickness * 0.5f;
+        // 厚みをローカル空間に変換（lossyScaleで補正）
+        // これをしないと、Scaleが大きいオブジェクトでコリジョンが巨大に突き出す
+        Vector3 s = transform.lossyScale;
+        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float halfThick = (meshThickness * 0.5f) / Mathf.Max(avgScale, 0.0001f);
         float maxDistSq = maxCellDistance * maxCellDistance;
 
         for (int cy = 0; cy < chunksY; cy++)

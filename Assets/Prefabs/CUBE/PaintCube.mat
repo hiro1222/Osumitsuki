@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PaintCube
-  m_Shader: {fileID: 4800000, guid: a8d9faf7d34f2d844a3ab579171099ea, type: 3}
+  m_Shader: {fileID: 4800000, guid: 69b7a9020ed1d2c409e10193b6ca99cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:

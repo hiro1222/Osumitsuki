@@ -16,9 +16,9 @@ Shader "Ink/PaintableSurfaceInk"
     {
         _BaseColor ("地面の色", Color) = (0.85, 0.82, 0.75, 1)
         _BaseTex ("地面のテクスチャ", 2D) = "white" {}
-        _OsumiTex ("オスミツキテクスチャ (R: density, G: colorId, B: palette)", 2D) = "black" {}
+        _OsumiTex ("オスミツキテクスチャ", 2D) = "black" {}
 
-        [Header(Ink Textures (auto set))]
+        [Header(Ink Textures auto set)]
         _InkTex ("Ink Density", 2D) = "black" {}
         _InkColorTex ("Ink Color ID", 2D) = "black" {}
         _InkPalette ("Ink Palette", 2D) = "black" {}
@@ -83,16 +83,15 @@ Shader "Ink/PaintableSurfaceInk"
 
             half4 frag(Varyings input) : SV_Target
             {
-                // ── 地面の色 ──
+                // 地面の色
                 float2 baseUV = TRANSFORM_TEX(input.uv, _BaseTex);
                 half4 baseCol = SAMPLE_TEXTURE2D(_BaseTex, sampler_BaseTex, baseUV) * _BaseColor;
 
-                // ── 墨のデータを読む ──
+                // 墨のデータを読む
                 float density  = SAMPLE_TEXTURE2D(_InkTex, sampler_InkTex, input.uv).r;
                 float colorIdN = SAMPLE_TEXTURE2D(_InkColorTex, sampler_InkColorTex, input.uv).r;
 
-                // ── 色パレットから墨の色を取得 ──
-                // colorIdN は 0-1 正規化されているので、そのままパレットのUとして使える
+                // 色パレットから墨の色を取得
                 float3 inkColor = SAMPLE_TEXTURE2D(_InkPalette, sampler_InkPalette,
                                                     float2(colorIdN, 0.5)).rgb;
 
@@ -101,24 +100,23 @@ Shader "Ink/PaintableSurfaceInk"
                 if (density > 0.001)
                 {
                     #ifdef _ENABLEGRAYSCALE_ON
-                    // ── 方式D: 墨が塗られた場所は元の色をグレースケール化 ──
+                    // 方式D: 墨が塗られた場所は元の色をグレースケール化
                     float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
                     float3 grayRgb = float3(gray, gray, gray);
-                    // density で グレースケール化
                     finalRgb = lerp(finalRgb, grayRgb, _GrayscaleStrength);
                     #endif
 
-                    // ── 墨の色をグレー（or 元の色）の上に重ねる ──
+                    // 墨の色を重ねる
                     float inkAlpha = smoothstep(0.0, 0.4, density) * _InkColorStrength;
                     finalRgb = lerp(finalRgb, inkColor, inkAlpha);
                 }
-                else 
+                else
                 {
                     half4 OsumiCol = SAMPLE_TEXTURE2D(_OsumiTex, sampler_OsumiTex, baseUV) * _BaseColor;
                     finalRgb = OsumiCol.rgb;
                 }
 
-                // ── 簡易ライティング ──
+                // 簡易ライティング
                 float3 lightDir = normalize(float3(0.5, 1.0, 0.3));
                 float NdotL = saturate(dot(input.normalWS, lightDir));
                 finalRgb *= (NdotL * 0.5 + 0.5);

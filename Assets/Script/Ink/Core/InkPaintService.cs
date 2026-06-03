@@ -33,6 +33,7 @@ using System.Collections.Generic;
 /// 【コリジョン制御】
 ///   InkPaintService.EnableInkCollider(surface);
 ///   InkPaintService.DisableInkCollider(surface);
+///   InkPaintService.DisableInkCollider(gameObject);  // GameObjectを渡すだけ（手軽）
 /// 
 /// 【Raycastの注意】
 ///   全てのRaycastに QueryTriggerInteraction.Collide を付けてください。
@@ -55,7 +56,6 @@ public static class InkPaintService
     public static void Paint(RaycastHit hit, float radius, byte inkDensity, byte colorId = 0)
     {
         var surface = FindSurface(hit.collider);
-        var hfSurface = FindHFSurface(hit.collider);
         if (surface != null)
             surface.Paint(hit, radius, inkDensity, colorId);
     }
@@ -88,8 +88,9 @@ public static class InkPaintService
         if (mainSurface != null)
             mainSurface.Paint(hit, radius, inkDensity, colorId);
 
+        // 隣接サーフェスは PaintNeighbor で塗る（3D距離チェックなし）
         PaintNeighborSurfaces(hit.point, radius, mainSurface,
-            (subHit, surface) => surface.Paint(subHit, radius, inkDensity, colorId));
+            (subHit, surface) => surface.PaintNeighbor(subHit, radius, inkDensity, colorId));
     }
 
     /// <summary>SlashPatternベースの範囲塗り</summary>
@@ -100,9 +101,10 @@ public static class InkPaintService
             mainSurface.Paint(hit, pattern.impactRadius,
                               (byte)pattern.inkDensity, pattern.inkColorId);
 
+        // 隣接サーフェスは PaintNeighbor で塗る
         PaintNeighborSurfaces(hit.point, pattern.impactRadius, mainSurface,
-            (subHit, surface) => surface.Paint(subHit, pattern.impactRadius,
-                                                (byte)pattern.inkDensity, pattern.inkColorId));
+            (subHit, surface) => surface.PaintNeighbor(subHit, pattern.impactRadius,
+                                                       (byte)pattern.inkDensity, pattern.inkColorId));
     }
 
     // ================================================================
@@ -257,6 +259,32 @@ public static class InkPaintService
         if (surface != null) surface.DisableInkCollider();
     }
 
+    /// <summary>
+    /// GameObjectを渡してインクコリジョンを有効化（一番手軽）
+    /// PaintableSurfaceが付いているGameObjectを渡すだけ
+    /// 子オブジェクトにPaintableSurfaceがある場合も探す
+    /// </summary>
+    public static void EnableInkCollider(GameObject obj)
+    {
+        if (obj == null) return;
+        var surface = obj.GetComponent<PaintableSurface>()
+                   ?? obj.GetComponentInChildren<PaintableSurface>();
+        if (surface != null) surface.EnableInkCollider();
+    }
+
+    /// <summary>
+    /// GameObjectを渡してインクコリジョンを無効化（一番手軽）
+    /// PaintableSurfaceが付いているGameObjectを渡すだけ
+    /// 塗りの見た目は残るがプレイヤーは通り抜けられるようになる
+    /// </summary>
+    public static void DisableInkCollider(GameObject obj)
+    {
+        if (obj == null) return;
+        var surface = obj.GetComponent<PaintableSurface>()
+                   ?? obj.GetComponentInChildren<PaintableSurface>();
+        if (surface != null) surface.DisableInkCollider();
+    }
+
     // ================================================================
     //  内部実装（このセクションはチームメンバーが触る必要なし）
     // ================================================================
@@ -272,16 +300,6 @@ public static class InkPaintService
     }
 
     /// <summary>
-    /// HF_PaintableSurfaceを探す（チームメンバー追加の別塗りシステム用）
-    /// 注意: 現在の実装は GetComponent を2回呼んでいる可能性あり（要確認）
-    /// </summary>
-    private static HF_PaintableSurface FindHFSurface(Collider col)
-    {
-        return col.GetComponent<HF_PaintableSurface>()
-            ?? col.GetComponent<HF_PaintableSurface>();
-    }
-
-    /// <summary>
     /// ヒット地点を中心に近傍のPaintableSurfaceを探し、
     /// 各々に対して最寄り点へのRaycastを撃ってコールバックを呼ぶ
     /// (隣接サーフェスへの範囲塗り用)
@@ -290,11 +308,19 @@ public static class InkPaintService
         PaintableSurface excludeSurface,
         System.Action<RaycastHit, PaintableSurface> onSurfaceFound)
     {
-        // 近傍のコライダーを取得
-        Collider[] colliders = Physics.OverlapSphere(
-            hitPoint, radius, ~0, QueryTriggerInteraction.Collide);
+        // インクコリジョン(PlayerVSObject)を除外するマスク
+        // インクコリジョン子オブジェクトはUVがないのでRaycastで当ててはいけない
+        int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+        int mask = inkLayer >= 0 ? ~(1 << inkLayer) : ~0;
 
-        Debug.Log($"[PaintArea] hitPoint={hitPoint} radius={radius} → {colliders.Length}個検出");
+#if UNITY_EDITOR
+        if (inkLayer < 0)
+            Debug.LogError("[PaintArea] 'PlayerVSObject' レイヤーが見つかりません！マスクが効きません");
+#endif
+
+        // 近傍のコライダーを取得（インクコリジョンは除外）
+        Collider[] colliders = Physics.OverlapSphere(
+            hitPoint, radius, mask, QueryTriggerInteraction.Collide);
 
         // 重複処理防止
         var processed = new HashSet<PaintableSurface>();
@@ -303,54 +329,37 @@ public static class InkPaintService
         foreach (var col in colliders)
         {
             var surface = FindSurface(col);
-            if (surface == null)
-            {
-                Debug.Log($"[PaintArea]   {col.name}: PaintableSurfaceなし → スキップ");
-                continue;
-            }
-            if (processed.Contains(surface))
-            {
-                Debug.Log($"[PaintArea]   {surface.name}: 処理済み(メイン or 重複) → スキップ");
-                continue;
-            }
+            if (surface == null || processed.Contains(surface)) continue;
             processed.Add(surface);
 
-            // このコライダーへの最寄り点を求める
-            Vector3 closestPoint = col.ClosestPoint(hitPoint);
+            // コライダーのbounds（AABB）上の最寄り点を使う
+            // col.ClosestPoint() は凹MeshColliderで使えないが、
+            // bounds.ClosestPoint() はAABBなので常に使える
+            Vector3 closestPoint = col.bounds.ClosestPoint(hitPoint);
 
-            // 同一点(コライダー内部)の場合、textureCoordが取れないのでスキップ
+            // 同一点(bounds内部)の場合、bounds中心方向を使う
             Vector3 toClosest = closestPoint - hitPoint;
             if (toClosest.sqrMagnitude < 0.0001f)
             {
-                Debug.Log($"[PaintArea]   {surface.name}: 最寄り点が同一(内部) → スキップ");
-                continue;
+                // hitPointがbounds内部にある → bounds中心へ向かう
+                toClosest = col.bounds.center - hitPoint;
+                if (toClosest.sqrMagnitude < 0.0001f) continue;
             }
 
             Vector3 direction = toClosest.normalized;
 
-            // 最寄り点の少し手前から、最寄り点を通り過ぎる方向にRaycast
-            Vector3 rayOrigin = closestPoint - direction * 0.05f;
-            float rayDistance = 0.1f;
+            // hitPointから direction 方向へRaycast（少し長めに）
+            // インクコリジョン除外マスク使用
+            float rayDistance = radius + 1f;
 
-            Debug.Log($"[PaintArea]   {surface.name}: closest={closestPoint} へRaycast");
-
-            if (Physics.Raycast(rayOrigin, direction, out RaycastHit subHit,
-                rayDistance, ~0, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(hitPoint, direction, out RaycastHit subHit,
+                rayDistance, mask, QueryTriggerInteraction.Collide))
             {
                 var subSurface = FindSurface(subHit.collider);
                 if (subSurface == surface)
                 {
-                    Debug.Log($"[PaintArea]   {surface.name}: 塗り成功 uv={subHit.textureCoord}");
                     onSurfaceFound(subHit, surface);
                 }
-                else
-                {
-                    Debug.Log($"[PaintArea]   {surface.name}: Raycastが別物({subHit.collider.name})にヒット");
-                }
-            }
-            else
-            {
-                Debug.Log($"[PaintArea]   {surface.name}: Raycast当たらず");
             }
         }
     }
