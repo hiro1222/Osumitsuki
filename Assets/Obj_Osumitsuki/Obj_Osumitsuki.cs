@@ -12,7 +12,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 	//現在のインクの量
 	protected float curInkAmount = 0;
 	[SerializeField] private float maxInkCapa = 100;    //インクの最大量
-	[SerializeField] private float InkRatio = 70;       //お墨付き
 
 	[Header("お墨付き後のテクスチャ")]
 	[SerializeField] protected Material myMaterial;
@@ -27,8 +26,9 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected bool osumitsukiTrg = false;	//お墨付きした時にtrueへ
 	protected bool osumitsukiFlg = false;	//Action_Osumitsuki後にtrueへ
 	protected bool endFlg = false;			//終了フラグ
-	protected bool firstSearchFlg = false;	//検索フラグ
+	protected bool firstSearchFlg = false;  //検索フラグ
 
+	private MaskedInkProgress maskSys;
 
 	//プロパティ
 	public bool OsumiTrg => osumitsukiTrg;
@@ -111,12 +111,20 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 	}
 
+
+
 	private void Awake()
 	{
 		if (allyEnemyTarget != null)
 		{
 			helperAllyEnemys = new AllyEnemy[allyEnemyTarget.Length];
 			helperEnemyStates = new AllyEnemy.IAllyEnemyState[allyEnemyTarget.Length];
+		}
+
+		maskSys = GetComponent<MaskedInkProgress>();
+		if (maskSys == null)
+		{
+			Debug.Log(name + "：MaskedInkProgress.csがないです。動的塗りを適用");
 		}
 	}
 
@@ -148,10 +156,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 	{
 		curInkAmount += _ink;
 
-		if (curInkAmount > maxInkCapa)
-			curInkAmount = maxInkCapa;
-
-		if (InkRatio / 100f <= curInkAmount / maxInkCapa && !osumitsukiTrg)
+		if (maxInkCapa <= curInkAmount && !osumitsukiTrg)
 		{
 			//本来のマテリアルに変更
 			var meshRenderer = GetComponent<MeshRenderer>();
@@ -176,6 +181,20 @@ public class Obj_Osumitsuki : MonoBehaviour
 				}
 				DestroyInkCollider(childrenObj);
 			}
+
+			return osumitsukiTrg;
+		}
+
+		if (maskSys != null)
+		{
+			float curRatio = curInkAmount / maxInkCapa;
+			float curStep = maskSys.CurrentStep + 1;
+			int numStep = 3 + 1;
+
+			float curStepInkAmount = maxInkCapa / numStep * curStep;
+
+			if (curInkAmount >= curStepInkAmount)
+				maskSys.AdvanceBy(1);
 		}
 
 		return osumitsukiTrg;
