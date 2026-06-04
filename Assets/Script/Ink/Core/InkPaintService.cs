@@ -108,6 +108,77 @@ public static class InkPaintService
     }
 
     // ================================================================
+    //  飛沫付き塗り
+    // ================================================================
+
+    /// <summary>
+    /// 着弾点に塗り、周囲に飛沫を散らす
+    /// 飛沫は着弾面の上にランダムに小さく塗られる（メインと同じ濃さ）
+    /// </summary>
+    public static void PaintWithSplatter(RaycastHit hit, float radius, byte density,
+                                          byte colorId, int splatterCount,
+                                          float splatterRange, float splatterRadius)
+    {
+        var surface = FindSurface(hit.collider);
+        if (surface != null)
+            surface.Paint(hit, radius, density, colorId);
+
+        SpawnSplatters(hit, density, colorId, splatterCount, splatterRange, splatterRadius);
+    }
+
+    /// <summary>SlashPatternの飛沫設定を使う版</summary>
+    public static void PaintWithSplatter(RaycastHit hit, SlashPattern pattern)
+    {
+        var surface = FindSurface(hit.collider);
+        if (surface != null)
+            surface.Paint(hit, pattern.impactRadius,
+                          (byte)pattern.inkDensity, pattern.inkColorId);
+
+        SpawnSplatters(hit, (byte)pattern.inkDensity, pattern.inkColorId,
+                       pattern.splatterCount, pattern.splatterRange, pattern.splatterRadius);
+    }
+
+    /// <summary>飛沫を散らす内部処理（着弾面に沿ってランダムな位置に小さく塗る）</summary>
+    private static void SpawnSplatters(RaycastHit hit, byte density, byte colorId,
+                                        int count, float range, float splatterRadius)
+    {
+        if (count <= 0) return;
+
+        int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+        int mask = inkLayer >= 0 ? ~(1 << inkLayer) : ~0;
+
+        // 着弾面に沿った2軸を作る
+        Vector3 normal = hit.normal;
+        Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+        if (tangent.sqrMagnitude < 0.001f)
+            tangent = Vector3.Cross(normal, Vector3.right);
+        tangent.Normalize();
+        Vector3 bitangent = Vector3.Cross(normal, tangent).normalized;
+
+        for (int i = 0; i < count; i++)
+        {
+            // 面に沿ったランダムなオフセット
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            float dist = Random.Range(range * 0.3f, range);
+            Vector3 offset = (tangent * Mathf.Cos(angle) + bitangent * Mathf.Sin(angle)) * dist;
+
+            Vector3 splatterWorld = hit.point + offset;
+
+            // その位置の少し上から面に向けてRaycast
+            Vector3 rayOrigin = splatterWorld + normal * 0.5f;
+            if (Physics.Raycast(rayOrigin, -normal, out RaycastHit splatterHit,
+                1f, mask, QueryTriggerInteraction.Collide))
+            {
+                var splatSurface = FindSurface(splatterHit.collider);
+                if (splatSurface != null)
+                {
+                    splatSurface.Paint(splatterHit, splatterRadius, density, colorId);
+                }
+            }
+        }
+    }
+
+    // ================================================================
     //  墨の状態を調べる
     // ================================================================
 

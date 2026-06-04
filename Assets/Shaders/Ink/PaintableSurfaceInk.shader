@@ -1,9 +1,10 @@
-// 設計書 第5章: PaintableSurfaceInk シェーダー（色対応+グレースケール版）
+// 設計書 第5章: PaintableSurfaceInk シェーダー（色対応+グレースケール+滲み版）
 //
 // ■ 機能:
 // - メッシュのUV1でdensity/colorId/paletteを読む
 // - 墨が塗られた場所は元の色をグレースケール化（墨絵表現、方式D）
 // - 色番号から色パレットを引いて墨の色を決定
+// - 滲みエッジ: fBmノイズで輪郭を揺らがす（大神風）
 //
 // ■ テクスチャ:
 // _InkTex       : density (R8, 0-255)
@@ -27,6 +28,11 @@ Shader "Ink/PaintableSurfaceInk"
         [Toggle] _EnableGrayscale ("World Grayscale Under Ink", Float) = 1
         _GrayscaleStrength ("Grayscale Strength", Range(0, 1)) = 1.0
         _InkColorStrength ("Ink Color Strength", Range(0, 1)) = 0.7
+
+        [Header(Nijimi Bleed)]
+        [Toggle] _EnableBleed ("滲みエッジ ON", Float) = 1
+        _BleedStrength ("滲みの強さ", Range(0, 1)) = 0.5
+        _BleedScale ("滲みノイズの大きさ", Range(1, 50)) = 12
     }
 
     SubShader
@@ -41,7 +47,6 @@ Shader "Ink/PaintableSurfaceInk"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature_local _ENABLEGRAYSCALE_ON
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -64,6 +69,10 @@ Shader "Ink/PaintableSurfaceInk"
                 float4 _BaseTex_ST;
                 float _GrayscaleStrength;
                 float _InkColorStrength;
+                float _BleedStrength;
+                float _BleedScale;
+                float _EnableBleed;
+                float _EnableGrayscale;
             CBUFFER_END
 
             TEXTURE2D(_BaseTex);     SAMPLER(sampler_BaseTex);
@@ -71,6 +80,42 @@ Shader "Ink/PaintableSurfaceInk"
             TEXTURE2D(_InkTex);      SAMPLER(sampler_InkTex);
             TEXTURE2D(_InkColorTex); SAMPLER(sampler_InkColorTex);
             TEXTURE2D(_InkPalette);  SAMPLER(sampler_InkPalette);
+
+            // 2D hash
+            float hash21(float2 p)
+            {
+                p = frac(p * float2(123.34, 456.21));
+                p += dot(p, p + 45.32);
+                return frac(p.x * p.y);
+            }
+
+            // value noise
+            float valueNoise(float2 p)
+            {
+                float2 i = floor(p);
+                float2 f = frac(p);
+                f = f * f * (3.0 - 2.0 * f);
+                float a = hash21(i + float2(0, 0));
+                float b = hash21(i + float2(1, 0));
+                float c = hash21(i + float2(0, 1));
+                float d = hash21(i + float2(1, 1));
+                return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
+            }
+
+            // fBm
+            float fbm(float2 p)
+            {
+                float total = 0.0;
+                float amp = 0.5;
+                float freq = 1.0;
+                for (int i = 0; i < 3; i++)
+                {
+                    total += valueNoise(p * freq) * amp;
+                    freq *= 2.0;
+                    amp *= 0.5;
+                }
+                return total;
+            }
 
             Varyings vert(Attributes input)
             {
@@ -91,6 +136,14 @@ Shader "Ink/PaintableSurfaceInk"
                 float density  = SAMPLE_TEXTURE2D(_InkTex, sampler_InkTex, input.uv).r;
                 float colorIdN = SAMPLE_TEXTURE2D(_InkColorTex, sampler_InkColorTex, input.uv).r;
 
+                // 滲みエッジ: fBmノイズで density の輪郭を揺らがす
+                if (_EnableBleed > 0.5)
+                {
+                    float bleedNoise = fbm(input.uv * _BleedScale);
+                    float edgeFactor = density * (1.0 - density) * 4.0;
+                    density = saturate(density + (bleedNoise - 0.5) * _BleedStrength * edgeFactor);
+                }
+
                 // 色パレットから墨の色を取得
                 float3 inkColor = SAMPLE_TEXTURE2D(_InkPalette, sampler_InkPalette,
                                                     float2(colorIdN, 0.5)).rgb;
@@ -99,12 +152,12 @@ Shader "Ink/PaintableSurfaceInk"
 
                 if (density > 0.001)
                 {
-                    #ifdef _ENABLEGRAYSCALE_ON
-                    // 方式D: 墨が塗られた場所は元の色をグレースケール化
-                    float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
-                    float3 grayRgb = float3(gray, gray, gray);
-                    finalRgb = lerp(finalRgb, grayRgb, _GrayscaleStrength);
-                    #endif
+                    if (_EnableGrayscale > 0.5)
+                    {
+                        float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
+                        float3 grayRgb = float3(gray, gray, gray);
+                        finalRgb = lerp(finalRgb, grayRgb, _GrayscaleStrength);
+                    }
 
                     // 墨の色を重ねる
                     float inkAlpha = smoothstep(0.0, 0.4, density) * _InkColorStrength;

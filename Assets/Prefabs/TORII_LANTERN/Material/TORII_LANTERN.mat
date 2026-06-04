@@ -11,9 +11,10 @@ Material:
   m_Shader: {fileID: 4800000, guid: 69b7a9020ed1d2c409e10193b6ca99cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _ENABLEBLEED_ON
   - _ENABLEGRAYSCALE_ON
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -106,6 +107,8 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _BleedScale: 12
+    - _BleedStrength: 0.5
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -117,6 +120,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EnableBleed: 1
     - _EnableGrayscale: 1
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0

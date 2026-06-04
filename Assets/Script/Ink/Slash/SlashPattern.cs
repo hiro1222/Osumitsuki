@@ -89,6 +89,15 @@ public class SlashPattern : ScriptableObject
     [Tooltip("着弾時の墨痕の半径")]
     public float impactRadius = 1.2f;
 
+    [Header("飛沫")]
+    [Tooltip("着弾時に周囲に散る飛沫の数（0なら飛沫なし）")]
+    [Min(0)]
+    public int splatterCount = 5;
+    [Tooltip("飛沫が散る範囲（着弾点からの距離・メートル）")]
+    public float splatterRange = 1.5f;
+    [Tooltip("飛沫1つの半径")]
+    public float splatterRadius = 0.25f;
+
     [Header("墨消費")]
     [Tooltip("1発あたりの墨消費量（0〜1）")]
     [Range(0f, 1f)]

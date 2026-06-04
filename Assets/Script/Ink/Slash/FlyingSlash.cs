@@ -329,7 +329,11 @@ public class FlyingSlash : MonoBehaviour
             "[FlyingSlash] GroundPaint"
         );
 
+
         InkPaintService.PaintArea(hit, pattern);
+
+        //飛沫付き
+        InkPaintService.PaintWithSplatter(hit, pattern);
 
         Destroy(gameObject);
     }
