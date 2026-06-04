@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// ボスエネミー「鎧墨袋（Boss_SB）」フェーズ1
+/// ボスエネミー「鎧墨袋（Boss_SB）」
 ///
 /// 【状態遷移】
 /// Idle → Chase → Charge → Tackle → Stop → Chase
 /// 木箱衝突時: Stun（10秒・攻撃ヒットでタイマーリセット）
-/// お墨付き完了時: Roar（咆哮）→ Chase
+/// お墨付き完了時: Roar（咆哮）→ フェーズ進行 → Chase（or 撃破）
+///
+/// 【フェーズ】
+/// フェーズ1 → 咆哮 → フェーズ2
+/// フェーズ2 → 咆哮 → フェーズ3
+/// フェーズ3 → 咆哮 → 撃破
 ///
 /// 【仕様変更・追加時のガイド】
 /// ・新しい状態を追加 → BossState に追加 → Enter/Update メソッドを追加
@@ -42,7 +47,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     // ====================================================================
     //  設定（Inspector）
-    //  ★ステータス変更はここで行う
     // ====================================================================
 
     [Header("── プレイヤー参照 ──")]
@@ -91,14 +95,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float knockbackUpForce = 5f;
     [Tooltip("ノックバックの持続時間（秒）")]
     [SerializeField] private float knockbackDuration = 0.8f;
-    [Tooltip("お墨付きに必要な塗り回数")]
-    [SerializeField] private int requiredInkCount = 10;
-    [Tooltip("お墨付き時にプレイヤーのインクを回復する量")]
+    [Tooltip("回復量")]
     [SerializeField] private float inkRecovery = 2f;
 
+    [Header("── フェーズ別ステータス ──")]
+    [Tooltip("必要塗り回数（フェーズ1・2・3）")]
+    [SerializeField] private int[] requiredInkCounts = { 10, 12, 15 };
+    [Tooltip("咆哮の円形リセット範囲・直径（フェーズ1・2・3）単位:m")]
+    [SerializeField] private float[] roarRanges = { 5f, 7f, 10f };
+
     [Header("── 咆哮 ──")]
-    [Tooltip("咆哮量・直径（m）")]
-    [SerializeField] private float roarRange = 5f;
     [Tooltip("咆哮時にジャンプするフィールド中央の座標")]
     [SerializeField] private Transform fieldCenter;
     [Tooltip("咆哮ジャンプの高さ")]
@@ -109,14 +115,22 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── 咆哮リセット対象 ──")]
     [Tooltip("ボス自身のPaintableSurface")]
     [SerializeField] private List<PaintableSurface> bossSurfaces = new List<PaintableSurface>();
-    [Tooltip("ボスエリア内オブジェクトのPaintableSurface")]
-    [SerializeField] private List<PaintableSurface> areaSurfaces = new List<PaintableSurface>();
 
     [Header("── 木箱 ──")]
     [Tooltip("木箱オブジェクト（咆哮で飛ばす対象）")]
     [SerializeField] private List<GameObject> crateObjects = new List<GameObject>();
     [Tooltip("木箱を飛ばす方向と強さ")]
     [SerializeField] private Vector3 crateBlastForce = new Vector3(0f, 10f, 20f);
+    [Tooltip("木箱が消えるまでの時間（秒）")]
+    [SerializeField] private float crateDestroyDelay = 3f;
+
+    [Header("── スタン演出 ──")]
+    [Tooltip("後退速度")]
+    [SerializeField] private float recoilSpeed = 5f;
+    [Tooltip("後退時間（秒）")]
+    [SerializeField] private float recoilDuration = 0.5f;
+    [Tooltip("傾く時間（秒）")]
+    [SerializeField] private float tiltDuration = 0.3f;
 
     [Header("── 地面追従 ──")]
     [SerializeField] private float groundFollowSpeed = 10f;
@@ -126,6 +140,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // ====================================================================
 
     private BossState state = BossState.Idle;
+    private int currentPhase = 0; // 0=フェーズ1, 1=フェーズ2, 2=フェーズ3
     private int inkHitCount = 0;
     private bool isAlly = false;
 
@@ -153,6 +168,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
     private bool isPlayerKnockedBack;
+
+    private CharacterController bossController;
 
     // ====================================================================
     //  初期化
@@ -191,19 +208,19 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 playerMove = player.GetComponentInParent<PlayerMove>();
         }
 
+        bossController = GetComponent<CharacterController>();
         state = BossState.Idle;
+        currentPhase = 0;
     }
 
     // ====================================================================
     //  毎フレーム
-    //  ★新しい状態を追加したらここにcaseを追加する
     // ====================================================================
 
     private void Update()
     {
         if (player == null) return;
 
-        FollowGround();
         UpdatePlayerKnockback();
 
         switch (state)
@@ -214,14 +231,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Tackle: UpdateTackle(); break;
             case BossState.Stop: UpdateStop(); break;
             case BossState.Stun: UpdateStun(); break;
-            case BossState.Roar: break; // コルーチンで処理
+            case BossState.Roar: break;
             case BossState.Defeated: break;
         }
     }
 
     // ====================================================================
     //  外部から呼ぶ関数
-    //  ★他スクリプトとの連携はここに追加する
     // ====================================================================
 
     /// <summary>ボス戦を開始する（BossAreaTriggerから呼ぶ）</summary>
@@ -229,13 +245,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (state != BossState.Idle) return;
         inkHitCount = 0;
-        Debug.Log("[Boss_SB] ボス戦開始！");
+        currentPhase = 0;
+        Debug.Log("[Boss_SB] ボス戦開始！フェーズ1");
         EnterChase();
     }
 
     /// <summary>
     /// 墨を塗られたときの処理（EnemyHitReceiverから呼ぶ）
-    /// スタン中のみ有効・スタン中以外は規定数-1までしか増えない
+    /// スタン中のみ規定数まで増える・スタン中以外は規定数-1まで
     /// </summary>
     public void ReceiveInk()
     {
@@ -243,24 +260,25 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (state == BossState.Roar) return;
         if (state == BossState.Defeated) return;
 
+        int required = requiredInkCounts[currentPhase];
+
         // スタン中以外は規定数-1までしか増えない
         if (state != BossState.Stun)
         {
-            if (inkHitCount >= requiredInkCount - 1) return;
+            if (inkHitCount >= required - 1) return;
             inkHitCount++;
-            Debug.Log($"[Boss_SB] 塗り回数: {inkHitCount} / {requiredInkCount - 1}（スタン外上限）");
+            Debug.Log($"[Boss_SB] 塗り回数: {inkHitCount} / {required - 1}（スタン外上限）フェーズ{currentPhase + 1}");
             return;
         }
 
         // スタン中
         inkHitCount++;
-        Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {requiredInkCount}");
+        Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {required} フェーズ{currentPhase + 1}");
 
-        // スタンタイマーをリセット
         if (resetStunTimerOnHit)
             stunTimer = 0f;
 
-        if (inkHitCount >= requiredInkCount)
+        if (inkHitCount >= required)
         {
             inkHitCount = 0;
             EnterRoar();
@@ -281,6 +299,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         EnterStun();
     }
 
+    /// <summary>現在のフェーズを返す（外部参照用）</summary>
+    public int GetCurrentPhase() => currentPhase;
+
     // ====================================================================
     //  Chase（追従）
     // ====================================================================
@@ -290,6 +311,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         state = BossState.Chase;
         tackleTimer = 0f;
         tackleDelay = Random.Range(tackleDelayMin, tackleDelayMax);
+
+        // 体を起こす
+        StartCoroutine(StandUpCoroutine());
+
         Debug.Log($"[Boss_SB] Chase開始。タックルまで{tackleDelay:F1}秒");
     }
 
@@ -312,7 +337,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         float dist = Vector3.Distance(bossPos, playerPos);
 
         if (dist > collideDistance)
-            transform.position += toPlayer.normalized * chaseSpeed * Time.deltaTime;
+        {
+            Vector3 moveDir = toPlayer.normalized * chaseSpeed * Time.deltaTime;
+            moveDir.y = -9.8f * Time.deltaTime;
+            bossController.Move(moveDir);
+        }
         else
         {
             ApplyKnockbackToPlayer();
@@ -359,10 +388,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void UpdateTackle()
     {
-        transform.position += tackleDirection * tackleSpeed * Time.deltaTime;
+        Vector3 tackleMove = tackleDirection * tackleSpeed * Time.deltaTime;
+        tackleMove.y = -9.8f * Time.deltaTime;
+        bossController.Move(tackleMove);
         LookAt(tackleDirection);
 
-        // プレイヤーとの衝突判定
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
         Vector3 playerPos = player.position;
         bossPos.y = 0f;
@@ -376,7 +406,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
 
-        // 最大距離で停止
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
             EnterStop();
@@ -401,15 +430,17 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  Stun（スタン・木箱衝突）
-    //  ★スタンの挙動を変えたいときはここを編集
+    //  Stun（スタン）
     // ====================================================================
 
     private void EnterStun()
     {
         state = BossState.Stun;
         stunTimer = 0f;
-        Debug.Log("[Boss_SB] スタン！10秒間停止");
+        Debug.Log("[Boss_SB] スタン！");
+
+        StartCoroutine(StunRecoilCoroutine());
+        StartCoroutine(StunTiltCoroutine());
     }
 
     private void UpdateStun()
@@ -418,7 +449,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (stunTimer >= stunDuration)
         {
-            // スタン解除（塗りは引き継ぎ・リセットしない）
+            // スタン解除（塗り引き継ぎ）
             Debug.Log("[Boss_SB] スタン解除。塗り引き継ぎ");
             EnterChase();
         }
@@ -426,23 +457,23 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     // ====================================================================
     //  Roar（咆哮）
-    //  ★咆哮の挙動を変えたいときはここを編集
     // ====================================================================
 
     private void EnterRoar()
     {
         state = BossState.Roar;
-        Debug.Log("[Boss_SB] 咆哮！");
+        Debug.Log($"[Boss_SB] 咆哮！フェーズ{currentPhase + 1}");
         StartCoroutine(RoarCoroutine());
     }
 
     private IEnumerator RoarCoroutine()
     {
+        // 体を起こす
+        yield return StartCoroutine(StandUpCoroutine());
+
         // フィールド中央にジャンプ
         if (fieldCenter != null)
-        {
             yield return StartCoroutine(JumpToCenter());
-        }
 
         yield return new WaitForSeconds(0.5f);
 
@@ -453,26 +484,32 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             try { InkPaintService.ClearAll(surface); } catch { }
         }
 
-        // エリア内オブジェクトの墨をリセット
-        foreach (var surface in areaSurfaces)
-        {
-            if (surface == null || !surface.enabled) continue;
-            try { InkPaintService.ClearAll(surface); } catch { }
-        }
-
-        // フィールドを円形にリセット
+        // フィールドを円形にリセット（現在のフェーズの範囲）
+        float roarRange = roarRanges[currentPhase];
         ResetFieldInRange(roarRange * 0.5f);
 
         // 木箱を飛ばす
         BlastCrates();
 
-        Debug.Log($"[Boss_SB] 咆哮リセット完了。範囲: {roarRange}m（直径）");
+        Debug.Log($"[Boss_SB] 咆哮リセット完了。範囲: {roarRange}m（直径）フェーズ{currentPhase + 1}");
 
         yield return new WaitForSeconds(0.5f);
 
-        // 塗り回数リセット
-        inkHitCount = 0;
-        EnterChase();
+        // フェーズを進める
+        currentPhase++;
+
+        if (currentPhase >= 3)
+        {
+            // フェーズ3の咆哮後に撃破
+            EnterDefeated();
+        }
+        else
+        {
+            // 次のフェーズへ
+            inkHitCount = 0;
+            Debug.Log($"[Boss_SB] フェーズ{currentPhase + 1}へ移行");
+            EnterChase();
+        }
     }
 
     /// <summary>フィールド中央にジャンプするコルーチン</summary>
@@ -488,7 +525,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
 
-            // 放物線を描いてジャンプ
             Vector3 pos = Vector3.Lerp(startPos, endPos, t);
             pos.y += Mathf.Sin(t * Mathf.PI) * roarJumpHeight;
             transform.position = pos;
@@ -497,6 +533,31 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         transform.position = endPos;
+    }
+
+    /// <summary>
+    /// フィールドを円形にリセットする
+    /// OverlapSphereで範囲内のPaintableSurfaceを取得してEraseAtで範囲内だけ消す
+    /// </summary>
+    private void ResetFieldInRange(float radius)
+    {
+        // 既に処理したSurfaceを記録して重複処理を防ぐ
+        var processed = new HashSet<PaintableSurface>();
+
+        Collider[] colliders = Physics.OverlapSphere(
+            transform.position, radius, ~0, QueryTriggerInteraction.Collide);
+
+        foreach (var col in colliders)
+        {
+            var surface = col.GetComponent<PaintableSurface>()
+                       ?? col.GetComponentInParent<PaintableSurface>();
+            if (surface == null || !surface.enabled) continue;
+            if (processed.Contains(surface)) continue;
+            processed.Add(surface);
+
+            // ClearAll()ではなくEraseAt()で範囲内だけ消す
+            try { InkPaintService.EraseAt(surface, transform.position, radius); } catch { }
+        }
     }
 
     /// <summary>木箱を画面外に飛ばす</summary>
@@ -509,31 +570,24 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             var rb = crate.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                // Rigidbodyがあれば力を加える
+                rb.isKinematic = false;
                 rb.AddForce(crateBlastForce, ForceMode.Impulse);
             }
             else
             {
-                // なければ非表示にする
                 crate.SetActive(false);
             }
 
+            StartCoroutine(DestroyCrateAfterDelay(crate, crateDestroyDelay));
             Debug.Log($"[Boss_SB] 木箱を飛ばす: {crate.name}");
         }
     }
 
-    private void ResetFieldInRange(float radius)
+    private IEnumerator DestroyCrateAfterDelay(GameObject crate, float delay)
     {
-        Collider[] colliders = Physics.OverlapSphere(
-            transform.position, radius, ~0, QueryTriggerInteraction.Collide);
-
-        foreach (var col in colliders)
-        {
-            var surface = col.GetComponent<PaintableSurface>()
-                       ?? col.GetComponentInParent<PaintableSurface>();
-            if (surface == null || !surface.enabled) continue;
-            try { InkPaintService.ClearAll(surface); } catch { }
-        }
+        yield return new WaitForSeconds(delay);
+        if (crate != null)
+            crate.SetActive(false);
     }
 
     // ====================================================================
@@ -590,22 +644,60 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  地面追従
+    //  スタン演出
     // ====================================================================
 
-    private void FollowGround()
+    private IEnumerator StunRecoilCoroutine()
     {
-        if (Physics.Raycast(
-            transform.position + Vector3.up * 0.5f,
-            Vector3.down, out RaycastHit hit, 10f,
-            ~0, QueryTriggerInteraction.Collide))
-        {
-            if (hit.collider.gameObject == gameObject) return;
+        float elapsed = 0f;
+        Vector3 recoilDir = -tackleDirection;
 
-            float newY = Mathf.Lerp(
-                transform.position.y, hit.point.y, groundFollowSpeed * Time.deltaTime);
-            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        while (elapsed < recoilDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - (elapsed / recoilDuration);
+            float smoothT = t * t;
+
+            Vector3 move = recoilDir * recoilSpeed * smoothT * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+            bossController.Move(move);
+
+            yield return null;
         }
+    }
+
+    private IEnumerator StunTiltCoroutine()
+    {
+        float elapsed = 0f;
+        Quaternion startRot = transform.rotation;
+        Quaternion tiltRot = startRot * Quaternion.Euler(-90f, 0f, 0f);
+
+        while (elapsed < tiltDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / tiltDuration;
+            transform.rotation = Quaternion.Slerp(startRot, tiltRot, t);
+            yield return null;
+        }
+
+        transform.rotation = tiltRot;
+    }
+
+    private IEnumerator StandUpCoroutine()
+    {
+        float elapsed = 0f;
+        Quaternion startRot = transform.rotation;
+        Quaternion upRot = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
+
+        while (elapsed < tiltDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / tiltDuration;
+            transform.rotation = Quaternion.Slerp(startRot, upRot, t);
+            yield return null;
+        }
+
+        transform.rotation = upRot;
     }
 
     // ====================================================================
@@ -630,10 +722,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
 
+        // 衝突判定
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(bossPos, collideDistance);
 
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, roarRange * 0.5f);
+        // 咆哮範囲（現在のフェーズ）
+        if (roarRanges != null && roarRanges.Length > 0)
+        {
+            Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
+            float range = roarRanges[Mathf.Min(currentPhase, roarRanges.Length - 1)];
+            Gizmos.DrawWireSphere(transform.position, range * 0.5f);
+        }
     }
 }
