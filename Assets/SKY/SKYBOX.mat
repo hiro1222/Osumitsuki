@@ -51,10 +51,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlendHeight: -1
-    - _CLOUD_SCATTER: 0
+    - _BlendHeight: 0
+    - _CLOUD_SCATTER: 0.7
     - _Cloud_Density: 0
-    - _Cloud_Intensity: 1.69
+    - _Cloud_Intensity: 2
     - _Cloud_Scale: 10
     - _QueueControl: 0
     - _QueueOffset: 0

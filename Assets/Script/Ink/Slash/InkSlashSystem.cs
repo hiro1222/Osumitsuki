@@ -366,7 +366,7 @@ public class InkSlashSystem : MonoBehaviour
     {
         yield return new WaitForSeconds(pat.spawnDelay);
 
-        CreateSlashImmediate(position, direction, pat);
+        CreateSlashAfterDelay(position, direction, pat);
     }
 
     private void CreateSlashImmediate(Vector3 position, Vector3 direction, SlashPattern pat)
@@ -471,8 +471,10 @@ public class InkSlashSystem : MonoBehaviour
             slash.pattern = pat;
             slash.hitMask = hitMask;
 
+            // エフェクトは中央の1個だけ
             slash.spawnEffect = isCenter;
 
+            // 中央以外の見た目を消すかどうか
             if (!isCenter && pat.hideSubProjectiles)
             {
                 HideSlashVisual(obj);

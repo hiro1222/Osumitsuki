@@ -24,23 +24,27 @@ public class Act_Tome : PlayerActionBase
     [Header("Rise Motion")]
     [SerializeField] private float riseHeight = 0.45f;
 
+    [Header("Fall Motion")]
+    [SerializeField] private float fallGravity = 25.0f;
+    [SerializeField] private float maxFallSpeed = 18.0f;
+    [SerializeField] private float landingCheckDistance = 0.35f;
+    [SerializeField] private float landingSnapHeight = 0.0f;
+
     [Header("Pre Landing Paint")]
     [SerializeField] private bool enablePreLandingPaint = true;
-
-    [Tooltip("Playerの下にこの距離以内で地面があれば、着地前に塗る")]
     [SerializeField] private float paintTriggerDistance = 0.6f;
-
-    [Tooltip("なぞりと同じ PaintGroundNearPlayer の前方オフセット")]
     [SerializeField] private float paintForwardOffset = 0.0f;
-
     [SerializeField] private float paintRadius = 0.9f;
     [SerializeField] private byte paintDensity = 180;
-
-    [Tooltip("地面検出用。基本はGround系Layerを指定")]
     [SerializeField] private LayerMask groundCheckMask = ~0;
 
     [Header("Landing")]
     [SerializeField] private float resumeAfterGroundedTime = 0.0f;
+
+    [Header("Landing Effect")]
+    [SerializeField] private GameObject landingEffectPrefab;
+    [SerializeField] private Vector3 landingEffectOffset = Vector3.zero;
+    [SerializeField] private float landingEffectLifeTime = 2.0f;
 
     private TomePhase phase;
     private float actionTimer;
@@ -51,6 +55,9 @@ public class Act_Tome : PlayerActionBase
     private Vector3 riseTargetPosition;
 
     private bool preLandingPainted;
+    private bool landingEffectPlayed;
+
+    private float fallSpeed;
 
     private PlayerInkActionPainter inkPainter;
     private PlayerPaintStatus paintStatus;
@@ -98,7 +105,10 @@ public class Act_Tome : PlayerActionBase
         actionTimer = 0.0f;
         phaseTimer = 0.0f;
         groundedTimer = 0.0f;
+
         preLandingPainted = false;
+        landingEffectPlayed = false;
+        fallSpeed = 0.0f;
 
         StartRise();
     }
@@ -117,7 +127,7 @@ public class Act_Tome : PlayerActionBase
                 break;
 
             case TomePhase.Falling:
-                TickFalling();
+                TickFalling(dt);
                 break;
 
             case TomePhase.LandingResume:
@@ -179,6 +189,7 @@ public class Act_Tome : PlayerActionBase
     {
         phase = TomePhase.Falling;
         phaseTimer = 0.0f;
+        fallSpeed = 0.0f;
 
         if (controller.AnimatorDriver != null)
         {
@@ -190,22 +201,51 @@ public class Act_Tome : PlayerActionBase
 
         if (controller.Move != null)
         {
-            controller.Move.SetExternalPositionLock(false, controller.transform.position, false);
             controller.Move.ClearVerticalVelocity();
-            controller.Move.SetExternalGravityEnabled(true);
+            controller.Move.SetExternalGravityEnabled(false);
+            controller.Move.SetExternalPositionLock(true, controller.transform.position, false);
         }
     }
 
-    private void TickFalling()
+    private void TickFalling(float dt)
     {
         TryPreLandingPaint();
 
-        if (controller.Move == null) return;
-        if (!controller.Move.IsGrounded) return;
+        fallSpeed += fallGravity * dt;
+        fallSpeed = Mathf.Min(fallSpeed, maxFallSpeed);
 
-        phase = TomePhase.LandingResume;
-        phaseTimer = 0.0f;
-        groundedTimer = 0.0f;
+        Vector3 currentPos = controller.transform.position;
+        Vector3 nextPos = currentPos + Vector3.down * fallSpeed * dt;
+
+        float rayDistance = Vector3.Distance(currentPos, nextPos) + landingCheckDistance;
+
+        if (Physics.Raycast(currentPos, Vector3.down, out RaycastHit hit, rayDistance, groundCheckMask))
+        {
+            Vector3 landedPos = controller.transform.position;
+            landedPos.y = hit.point.y + landingSnapHeight;
+
+            controller.transform.position = landedPos;
+
+            if (controller.Move != null)
+            {
+                controller.Move.SetExternalPositionLock(true, landedPos, false);
+                controller.Move.ClearVerticalVelocity();
+            }
+
+            TryPlayLandingEffect(hit.point, hit.normal);
+
+            phase = TomePhase.LandingResume;
+            phaseTimer = 0.0f;
+            groundedTimer = 0.0f;
+            return;
+        }
+
+        controller.transform.position = nextPos;
+
+        if (controller.Move != null)
+        {
+            controller.Move.SetExternalPositionLock(true, nextPos, false);
+        }
     }
 
     private void TryPreLandingPaint()
@@ -239,6 +279,27 @@ public class Act_Tome : PlayerActionBase
         preLandingPainted = true;
     }
 
+    private void TryPlayLandingEffect(Vector3 hitPoint, Vector3 hitNormal)
+    {
+        if (landingEffectPlayed) return;
+        if (landingEffectPrefab == null) return;
+
+        Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hitNormal);
+
+        GameObject effect = Object.Instantiate(
+            landingEffectPrefab,
+            hitPoint + landingEffectOffset,
+            rotation
+        );
+
+        if (landingEffectLifeTime > 0.0f)
+        {
+            Object.Destroy(effect, landingEffectLifeTime);
+        }
+
+        landingEffectPlayed = true;
+    }
+
     private void TickLandingResume(float dt)
     {
         groundedTimer += dt;
@@ -248,6 +309,13 @@ public class Act_Tome : PlayerActionBase
         if (controller.AnimatorDriver != null)
         {
             controller.AnimatorDriver.ResumeAnimation();
+        }
+
+        if (controller.Move != null)
+        {
+            controller.Move.SetExternalPositionLock(false, controller.transform.position, false);
+            controller.Move.SetExternalGravityEnabled(true);
+            controller.Move.ClearVerticalVelocity();
         }
 
         phase = TomePhase.Finished;
@@ -283,6 +351,7 @@ public class Act_Tome : PlayerActionBase
         {
             controller.Move.SetExternalPositionLock(false, controller.transform.position, false);
             controller.Move.SetExternalGravityEnabled(true);
+            controller.Move.ClearVerticalVelocity();
         }
 
         if (controller.AnimatorDriver != null)
