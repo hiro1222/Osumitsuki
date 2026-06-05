@@ -29,6 +29,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected bool firstSearchFlg = false;  //検索フラグ
 
 	private MaskedInkProgress maskSys;
+    private List<MaskedInkProgress> maskSystems;
 
 	//プロパティ
 	public bool OsumiTrg => osumitsukiTrg;
@@ -121,22 +122,23 @@ public class Obj_Osumitsuki : MonoBehaviour
 			helperEnemyStates = new AllyEnemy.IAllyEnemyState[allyEnemyTarget.Length];
 		}
 
-		maskSys = GetComponent<MaskedInkProgress>();
-		if (maskSys == null)
-		{
-			Debug.Log(name + "：MaskedInkProgress.csがないです。動的塗りを適用");
-		}
-	}
+        maskSystems = new List<MaskedInkProgress>();
+        Transform[] allTransforms = GetComponentsInChildren<Transform>();
+        foreach (Transform t in allTransforms)
+        {
+            var maskS = t.gameObject.GetComponent<MaskedInkProgress>();
+            if (maskS != null)
+                maskSystems.Add(maskS);
+        }
+    }
 
 	public void Action_Osumitsuki_Cover()
 	{
-		Debug.Log(gameObject.name + "：お墨付きアクション");
 		SearchOsumitsuki_Obj();
 		Action_Osumitsuki();
 	}
 	public void Update_Osumitsuki_Cover()
 	{
-		Debug.Log(gameObject.name + "：お墨付きアップデート");
 		Update_Osumitsuki();
 	}
 
@@ -185,16 +187,21 @@ public class Obj_Osumitsuki : MonoBehaviour
 			return osumitsukiTrg;
 		}
 
-		if (maskSys != null)
+		if (maskSystems.Count > 0)
 		{
-			float curRatio = curInkAmount / maxInkCapa;
-			float curStep = maskSys.CurrentStep + 1;
-			int numStep = 3 + 1;
+            foreach (MaskedInkProgress ms in maskSystems)
+            {
+                float curRatio = curInkAmount / maxInkCapa;
+                float curStep = ms.CurrentStep + 1;
+                int numStep = 3 + 1;
 
-			float curStepInkAmount = maxInkCapa / numStep * curStep;
+                float curStepInkAmount = maxInkCapa / numStep * curStep;
 
-			if (curInkAmount >= curStepInkAmount)
-				maskSys.AdvanceBy(1);
+                if (curInkAmount >= curStepInkAmount)
+                    ms.AdvanceBy(1);
+
+            }
+
 		}
 
 		return osumitsukiTrg;
@@ -294,6 +301,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 	{
 		//目標座標がなければ終了
 		if (allyEnemyTarget.Length == 0) return;
+        if (allyEnemyManager == null) return;
 
 		IReadOnlyList<AllyEnemy> allyEnemys = allyEnemyManager.GetAllyEnemy();
 		//AllyEnemyがいなければ終了

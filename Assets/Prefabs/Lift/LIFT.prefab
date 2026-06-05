@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 5239182130005365633}
   - component: {fileID: 4074256994794195372}
   - component: {fileID: 3224569807949088465}
+  - component: {fileID: 5376640367244769444}
   m_Layer: 7
   m_Name: SM_LIFT_BOARD
   m_TagString: Untagged
@@ -284,7 +285,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aead24b7d99494c4da6a43569c0180a7, type: 2}
+  - {fileID: 2100000, guid: cc9b421cf9288cd438338b2cc73022d4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -318,6 +319,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -345,6 +350,29 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3784008544466421810, guid: ae7fa1d4395c49e4687bdf8c22b38712, type: 3}
+--- !u!114 &5376640367244769444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2264786321398550826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f482d04781efed54eaebf89f1115118f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  steps:
+  - mask: {fileID: 2800000, guid: c36f8f1c000d1dc4bb33c2df7fa98512, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: ecc4c4f845774b7419b5214169a9fadc, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: 28b4a51f2ea09c74db86380416324221, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: 2925127bb7b6b5647a4f58e3c909e332, type: 3}
+    strength: 1
+  textureResolution: 512
+  targetRenderer: {fileID: 0}
 --- !u!1 &2924456735436744258
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,7 +400,7 @@ Transform:
   m_GameObject: {fileID: 2924456735436744258}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0.0000009536743, z: 4.429197}
+  m_LocalPosition: {x: 0.4899485, y: 0.0000014305115, z: 3.2294998}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -393,8 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc8357d8ef1bd743b7e4532d769a06a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 100
-  InkRatio: 70
+  maxInkCapa: 200
   myMaterial: {fileID: 2100000, guid: d99e6d0ca95142744a5a7aeafe6dda47, type: 2}
   allyEnemyTarget:
   - {fileID: 436868469339301971}
@@ -517,6 +544,7 @@ GameObject:
   - component: {fileID: 1230198961125778086}
   - component: {fileID: 4851694985555668690}
   - component: {fileID: 7724969390183552634}
+  - component: {fileID: 1848200298274081417}
   m_Layer: 7
   m_Name: SM_LIFT_STAND
   m_TagString: Untagged
@@ -570,7 +598,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aead24b7d99494c4da6a43569c0180a7, type: 2}
+  - {fileID: 2100000, guid: cc9b421cf9288cd438338b2cc73022d4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -604,6 +632,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -631,3 +663,26 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -978992042930968676, guid: ae7fa1d4395c49e4687bdf8c22b38712, type: 3}
+--- !u!114 &1848200298274081417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4146579460506339721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f482d04781efed54eaebf89f1115118f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  steps:
+  - mask: {fileID: 2800000, guid: c36f8f1c000d1dc4bb33c2df7fa98512, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: ecc4c4f845774b7419b5214169a9fadc, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: 28b4a51f2ea09c74db86380416324221, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: 2925127bb7b6b5647a4f58e3c909e332, type: 3}
+    strength: 1
+  textureResolution: 512
+  targetRenderer: {fileID: 0}
