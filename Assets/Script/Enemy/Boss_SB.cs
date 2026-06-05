@@ -68,6 +68,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("タックルの最大移動距離（m）")]
     [SerializeField] private float tackleMaxDistance = 20f;
 
+    [Header("── 障害物回避 ──")]
+    [Tooltip("障害物検知距離（m）")]
+    [SerializeField] private float avoidDistance = 2f;
+    [Tooltip("回避時の横移動速度")]
+    [SerializeField] private float avoidSpeed = 3f;
+
     [Header("── タックルタイミング ──")]
     [Tooltip("追従開始からタックルまでの待機時間（最小・秒）")]
     [SerializeField] private float tackleDelayMin = 3f;
@@ -97,6 +103,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float knockbackDuration = 0.8f;
     [Tooltip("回復量")]
     [SerializeField] private float inkRecovery = 2f;
+
+    [Header("── 攻撃予告 ──")]
+    [Tooltip("攻撃予告スクリプト")]
+    [SerializeField] private AttackIndicator attackIndicator;
 
     [Header("── フェーズ別ステータス ──")]
     [Tooltip("必要塗り回数（フェーズ1・2・3）")]
@@ -135,6 +145,17 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── 地面追従 ──")]
     [SerializeField] private float groundFollowSpeed = 10f;
 
+    [Header("── 塗り判定 ──")]
+    [Tooltip("塗りのクールダウン時間（秒）同じ時間内に複数回カウントされない")]
+    [SerializeField] private float inkCooldown = 0.5f;
+
+    [Header("── ボスエリア ──")]
+    [Tooltip("ボスエリアのPointA（BossAreaTriggerと同じ）")]
+    [SerializeField] private Transform areaPointA;
+    [Tooltip("ボスエリアのPointB（BossAreaTriggerと同じ）")]
+    [SerializeField] private Transform areaPointB;
+
+
     // ====================================================================
     //  内部状態（全てprivate）
     // ====================================================================
@@ -170,6 +191,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private bool isPlayerKnockedBack;
 
     private CharacterController bossController;
+
+    private float lastInkTime = -999f; // 最後に塗られた時間
 
     // ====================================================================
     //  初期化
@@ -222,6 +245,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (player == null) return;
 
         UpdatePlayerKnockback();
+        ClampToArea();
 
         switch (state)
         {
@@ -259,6 +283,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (isAlly) return;
         if (state == BossState.Roar) return;
         if (state == BossState.Defeated) return;
+
+        if (Time.time - lastInkTime < inkCooldown) return;
+        lastInkTime = Time.time;
 
         int required = requiredInkCounts[currentPhase];
 
@@ -338,9 +365,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (dist > collideDistance)
         {
-            Vector3 moveDir = toPlayer.normalized * chaseSpeed * Time.deltaTime;
-            moveDir.y = -9.8f * Time.deltaTime;
-            bossController.Move(moveDir);
+            Vector3 moveDir = GetAvoidanceDirection(toPlayer.normalized);
+            Vector3 move = moveDir * chaseSpeed * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+            bossController.Move(move);
         }
         else
         {
@@ -350,6 +378,49 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         LookAt(toPlayer);
+    }
+
+    /// <summary>障害物を検知して回避方向を返す</summary>
+    private Vector3 GetAvoidanceDirection(Vector3 desiredDir)
+    {
+        // 進行方向に障害物があるか確認
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            desiredDir,
+            avoidDistance,
+            ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            // 障害物なし → そのまま進む
+            return desiredDir;
+        }
+
+        // 右方向を確認
+        Vector3 rightDir = Quaternion.Euler(0, 45f, 0) * desiredDir;
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            rightDir,
+            avoidDistance,
+            ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            return rightDir;
+        }
+
+        // 左方向を確認
+        Vector3 leftDir = Quaternion.Euler(0, -45f, 0) * desiredDir;
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            leftDir,
+            avoidDistance,
+            ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            return leftDir;
+        }
+
+        // 全方向に障害物があれば元の方向に進む
+        return desiredDir;
     }
 
     // ====================================================================
@@ -362,6 +433,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         chargeTimer = 0f;
         chargeTargetDir = (player.position - transform.position).normalized;
         chargeTargetDir.y = 0f;
+
+        // 攻撃予告表示
+        if (attackIndicator != null)
+            attackIndicator.Show(chargeTargetDir);
+
         Debug.Log("[Boss_SB] チャージ開始！");
     }
 
@@ -383,6 +459,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         state = BossState.Tackle;
         tackleDirection = chargeTargetDir;
         tackleStartPos = transform.position;
+
+        // 攻撃予告非表示
+        if (attackIndicator != null)
+            attackIndicator.Hide();
+
         Debug.Log("[Boss_SB] タックル開始！");
     }
 
@@ -392,6 +473,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         tackleMove.y = -9.8f * Time.deltaTime;
         bossController.Move(tackleMove);
         LookAt(tackleDirection);
+
+        if (IsOutOfArea())
+        {
+            ClampToArea();
+            EnterStop();
+            return;
+        }
 
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
         Vector3 playerPos = player.position;
@@ -409,6 +497,19 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
             EnterStop();
+    }
+
+    private bool IsOutOfArea()
+    {
+        if (areaPointA == null || areaPointB == null) return false;
+
+        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
+        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
+
+        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
+
+        return checkPos.x < min.x || checkPos.x > max.x ||
+               checkPos.z < min.z || checkPos.z > max.z;
     }
 
     // ====================================================================
@@ -698,6 +799,27 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         transform.rotation = upRot;
+    }
+
+    private void ClampToArea()
+    {
+        if (areaPointA == null || areaPointB == null) return;
+
+        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
+        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
+
+        // モデルの位置を基準にクランプ
+        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        Vector3 offset = checkPos - transform.position; // 親とモデルのオフセット
+
+        float clampedX = Mathf.Clamp(checkPos.x, min.x, max.x);
+        float clampedZ = Mathf.Clamp(checkPos.z, min.z, max.z);
+
+        // オフセット分を引いて親の位置を設定
+        transform.position = new Vector3(
+            clampedX - offset.x,
+            transform.position.y,
+            clampedZ - offset.z);
     }
 
     // ====================================================================
