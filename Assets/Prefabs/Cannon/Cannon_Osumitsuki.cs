@@ -146,7 +146,6 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
         if (osumitsukiFlg)
             return;
 
-        Debug.Log("************************************************************");
         Vector3 dif = transform.position - playerTrf.position;
         if (dif.sqrMagnitude < activeDist)
         {

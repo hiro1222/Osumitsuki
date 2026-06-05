@@ -20,9 +20,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WASI_Seesaw
-  m_Shader: {fileID: 4800000, guid: dce85b857fbd6584cb82405bd8208416, type: 3}
-  m_Parent: {fileID: 2100000, guid: 657b2245e2cf92d478a13434b4b3799e, type: 2}
+  m_Name: WASI_Lantern
+  m_Shader: {fileID: 4800000, guid: 69b7a9020ed1d2c409e10193b6ca99cb, type: 3}
+  m_Parent: {fileID: 2100000, guid: 4d9b2c4e24d078446b00ac28a65f8cdd, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
@@ -40,11 +40,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseTex:
-        m_Texture: {fileID: 2800000, guid: ef36996a765417a48981942d43e0ea4d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 952c9739d7aca8d4588fd9f058312d71, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OsumiTex:
-        m_Texture: {fileID: 2800000, guid: 240f0e0cb9c1c134f88354bbd8c8ef19, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8ef4774bd4839514eb7abc181823be1e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
