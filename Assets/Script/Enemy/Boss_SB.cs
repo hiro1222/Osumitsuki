@@ -6,25 +6,25 @@ using System.Collections.Generic;
 /// ボスエネミー「鎧墨袋（Boss_SB）」
 ///
 /// 【状態遷移】
-/// Idle → Chase → Charge → Tackle → Stop → Chase
-/// 木箱衝突時: Stun（10秒・攻撃ヒットでタイマーリセット）
-/// お墨付き完了時: Roar（咆哮）→ フェーズ進行 → Chase（or 撃破）
+/// フェーズ1: Idle → Chase → Charge → Tackle → Stop → Chase
+/// フェーズ2: Idle → Chase → Roll（ゴロゴロ・ホーミング）→ RollEnd（ジャンプ着地）→ Chase
+/// 木箱衝突時(P1): Stun
+/// 灯籠3回バウンド時(P2): Stun
+/// お墨付き完了時: Roar → フェーズ進行 → Chase（or 撃破）
 ///
 /// 【フェーズ】
 /// フェーズ1 → 咆哮 → フェーズ2
 /// フェーズ2 → 咆哮 → フェーズ3
 /// フェーズ3 → 咆哮 → 撃破
 ///
-/// 【仕様変更・追加時のガイド】
-/// ・新しい状態を追加 → BossState に追加 → Enter/Update メソッドを追加
-/// ・既存の状態を変更 → 対応する Enter/Update メソッドだけ変更
-/// ・ステータス変更   → Inspector で調整（[SerializeField]）
-///
 /// 【外部から呼ぶ関数】
-/// ・StartBossBattle()  : BossAreaTriggerから呼ぶ
-/// ・ReceiveInk()       : EnemyHitReceiverから呼ぶ（スタン中のみ有効）
-/// ・GetIsAlly()        : 外部からお墨付き状態を確認する
-/// ・NotifyHitCrate()   : 木箱スクリプトからタックル衝突時に呼ぶ
+/// ・StartBossBattle()      : BossAreaTriggerから呼ぶ
+/// ・ReceiveInk()           : EnemyHitReceiverから呼ぶ
+/// ・GetIsAlly()            : 外部からお墨付き状態を確認する
+/// ・NotifyHitCrate()       : 木箱スクリプトからタックル衝突時に呼ぶ（フェーズ1）
+/// ・NotifyLanternBounce()  : 灯籠スクリプトからバウンド時に呼ぶ（フェーズ2）
+/// ・GetRollDirection()     : 灯籠スクリプトから転がり方向を取得するために呼ぶ
+/// ・SetRollDirection()     : 灯籠スクリプトからバウンド後の方向を設定するために呼ぶ
 /// </summary>
 public class Boss_SB : MonoBehaviour, IF_Enemy
 {
@@ -37,10 +37,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         Idle,    // 待機（ボス戦開始前）
         Chase,   // 追従
-        Charge,  // チャージ（タックル前の溜め）
-        Tackle,  // タックル（急直進）
-        Stop,    // 停止（タックル後3秒）
-        Stun,    // スタン（木箱衝突・10秒）
+        Charge,  // チャージ（タックル前の溜め）フェーズ1
+        Tackle,  // タックル（急直進）フェーズ1
+        Roll,    // ゴロゴロ（ホーミング転がり）フェーズ2
+        RollEnd, // ゴロゴロ終了（ジャンプ→着地）フェーズ2
+        Stop,    // 停止（攻撃後3秒）
+        Stun,    // スタン（10秒）
         Roar,    // 咆哮
         Defeated // 撃破
     }
@@ -49,43 +51,65 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     //  設定（Inspector）
     // ====================================================================
 
+    [Header("── デバッグ ──")]
+    [Tooltip("開始時のフェーズ（0=フェーズ1, 1=フェーズ2, 2=フェーズ3）デバッグ用")]
+    [SerializeField] private int debugStartPhase = 0;
+
     [Header("── プレイヤー参照 ──")]
     [SerializeField] private Transform player;
 
     [Header("── モデル参照 ──")]
     [Tooltip("距離判定の基準にするモデルのTransform（子オブジェクト）")]
     [SerializeField] private Transform bodyTransform;
+    [Tooltip("ゴロゴロ回転させるモデルのTransform（子オブジェクト）")]
+    [SerializeField] private Transform rollModelTransform;
 
     [Header("── 移動 ──")]
     [Tooltip("追従速度")]
     [SerializeField] private float chaseSpeed = 3f;
-    [Tooltip("タックル速度")]
-    [SerializeField] private float tackleSpeed = 12f;
     [Tooltip("追従中の衝突判定距離")]
     [SerializeField] private float collideDistance = 2f;
-    [Tooltip("タックル中の衝突判定距離")]
-    [SerializeField] private float tackleCollideDistance = 3.5f;
-    [Tooltip("タックルの最大移動距離（m）")]
-    [SerializeField] private float tackleMaxDistance = 20f;
 
     [Header("── 障害物回避 ──")]
     [Tooltip("障害物検知距離（m）")]
     [SerializeField] private float avoidDistance = 2f;
-    [Tooltip("回避時の横移動速度")]
-    [SerializeField] private float avoidSpeed = 3f;
 
-    [Header("── タックルタイミング ──")]
-    [Tooltip("追従開始からタックルまでの待機時間（最小・秒）")]
-    [SerializeField] private float tackleDelayMin = 3f;
-    [Tooltip("追従開始からタックルまでの待機時間（最大・秒）")]
-    [SerializeField] private float tackleDelayMax = 8f;
+    [Header("── タックル（フェーズ1）──")]
+    [Tooltip("タックル速度")]
+    [SerializeField] private float tackleSpeed = 12f;
+    [Tooltip("タックルの最大移動距離（m）")]
+    [SerializeField] private float tackleMaxDistance = 20f;
+
+    [Header("── ゴロゴロ（フェーズ2）──")]
+    [Tooltip("ゴロゴロの速度")]
+    [SerializeField] private float rollSpeed = 8f;
+    [Tooltip("ゴロゴロの最大時間（秒）")]
+    [SerializeField] private float rollDuration = 10f;
+    [Tooltip("近距離時の最大曲がり角度（度/秒）")]
+    [SerializeField] private float rollMaxTurnAngle = 3f;
+    [Tooltip("遠距離時の最大曲がり角度（度/秒）")]
+    [SerializeField] private float rollMaxTurnAngleFar = 15f;
+    [Tooltip("この距離以上離れたら遠距離ホーミングになる（m）")]
+    [SerializeField] private float rollHomingDistanceThreshold = 10f;
+    [Tooltip("ゴロゴロ中のX軸回転速度")]
+    [SerializeField] private float rollRotateSpeed = 360f;
+    [Tooltip("ゴロゴロ終了時のジャンプ高さ")]
+    [SerializeField] private float rollEndJumpHeight = 3f;
+    [Tooltip("ゴロゴロ終了時のジャンプ時間（秒）")]
+    [SerializeField] private float rollEndJumpDuration = 0.5f;
+
+    [Header("── 攻撃タイミング（共通）──")]
+    [Tooltip("追従開始から攻撃までの待機時間（最小・秒）")]
+    [SerializeField] private float attackDelayMin = 3f;
+    [Tooltip("追従開始から攻撃までの待機時間（最大・秒）")]
+    [SerializeField] private float attackDelayMax = 8f;
 
     [Header("── チャージ ──")]
     [Tooltip("チャージ時間（秒）")]
     [SerializeField] private float chargeDuration = 1f;
 
-    [Header("── 停止（タックル後） ──")]
-    [Tooltip("タックル後の停止時間（秒）")]
+    [Header("── 停止（攻撃後） ──")]
+    [Tooltip("攻撃後の停止時間（秒）")]
     [SerializeField] private float stopDuration = 3f;
 
     [Header("── スタン ──")]
@@ -95,23 +119,19 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private bool resetStunTimerOnHit = true;
 
     [Header("── ステータス ──")]
-    [Tooltip("攻撃力（ノックバック距離 = 攻撃力 × 0.5m）攻撃力:5")]
-    [SerializeField] private float attackPower = 5f;
+    [Tooltip("攻撃力（フェーズ1:5 フェーズ2:6）")]
+    [SerializeField] private float[] attackPowers = { 5f, 6f, 7f };
     [Tooltip("上方向のノックバック強さ")]
     [SerializeField] private float knockbackUpForce = 5f;
     [Tooltip("ノックバックの持続時間（秒）")]
     [SerializeField] private float knockbackDuration = 0.8f;
-    [Tooltip("回復量")]
-    [SerializeField] private float inkRecovery = 2f;
-
-    [Header("── 攻撃予告 ──")]
-    [Tooltip("攻撃予告スクリプト")]
-    [SerializeField] private AttackIndicator attackIndicator;
+    [Tooltip("回復量（フェーズ1:2 フェーズ2:10）")]
+    [SerializeField] private float[] inkRecoveries = { 2f, 10f, 10f };
 
     [Header("── フェーズ別ステータス ──")]
-    [Tooltip("必要塗り回数（フェーズ1・2・3）")]
+    [Tooltip("必要塗り回数（フェーズ1:10 フェーズ2:12 フェーズ3:15）")]
     [SerializeField] private int[] requiredInkCounts = { 10, 12, 15 };
-    [Tooltip("咆哮の円形リセット範囲・直径（フェーズ1・2・3）単位:m")]
+    [Tooltip("咆哮の円形リセット範囲・直径（フェーズ1:5 フェーズ2:7 フェーズ3:10）単位:m")]
     [SerializeField] private float[] roarRanges = { 5f, 7f, 10f };
 
     [Header("── 咆哮 ──")]
@@ -126,13 +146,21 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("ボス自身のPaintableSurface")]
     [SerializeField] private List<PaintableSurface> bossSurfaces = new List<PaintableSurface>();
 
-    [Header("── 木箱 ──")]
+    [Header("── 木箱（フェーズ1）──")]
     [Tooltip("木箱オブジェクト（咆哮で飛ばす対象）")]
     [SerializeField] private List<GameObject> crateObjects = new List<GameObject>();
     [Tooltip("木箱を飛ばす方向と強さ")]
     [SerializeField] private Vector3 crateBlastForce = new Vector3(0f, 10f, 20f);
     [Tooltip("木箱が消えるまでの時間（秒）")]
     [SerializeField] private float crateDestroyDelay = 3f;
+
+    [Header("── 灯籠（フェーズ2）──")]
+    [Tooltip("灯籠オブジェクト（咆哮で飛ばす対象）")]
+    [SerializeField] private List<GameObject> lanternObjects = new List<GameObject>();
+    [Tooltip("灯籠を飛ばす方向と強さ")]
+    [SerializeField] private Vector3 lanternBlastForce = new Vector3(0f, 10f, 20f);
+    [Tooltip("灯籠が消えるまでの時間（秒）")]
+    [SerializeField] private float lanternDestroyDelay = 3f;
 
     [Header("── スタン演出 ──")]
     [Tooltip("後退速度")]
@@ -142,40 +170,49 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("傾く時間（秒）")]
     [SerializeField] private float tiltDuration = 0.3f;
 
-    [Header("── 地面追従 ──")]
-    [SerializeField] private float groundFollowSpeed = 10f;
-
-    [Header("── 塗り判定 ──")]
-    [Tooltip("塗りのクールダウン時間（秒）同じ時間内に複数回カウントされない")]
-    [SerializeField] private float inkCooldown = 0.5f;
-
     [Header("── ボスエリア ──")]
-    [Tooltip("ボスエリアのPointA（BossAreaTriggerと同じ）")]
+    [Tooltip("ボスエリアのPointA")]
     [SerializeField] private Transform areaPointA;
-    [Tooltip("ボスエリアのPointB（BossAreaTriggerと同じ）")]
+    [Tooltip("ボスエリアのPointB")]
     [SerializeField] private Transform areaPointB;
 
+    [Header("── 攻撃予告 ──")]
+    [SerializeField] private AttackIndicator attackIndicator;
+
+    [Header("── 地面追従 ──")]
+    [SerializeField] private float groundFollowSpeed = 10f;
 
     // ====================================================================
     //  内部状態（全てprivate）
     // ====================================================================
 
     private BossState state = BossState.Idle;
-    private int currentPhase = 0; // 0=フェーズ1, 1=フェーズ2, 2=フェーズ3
+    private int currentPhase = 0;
     private int inkHitCount = 0;
     private bool isAlly = false;
 
     // Chase用
-    private float tackleTimer = 0f;
-    private float tackleDelay = 0f;
+    private float attackTimer = 0f;
+    private float attackDelay = 0f;
 
     // Charge用
     private float chargeTimer = 0f;
     private Vector3 chargeTargetDir;
 
-    // Tackle用
+    // Tackle用（フェーズ1）
     private Vector3 tackleDirection;
     private Vector3 tackleStartPos;
+
+    // Roll用（フェーズ2）
+    private float rollTimer = 0f;
+    private Vector3 rollDirection;
+    private int bounceCount = 0; // バウンドフラグ成立回数
+    private bool canStunOnBounce = true; // バウンドでスタンできるか
+    private float rollXRotation = 0f;
+    private float avoidTimer = 0f;
+    private float avoidDuration = 0.5f; // 回避後この時間で元に戻る
+    private bool isAvoiding = false;
+
 
     // Stop用
     private float stopTimer = 0f;
@@ -191,8 +228,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private bool isPlayerKnockedBack;
 
     private CharacterController bossController;
-
-    private float lastInkTime = -999f; // 最後に塗られた時間
 
     // ====================================================================
     //  初期化
@@ -232,8 +267,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         bossController = GetComponent<CharacterController>();
+
+        // デバッグ用フェーズ設定
+        currentPhase = Mathf.Clamp(debugStartPhase, 0, 2);
+        inkHitCount = 0;
         state = BossState.Idle;
-        currentPhase = 0;
+
+        Debug.Log($"[Boss_SB] 開始フェーズ: {currentPhase + 1}");
     }
 
     // ====================================================================
@@ -246,6 +286,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         UpdatePlayerKnockback();
         ClampToArea();
+        CheckPlayerCollision();
 
         switch (state)
         {
@@ -253,6 +294,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Chase: UpdateChase(); break;
             case BossState.Charge: UpdateCharge(); break;
             case BossState.Tackle: UpdateTackle(); break;
+            case BossState.Roll: UpdateRoll(); break;
+            case BossState.RollEnd: break; // コルーチンで処理
             case BossState.Stop: UpdateStop(); break;
             case BossState.Stun: UpdateStun(); break;
             case BossState.Roar: break;
@@ -269,27 +312,19 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (state != BossState.Idle) return;
         inkHitCount = 0;
-        currentPhase = 0;
-        Debug.Log("[Boss_SB] ボス戦開始！フェーズ1");
+        Debug.Log($"[Boss_SB] ボス戦開始！フェーズ{currentPhase + 1}");
         EnterChase();
     }
 
-    /// <summary>
-    /// 墨を塗られたときの処理（EnemyHitReceiverから呼ぶ）
-    /// スタン中のみ規定数まで増える・スタン中以外は規定数-1まで
-    /// </summary>
+    /// <summary>墨を塗られたときの処理（EnemyHitReceiverから呼ぶ）</summary>
     public void ReceiveInk()
     {
         if (isAlly) return;
         if (state == BossState.Roar) return;
         if (state == BossState.Defeated) return;
 
-        if (Time.time - lastInkTime < inkCooldown) return;
-        lastInkTime = Time.time;
-
         int required = requiredInkCounts[currentPhase];
 
-        // スタン中以外は規定数-1までしか増えない
         if (state != BossState.Stun)
         {
             if (inkHitCount >= required - 1) return;
@@ -298,7 +333,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
 
-        // スタン中
         inkHitCount++;
         Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {required} フェーズ{currentPhase + 1}");
 
@@ -315,19 +349,87 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     /// <summary>お墨付き状態を返す</summary>
     public bool GetIsAlly() => isAlly;
 
+    /// <summary>現在のフェーズを返す</summary>
+    public int GetCurrentPhase() => currentPhase;
+
     /// <summary>
-    /// 木箱に衝突したときに呼ぶ（木箱スクリプトから呼ぶ）
+    /// 木箱に衝突したときに呼ぶ（フェーズ1・木箱スクリプトから呼ぶ）
     /// タックル中のみスタンに移行する
     /// </summary>
     public void NotifyHitCrate()
     {
+        if (currentPhase != 0) return;
         if (state != BossState.Tackle) return;
         Debug.Log("[Boss_SB] 木箱に衝突！スタン開始");
         EnterStun();
     }
 
-    /// <summary>現在のフェーズを返す（外部参照用）</summary>
-    public int GetCurrentPhase() => currentPhase;
+    /// <summary>
+    /// 灯籠にバウンドしたときに呼ぶ（フェーズ2・灯籠スクリプトから呼ぶ）
+    /// isInner: 内面に当たったか（trueでバウンドフラグ成立）
+    /// newDirection: バウンド後の方向
+    /// </summary>
+    public void NotifyLanternBounce(bool isInner, Vector3 newDirection)
+    {
+        if (currentPhase != 1) return;
+        if (state != BossState.Roll) return;
+
+        // 方向を更新
+        rollDirection = newDirection.normalized;
+        rollDirection.y = 0f;
+
+        if (isInner)
+        {
+            // 内面バウンド → フラグ成立
+            bounceCount++;
+            Debug.Log($"[Boss_SB] 灯籠内面バウンド！フラグ成立: {bounceCount}/3");
+
+            if (bounceCount >= 3)
+            {
+                // 3回でスタン
+                Debug.Log("[Boss_SB] 3回バウンド！スタン開始");
+                EnterStun();
+            }
+        }
+        else
+        {
+            // 外面バウンド → フラグ不成立・3秒後に移動に戻る
+            Debug.Log("[Boss_SB] 灯籠外面バウンド。3秒後に移動に戻る");
+            StartCoroutine(RollEndAfterDelay(3f));
+        }
+    }
+
+    /// <summary>現在のゴロゴロ方向を返す（灯籠スクリプトからバウンド計算用）</summary>
+    public Vector3 GetRollDirection() => rollDirection;
+
+    private void CheckPlayerCollision()
+    {
+        if (state == BossState.Idle ||
+            state == BossState.Stop ||
+            state == BossState.Stun ||
+            state == BossState.Roar ||
+            state == BossState.RollEnd ||
+            state == BossState.Defeated) return;
+
+        Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        Vector3 playerPos = player.position;
+        bossPos.y = 0f;
+        playerPos.y = 0f;
+        float dist = Vector3.Distance(bossPos, playerPos);
+
+
+        if (dist <= collideDistance)
+        {
+            ApplyKnockbackToPlayer();
+
+            if (state == BossState.Tackle)
+                EnterStop();
+            else if (state == BossState.Roll)
+                StartCoroutine(RollEndCoroutine());
+            else if (state == BossState.Chase)
+                EnterStop();
+        }
+    }
 
     // ====================================================================
     //  Chase（追従）
@@ -336,13 +438,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void EnterChase()
     {
         state = BossState.Chase;
-        tackleTimer = 0f;
-        tackleDelay = Random.Range(tackleDelayMin, tackleDelayMax);
+        attackTimer = 0f;
+        attackDelay = Random.Range(attackDelayMin, attackDelayMax);
+        bounceCount = 0;
 
-        // 体を起こす
         StartCoroutine(StandUpCoroutine());
 
-        Debug.Log($"[Boss_SB] Chase開始。タックルまで{tackleDelay:F1}秒");
+        Debug.Log($"[Boss_SB] Chase開始。攻撃まで{attackDelay:F1}秒 フェーズ{currentPhase + 1}");
     }
 
     private void UpdateChase()
@@ -350,10 +452,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 toPlayer = player.position - transform.position;
         toPlayer.y = 0f;
 
-        tackleTimer += Time.deltaTime;
-        if (tackleTimer >= tackleDelay)
+        attackTimer += Time.deltaTime;
+        if (attackTimer >= attackDelay)
         {
-            EnterCharge();
+            // フェーズによって攻撃パターンを切り替える
+            if (currentPhase == 0)
+                EnterCharge(); // フェーズ1: タックル
+            else
+                EnterRoll();   // フェーズ2以降: ゴロゴロ
             return;
         }
 
@@ -370,61 +476,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             move.y = -9.8f * Time.deltaTime;
             bossController.Move(move);
         }
-        else
-        {
-            ApplyKnockbackToPlayer();
-            EnterStop();
-            return;
-        }
 
         LookAt(toPlayer);
     }
 
-    /// <summary>障害物を検知して回避方向を返す</summary>
-    private Vector3 GetAvoidanceDirection(Vector3 desiredDir)
-    {
-        // 進行方向に障害物があるか確認
-        if (!Physics.Raycast(
-            transform.position + Vector3.up * 0.5f,
-            desiredDir,
-            avoidDistance,
-            ~0,
-            QueryTriggerInteraction.Ignore))
-        {
-            // 障害物なし → そのまま進む
-            return desiredDir;
-        }
-
-        // 右方向を確認
-        Vector3 rightDir = Quaternion.Euler(0, 45f, 0) * desiredDir;
-        if (!Physics.Raycast(
-            transform.position + Vector3.up * 0.5f,
-            rightDir,
-            avoidDistance,
-            ~0,
-            QueryTriggerInteraction.Ignore))
-        {
-            return rightDir;
-        }
-
-        // 左方向を確認
-        Vector3 leftDir = Quaternion.Euler(0, -45f, 0) * desiredDir;
-        if (!Physics.Raycast(
-            transform.position + Vector3.up * 0.5f,
-            leftDir,
-            avoidDistance,
-            ~0,
-            QueryTriggerInteraction.Ignore))
-        {
-            return leftDir;
-        }
-
-        // 全方向に障害物があれば元の方向に進む
-        return desiredDir;
-    }
-
     // ====================================================================
-    //  Charge（チャージ）
+    //  Charge（チャージ・フェーズ1）
     // ====================================================================
 
     private void EnterCharge()
@@ -434,7 +491,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         chargeTargetDir = (player.position - transform.position).normalized;
         chargeTargetDir.y = 0f;
 
-        // 攻撃予告表示
         if (attackIndicator != null)
             attackIndicator.Show(chargeTargetDir);
 
@@ -451,7 +507,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  Tackle（タックル）
+    //  Tackle（タックル・フェーズ1）
     // ====================================================================
 
     private void EnterTackle()
@@ -460,7 +516,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         tackleDirection = chargeTargetDir;
         tackleStartPos = transform.position;
 
-        // 攻撃予告非表示
         if (attackIndicator != null)
             attackIndicator.Hide();
 
@@ -487,31 +542,196 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         playerPos.y = 0f;
         float dist = Vector3.Distance(bossPos, playerPos);
 
-        if (dist <= tackleCollideDistance)
-        {
-            ApplyKnockbackToPlayer();
-            EnterStop();
-            return;
-        }
-
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
             EnterStop();
     }
 
-    private bool IsOutOfArea()
+    // ====================================================================
+    //  Roll（ゴロゴロ・フェーズ2）
+    //  ★ゴロゴロの挙動を変えたいときはここを編集
+    // ====================================================================
+
+    private void EnterRoll()
     {
-        if (areaPointA == null || areaPointB == null) return false;
-
-        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
-        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
-
-        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
-
-        return checkPos.x < min.x || checkPos.x > max.x ||
-               checkPos.z < min.z || checkPos.z > max.z;
+        state = BossState.Roll;
+        rollTimer = 0f;
+        rollXRotation = 0f;
+        rollDirection = (player.position - transform.position).normalized;
+        rollDirection.y = 0f;
+        Debug.Log("[Boss_SB] ゴロゴロ開始！");
     }
 
+    private void UpdateRoll()
+    {
+        rollTimer += Time.deltaTime;
+
+        // 10秒経過で終了
+        if (rollTimer >= rollDuration)
+        {
+            StartCoroutine(RollEndCoroutine());
+            return;
+        }
+
+        // ホーミング：プレイヤー方向に少しずつ向きを変える
+        // プレイヤーとの距離によってホーミング強さを変える
+        Vector3 toPlayer = (player.position - transform.position).normalized;
+        toPlayer.y = 0f;
+
+        float distToPlayer = Vector3.Distance(
+            new Vector3(transform.position.x, 0, transform.position.z),
+            new Vector3(player.position.x, 0, player.position.z));
+
+        // 距離が遠いほどホーミングが強くなる
+        // rollHomingStrength: 近距離時の基本値
+        // rollHomingStrengthFar: 遠距離時の最大値
+        float homingRate = Mathf.Lerp(
+            rollMaxTurnAngle,
+            rollMaxTurnAngleFar,
+            Mathf.Clamp01(distToPlayer / rollHomingDistanceThreshold));
+
+        rollDirection = Vector3.RotateTowards(
+            rollDirection,
+            toPlayer,
+            homingRate * Mathf.Deg2Rad * Time.deltaTime,
+            0f).normalized;
+        rollDirection.y = 0f;
+
+        // 現在の方向とプレイヤー方向の角度差を計算
+        float angle = Vector3.Angle(rollDirection, toPlayer);
+
+        // 最大曲がり角度を制限（例：1フレームに最大3度まで）
+        float maxAnglePerFrame = rollMaxTurnAngle * Time.deltaTime;
+
+        if (angle > maxAnglePerFrame)
+        {
+            rollDirection = Vector3.RotateTowards(
+                rollDirection,
+                toPlayer,
+                maxAnglePerFrame * Mathf.Deg2Rad,
+                0f).normalized;
+        }
+        else
+        {
+            rollDirection = toPlayer;
+        }
+        rollDirection.y = 0f;
+
+        // 移動
+        Vector3 move = rollDirection * rollSpeed * Time.deltaTime;
+        move.y = -9.8f * Time.deltaTime;
+        bossController.Move(move);
+
+        // 親オブジェクトはY軸（左右）だけ回転
+        if (rollDirection.sqrMagnitude > 0.01f)
+        {
+            float targetY = Quaternion.LookRotation(rollDirection).eulerAngles.y;
+            transform.rotation = Quaternion.Euler(0f, targetY, 0f);
+        }
+
+        // 子オブジェクトはX軸（ゴロゴロ）だけ回転
+        rollXRotation += rollRotateSpeed * Time.deltaTime;
+        if (rollModelTransform != null)
+        {
+            rollModelTransform.localRotation = Quaternion.Euler(rollXRotation, 0f, 0f);
+        }
+
+        // エリア外に出たら停止
+        if (IsOutOfArea())
+        {
+            ClampToArea();
+            StartCoroutine(RollEndCoroutine());
+            return;
+        }
+
+        // プレイヤーとの衝突判定
+        Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        Vector3 playerPos = player.position;
+        bossPos.y = 0f;
+        playerPos.y = 0f;
+        float dist = Vector3.Distance(bossPos, playerPos);
+    }
+
+    /// <summary>一定時間後にゴロゴロを終了する（外面バウンド時に使う）</summary>
+    private IEnumerator RollEndAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (state == BossState.Roll)
+            StartCoroutine(RollEndCoroutine());
+    }
+
+    /// <summary>ゴロゴロ終了：ジャンプ→着地→移動</summary>
+    private IEnumerator RollEndCoroutine()
+    {
+        state = BossState.RollEnd;
+        Debug.Log("[Boss_SB] ゴロゴロ終了。ジャンプ→着地");
+
+        Vector3 startPos = transform.position;
+        Vector3 jumpVelocity = rollDirection * rollSpeed; // 慣性として転がり方向の速度を引き継ぐ
+        float elapsed = 0f;
+
+        Quaternion startModelRot = rollModelTransform != null
+        ? rollModelTransform.localRotation
+        : Quaternion.identity;
+
+        while (elapsed < rollEndJumpDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / rollEndJumpDuration;
+
+            // 慣性移動
+            float inertiaRate = 1f - t;
+            Vector3 inertiaMove = jumpVelocity * inertiaRate * Time.deltaTime;
+            inertiaMove.y = 0f;
+
+            float yOffset = Mathf.Sin(t * Mathf.PI) * rollEndJumpHeight;
+
+            transform.position = new Vector3(
+                startPos.x + inertiaMove.x * rollEndJumpDuration,
+                startPos.y + yOffset,
+                startPos.z + inertiaMove.z * rollEndJumpDuration);
+
+            startPos = new Vector3(
+                transform.position.x,
+                startPos.y,
+                transform.position.z);
+
+            // ↓ ジャンプ中に回転を戻す
+            if (rollModelTransform != null)
+                rollModelTransform.localRotation = Quaternion.RotateTowards(
+                    rollModelTransform.localRotation,
+                    Quaternion.identity,
+                    rollRotateSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        transform.position = new Vector3(
+            transform.position.x,
+            startPos.y,
+            transform.position.z);
+
+        float resetDuration = 0.3f;
+        elapsed = 0f;
+
+        // 時間ではなく回転が戻りきったら終了
+        while (rollModelTransform != null &&
+               Quaternion.Angle(rollModelTransform.localRotation, Quaternion.identity) > 0.1f)
+        {
+            rollModelTransform.localRotation = Quaternion.RotateTowards(
+                rollModelTransform.localRotation,
+                Quaternion.identity,
+                rollRotateSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        if (rollModelTransform != null)
+            rollModelTransform.localRotation = Quaternion.identity;
+
+        rollXRotation = 0f;
+        EnterChase();
+    }
     // ====================================================================
     //  Stop（停止）
     // ====================================================================
@@ -550,7 +770,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (stunTimer >= stunDuration)
         {
-            // スタン解除（塗り引き継ぎ）
             Debug.Log("[Boss_SB] スタン解除。塗り引き継ぎ");
             EnterChase();
         }
@@ -569,10 +788,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private IEnumerator RoarCoroutine()
     {
-        // 体を起こす
         yield return StartCoroutine(StandUpCoroutine());
 
-        // フィールド中央にジャンプ
         if (fieldCenter != null)
             yield return StartCoroutine(JumpToCenter());
 
@@ -585,12 +802,15 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             try { InkPaintService.ClearAll(surface); } catch { }
         }
 
-        // フィールドを円形にリセット（現在のフェーズの範囲）
+        // フィールドを円形にリセット
         float roarRange = roarRanges[currentPhase];
         ResetFieldInRange(roarRange * 0.5f);
 
-        // 木箱を飛ばす
-        BlastCrates();
+        // フェーズに応じてオブジェクトを飛ばす
+        if (currentPhase == 0)
+            BlastObjects(crateObjects, crateBlastForce, crateDestroyDelay);
+        else if (currentPhase == 1)
+            BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
 
         Debug.Log($"[Boss_SB] 咆哮リセット完了。範囲: {roarRange}m（直径）フェーズ{currentPhase + 1}");
 
@@ -601,19 +821,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (currentPhase >= 3)
         {
-            // フェーズ3の咆哮後に撃破
             EnterDefeated();
         }
         else
         {
-            // 次のフェーズへ
             inkHitCount = 0;
             Debug.Log($"[Boss_SB] フェーズ{currentPhase + 1}へ移行");
             EnterChase();
         }
     }
 
-    /// <summary>フィールド中央にジャンプするコルーチン</summary>
     private IEnumerator JumpToCenter()
     {
         Vector3 startPos = transform.position;
@@ -625,26 +842,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-
             Vector3 pos = Vector3.Lerp(startPos, endPos, t);
             pos.y += Mathf.Sin(t * Mathf.PI) * roarJumpHeight;
             transform.position = pos;
-
             yield return null;
         }
 
         transform.position = endPos;
     }
 
-    /// <summary>
-    /// フィールドを円形にリセットする
-    /// OverlapSphereで範囲内のPaintableSurfaceを取得してEraseAtで範囲内だけ消す
-    /// </summary>
     private void ResetFieldInRange(float radius)
     {
-        // 既に処理したSurfaceを記録して重複処理を防ぐ
         var processed = new HashSet<PaintableSurface>();
-
         Collider[] colliders = Physics.OverlapSphere(
             transform.position, radius, ~0, QueryTriggerInteraction.Collide);
 
@@ -655,40 +864,35 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             if (surface == null || !surface.enabled) continue;
             if (processed.Contains(surface)) continue;
             processed.Add(surface);
-
-            // ClearAll()ではなくEraseAt()で範囲内だけ消す
             try { InkPaintService.EraseAt(surface, transform.position, radius); } catch { }
         }
     }
 
-    /// <summary>木箱を画面外に飛ばす</summary>
-    private void BlastCrates()
+    /// <summary>オブジェクトリストを飛ばす（木箱・灯籠共通）</summary>
+    private void BlastObjects(List<GameObject> objects, Vector3 blastForce, float destroyDelay)
     {
-        foreach (var crate in crateObjects)
+        foreach (var obj in objects)
         {
-            if (crate == null) continue;
-
-            var rb = crate.GetComponent<Rigidbody>();
+            if (obj == null) continue;
+            var rb = obj.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.isKinematic = false;
-                rb.AddForce(crateBlastForce, ForceMode.Impulse);
+                rb.AddForce(blastForce, ForceMode.Impulse);
             }
             else
             {
-                crate.SetActive(false);
+                obj.SetActive(false);
             }
-
-            StartCoroutine(DestroyCrateAfterDelay(crate, crateDestroyDelay));
-            Debug.Log($"[Boss_SB] 木箱を飛ばす: {crate.name}");
+            StartCoroutine(DestroyAfterDelay(obj, destroyDelay));
         }
     }
 
-    private IEnumerator DestroyCrateAfterDelay(GameObject crate, float delay)
+    private IEnumerator DestroyAfterDelay(GameObject obj, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (crate != null)
-            crate.SetActive(false);
+        if (obj != null)
+            obj.SetActive(false);
     }
 
     // ====================================================================
@@ -711,7 +915,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (isPlayerKnockedBack) return;
         if (playerController == null) return;
 
-        float knockbackDistance = attackPower * 0.5f;
+        float knockbackDistance = attackPowers[currentPhase] * 0.5f;
         Vector3 knockDir = (player.position - transform.position).normalized;
         knockDir.y = 0f;
 
@@ -745,24 +949,97 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
+    //  エリア制限
+    // ====================================================================
+
+    private void ClampToArea()
+    {
+        if (areaPointA == null || areaPointB == null) return;
+
+        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
+        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
+
+        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        Vector3 offset = checkPos - transform.position;
+
+        float clampedX = Mathf.Clamp(checkPos.x, min.x, max.x);
+        float clampedZ = Mathf.Clamp(checkPos.z, min.z, max.z);
+
+        transform.position = new Vector3(
+            clampedX - offset.x,
+            transform.position.y,
+            clampedZ - offset.z);
+    }
+
+    private bool IsOutOfArea()
+    {
+        if (areaPointA == null || areaPointB == null) return false;
+
+        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
+        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
+
+        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
+        return checkPos.x < min.x || checkPos.x > max.x ||
+               checkPos.z < min.z || checkPos.z > max.z;
+    }
+
+    // ====================================================================
+    //  障害物回避
+    // ====================================================================
+
+    private Vector3 GetAvoidanceDirection(Vector3 desiredDir)
+    {
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            desiredDir, avoidDistance, ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            isAvoiding = false;
+            return desiredDir;
+        }
+
+        // 右方向を確認
+        Vector3 rightDir = Quaternion.Euler(0, 45f, 0) * desiredDir;
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            rightDir, avoidDistance, ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            isAvoiding = true;
+            return rightDir;
+        }
+
+        // 左方向を確認
+        Vector3 leftDir = Quaternion.Euler(0, -45f, 0) * desiredDir;
+        if (!Physics.Raycast(
+            transform.position + Vector3.up * 0.5f,
+            leftDir, avoidDistance, ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            isAvoiding = true;
+            return leftDir;
+        }
+
+        return desiredDir;
+    }
+
+    // ====================================================================
     //  スタン演出
     // ====================================================================
 
     private IEnumerator StunRecoilCoroutine()
     {
         float elapsed = 0f;
-        Vector3 recoilDir = -tackleDirection;
+        Vector3 recoilDir = state == BossState.Roll ? -rollDirection : -tackleDirection;
 
         while (elapsed < recoilDuration)
         {
             elapsed += Time.deltaTime;
             float t = 1f - (elapsed / recoilDuration);
             float smoothT = t * t;
-
             Vector3 move = recoilDir * recoilSpeed * smoothT * Time.deltaTime;
             move.y = -9.8f * Time.deltaTime;
             bossController.Move(move);
-
             yield return null;
         }
     }
@@ -771,7 +1048,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         float elapsed = 0f;
         Quaternion startRot = transform.rotation;
-        Quaternion tiltRot = startRot * Quaternion.Euler(-90f, 0f, 0f);
+        Quaternion tiltRot = startRot * Quaternion.Euler(90f, 0f, 0f);
 
         while (elapsed < tiltDuration)
         {
@@ -801,27 +1078,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         transform.rotation = upRot;
     }
 
-    private void ClampToArea()
-    {
-        if (areaPointA == null || areaPointB == null) return;
-
-        Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
-        Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
-
-        // モデルの位置を基準にクランプ
-        Vector3 checkPos = bodyTransform != null ? bodyTransform.position : transform.position;
-        Vector3 offset = checkPos - transform.position; // 親とモデルのオフセット
-
-        float clampedX = Mathf.Clamp(checkPos.x, min.x, max.x);
-        float clampedZ = Mathf.Clamp(checkPos.z, min.z, max.z);
-
-        // オフセット分を引いて親の位置を設定
-        transform.position = new Vector3(
-            clampedX - offset.x,
-            transform.position.y,
-            clampedZ - offset.z);
-    }
-
     // ====================================================================
     //  ユーティリティ
     // ====================================================================
@@ -844,16 +1100,25 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
 
-        // 衝突判定
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(bossPos, collideDistance);
 
-        // 咆哮範囲（現在のフェーズ）
         if (roarRanges != null && roarRanges.Length > 0)
         {
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
             float range = roarRanges[Mathf.Min(currentPhase, roarRanges.Length - 1)];
             Gizmos.DrawWireSphere(transform.position, range * 0.5f);
+        }
+
+        // エリア範囲
+        if (areaPointA != null && areaPointB != null)
+        {
+            Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
+            Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
+            Vector3 center = (min + max) * 0.5f;
+            Vector3 size = max - min;
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(center, size);
         }
     }
 }
