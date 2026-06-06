@@ -1,23 +1,14 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
-/// ƒ{ƒXí—p–Ø” 
-/// ƒ{ƒX‚Ìƒ^ƒbƒNƒ‹‚ª“–‚½‚Á‚½‚Æ‚«‚ÉBoss_SB‚ÉƒXƒ^ƒ“‚ğ’Ê’m‚·‚é
+/// ãƒœã‚¹æˆ¦ç”¨æœ¨ç®±
+/// ãƒœã‚¹ã®ã‚¿ãƒƒã‚¯ãƒ«ãŒå½“ãŸã£ãŸã¨ãã«Boss_SBã«ã‚¹ã‚¿ãƒ³ã‚’é€šçŸ¥ã™ã‚‹
 ///
-/// OnTriggerEnter: ƒ{ƒX‘¤‚ÌƒRƒ‰ƒCƒ_[‚ªIsTrigger ON‚Ìê‡
-/// OnCollisionEnter: ƒ{ƒX‘¤‚ÌƒRƒ‰ƒCƒ_[‚ªIsTrigger OFF‚Ìê‡
+/// OnTriggerEnter: ãƒœã‚¹å´ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãŒIsTrigger ONã®å ´åˆ
+/// OnCollisionEnter: ãƒœã‚¹å´ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãŒIsTrigger OFFã®å ´åˆ
 /// </summary>
 public class Boss_WoodBox : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
-    {
-        NotifyBoss(other.gameObject);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        NotifyBoss(collision.gameObject);
-    }
 
     private void NotifyBoss(GameObject other)
     {
@@ -30,7 +21,7 @@ public class Boss_WoodBox : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[Boss_WoodBox] Boss_SB‚ªŒ©‚Â‚©‚ç‚È‚¢: {other.name}");
+            Debug.Log($"[Boss_WoodBox] Boss_SBãŒè¦‹ã¤ã‹ã‚‰ãªã„: {other.name}");
         }
     }
 }

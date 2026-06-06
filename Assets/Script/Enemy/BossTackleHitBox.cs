@@ -1,15 +1,5 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
-/// <summary>
-/// ƒ{ƒX‚Ìƒ^ƒbƒNƒ‹“–‚½‚è”»’è
-/// ƒ{ƒX‚ÌqƒIƒuƒWƒFƒNƒg‚ÉƒAƒ^ƒbƒ`‚·‚é
-///
-/// yƒZƒbƒgƒAƒbƒvz
-/// ‡@ BossEnemy‚ÌqƒIƒuƒWƒFƒNƒgi‹ó‚ÌGameObjectj‚ğì‚é
-/// ‡A ‚±‚ÌƒXƒNƒŠƒvƒg‚ğƒAƒ^ƒbƒ`
-/// ‡B CapsuleCollider ‚ğƒAƒ^ƒbƒ`‚µ‚Ä Is Trigger ON ‚É‚·‚é
-/// ‡C Inspector‚ÅBoss‚ğƒhƒ‰ƒbƒO
-/// </summary>
 public class BossTackleHitbox : MonoBehaviour
 {
     [SerializeField] private Boss_SB boss;
@@ -24,14 +14,24 @@ public class BossTackleHitbox : MonoBehaviour
     {
         if (boss == null) return;
 
-        // Boss_WoodBox‚ª‚Â‚¢‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚É“–‚½‚Á‚½‚Æ‚«
         var woodBox = other.GetComponent<Boss_WoodBox>();
         if (woodBox == null)
             woodBox = other.GetComponentInParent<Boss_WoodBox>();
 
-        if (woodBox != null)
+        if (woodBox == null) return;
+
+        int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+        if (inkLayer >= 0 && other.gameObject.layer == inkLayer)
         {
+            // å®Ÿä½“åŒ–ã—ãŸã‚³ãƒªã‚¸ãƒ§ãƒ³ã«å½“ãŸã£ãŸ â†’ ã‚¹ã‚¿ãƒ³
+            Debug.Log("[BossTackleHitbox] å®Ÿä½“åŒ–ï¼ã‚¹ã‚¿ãƒ³");
             boss.NotifyHitCrate();
+        }
+        else
+        {
+            // å®Ÿä½“åŒ–ã—ã¦ã„ãªã„ãŒæœ¨ç®±ã«å½“ãŸã£ãŸ â†’ ã‚¹ã‚¿ãƒ³ã›ãšã«åœæ­¢ã ã‘
+            Debug.Log("[BossTackleHitbox] å¡—ã‚Šé‡ä¸è¶³ã€‚åœæ­¢ã®ã¿");
+            boss.NotifyHitCrateNoStun();
         }
     }
 }
