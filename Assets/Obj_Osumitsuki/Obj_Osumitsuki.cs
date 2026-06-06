@@ -28,8 +28,8 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected bool endFlg = false;			//終了フラグ
 	protected bool firstSearchFlg = false;  //検索フラグ
 
-	private MaskedInkProgress maskSys;
     private List<MaskedInkProgress> maskSystems;
+    private List<PaintableSurface> paintsurfaces;
 
 	//プロパティ
 	public bool OsumiTrg => osumitsukiTrg;
@@ -123,12 +123,17 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 
         maskSystems = new List<MaskedInkProgress>();
+        paintsurfaces = new List<PaintableSurface>();
         Transform[] allTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform t in allTransforms)
         {
             var maskS = t.gameObject.GetComponent<MaskedInkProgress>();
             if (maskS != null)
                 maskSystems.Add(maskS);
+
+            var paintS = t.gameObject.GetComponent<PaintableSurface>();
+            if (paintS != null)
+                paintsurfaces.Add(paintS);
         }
     }
 
@@ -175,14 +180,15 @@ public class Obj_Osumitsuki : MonoBehaviour
 			GetAllChildren(transform, all);
 			if (all.Count > 0)
 			{
-				GameObject[] childrenObj = new GameObject[all.Count];
-				for (int i = 0; i < all.Count; i++)
-				{
-					childrenObj[i] = all[i].gameObject;
-					all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
-				}
-				DestroyInkCollider(childrenObj);
-			}
+                for (int i = 0; i < all.Count; i++)
+                {
+                    all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+                }
+                foreach (PaintableSurface ps in paintsurfaces)
+                {
+                    ps.ClearAll();
+                }
+            }
 
 			return osumitsukiTrg;
 		}
@@ -193,9 +199,9 @@ public class Obj_Osumitsuki : MonoBehaviour
             {
                 float curRatio = curInkAmount / maxInkCapa;
                 float curStep = ms.CurrentStep + 1;
-                int numStep = 3 + 1;
+                int allStepNum = ms.StepCount + 1;
 
-                float curStepInkAmount = maxInkCapa / numStep * curStep;
+                float curStepInkAmount = maxInkCapa / allStepNum * curStep;
 
                 if (curInkAmount >= curStepInkAmount)
                     ms.AdvanceBy(1);
@@ -251,48 +257,20 @@ public class Obj_Osumitsuki : MonoBehaviour
 	{
 		endFlg = true;
 
-		if (helperAllyEnemys == null)
-			return;
+        if (helperAllyEnemys == null) return;
+        if (allyEnemyTarget == null) return;
 
-		for (int i = 0; i < helperAllyEnemys.Length; i++)
-			helperAllyEnemys[i].ClearExternalState();
-
-		if (allyEnemyTarget != null)
+        for (int i = 0; i < helperAllyEnemys.Length; i++)
+        {
+            if (helperAllyEnemys[i] != null)
+                helperAllyEnemys[i].ClearExternalState();
+        }
+		if (allyEnemyTarget.Length > 0)
 		{
 			helperAllyEnemys = new AllyEnemy[allyEnemyTarget.Length];
 			helperEnemyStates = new AllyEnemy.IAllyEnemyState[allyEnemyTarget.Length];
 		}
 	}
-
-
-	/**
-    * @brief    お墨付き前についているインク当たり判定を削除
-    * @param    GameObject[]    _gameObjects    子要素配列
-    */
-	private void DestroyInkCollider(GameObject[] _gameObjects)
-	{
-
-		int childrenCount = _gameObjects.Length;
-		Collider[] colliders = new Collider[childrenCount];
-		for (int i = 0; i < childrenCount; i++)
-		{
-			colliders[i] = _gameObjects[i].GetComponent<Collider>();
-
-			if (colliders[i].gameObject.name == $"{gameObject.name}_InkCollision")
-				Destroy(colliders[i].gameObject);
-		}
-
-		for (int i = 0; i < colliders.Length; i++)
-		{
-			var collider = colliders[i];
-			collider.gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
-			GameObject grandChild = collider.gameObject.transform.GetChild(0).gameObject;
-
-			if (grandChild.name == $"{collider.gameObject.name}_InkCollision")
-				Destroy(grandChild);
-		}
-	}
-
 
 	/**
     * @brief    プレイヤーからAllyEnemyを参照して保持する
