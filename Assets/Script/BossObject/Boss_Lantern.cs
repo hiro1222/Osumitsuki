@@ -26,6 +26,14 @@ public class Boss_Lantern : MonoBehaviour
         inkLayer = LayerMask.NameToLayer("PlayerVSObject");
         cachedColliders = GetComponentsInChildren<Collider>();
     }
+    private void Update()
+    {
+        var stairs = GetComponent<Stairs_Osumitsuki>();
+        if (stairs != null)
+        {
+            Debug.Log($"[Lantern] osumitsukiTrg={stairs.OsumiTrg} osumitsukiFlg={stairs.OsumiFlg} endFlg={stairs.EndFlg}");
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {

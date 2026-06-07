@@ -1,214 +1,226 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// ƒ{ƒXƒGƒlƒ~[uŠZ–n‘ÜiBoss_SBjv
+/// ãƒœã‚¹ã‚¨ãƒãƒŸãƒ¼ã€Œé§å¢¨è¢‹ï¼ˆBoss_SBï¼‰ã€
 ///
-/// yó‘Ô‘JˆÚz
-/// ƒtƒF[ƒY1: Idle ¨ Chase ¨ Charge ¨ Tackle ¨ Stop ¨ Chase
-/// ƒtƒF[ƒY2: Idle ¨ Chase ¨ RolliƒSƒƒSƒEƒz[ƒ~ƒ“ƒOj¨ RollEndiƒWƒƒƒ“ƒv’…’nj¨ Chase
-/// –Ø” Õ“Ë(P1): Stun
-/// “”âÄ3‰ñƒoƒEƒ“ƒh(P2): Stun
-/// ‚¨–n•t‚«Š®—¹: Roar ¨ ƒtƒF[ƒYis ¨ Chaseior Œ‚”jj
+/// ã€çŠ¶æ…‹é·ç§»ã€‘
+/// ãƒ•ã‚§ãƒ¼ã‚º1: Idle â†’ Chase â†’ Charge â†’ Tackle â†’ Stop â†’ Chase
+/// ãƒ•ã‚§ãƒ¼ã‚º2: Idle â†’ Chase â†’ Rollï¼ˆã‚´ãƒ­ã‚´ãƒ­ãƒ»ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ï¼‰â†’ RollEndï¼ˆã‚¸ãƒ£ãƒ³ãƒ—ç€åœ°ï¼‰â†’ Chase
+/// æœ¨ç®±è¡çªæ™‚(P1): Stun
+/// ç¯ç± 3å›ãƒã‚¦ãƒ³ãƒ‰æ™‚(P2): Stun
+/// ãŠå¢¨ä»˜ãå®Œäº†æ™‚: Roar â†’ ãƒ•ã‚§ãƒ¼ã‚ºé€²è¡Œ â†’ Chaseï¼ˆor æ’ƒç ´ï¼‰
 ///
-/// yƒtƒF[ƒYz
-/// ƒtƒF[ƒY1 ¨ ™ôšK ¨ ƒtƒF[ƒY2
-/// ƒtƒF[ƒY2 ¨ ™ôšK ¨ ƒtƒF[ƒY3
-/// ƒtƒF[ƒY3 ¨ ™ôšK ¨ Œ‚”j
+/// ã€ãƒ•ã‚§ãƒ¼ã‚ºã€‘
+/// ãƒ•ã‚§ãƒ¼ã‚º1 â†’ å’†å“® â†’ ãƒ•ã‚§ãƒ¼ã‚º2
+/// ãƒ•ã‚§ãƒ¼ã‚º2 â†’ å’†å“® â†’ ãƒ•ã‚§ãƒ¼ã‚º3
+/// ãƒ•ã‚§ãƒ¼ã‚º3 â†’ å’†å“® â†’ æ’ƒç ´
 ///
-/// yŠO•”‚©‚çŒÄ‚ÔŠÖ”z
-/// EStartBossBattle()      : BossAreaTrigger‚©‚çŒÄ‚Ô
-/// EReceiveInk()           : EnemyHitReceiver‚©‚çŒÄ‚Ô
-/// EGetIsAlly()            : ŠO•”‚©‚ç‚¨–n•t‚«ó‘Ô‚ğŠm”F‚·‚é
-/// ENotifyHitCrate()       : –Ø” ƒXƒNƒŠƒvƒg‚©‚çƒ^ƒbƒNƒ‹Õ“Ë‚ÉŒÄ‚ÔiƒtƒF[ƒY1j
-/// ENotifyLanternBounce()  : “”âÄƒXƒNƒŠƒvƒg‚©‚çƒoƒEƒ“ƒh‚ÉŒÄ‚ÔiƒtƒF[ƒY2j
-/// EGetRollDirection()     : “”âÄƒXƒNƒŠƒvƒg‚©‚ç“]‚ª‚è•ûŒü‚ğæ“¾‚·‚é‚½‚ß‚ÉŒÄ‚Ô
-/// ESetRollDirection()     : “”âÄƒXƒNƒŠƒvƒg‚©‚çƒoƒEƒ“ƒhŒã‚Ì•ûŒü‚ğİ’è‚·‚é‚½‚ß‚ÉŒÄ‚Ô
+/// ã€å¤–éƒ¨ã‹ã‚‰å‘¼ã¶é–¢æ•°ã€‘
+/// ãƒ»StartBossBattle()      : BossAreaTriggerã‹ã‚‰å‘¼ã¶
+/// ãƒ»ReceiveInk()           : EnemyHitReceiverã‹ã‚‰å‘¼ã¶
+/// ãƒ»GetIsAlly()            : å¤–éƒ¨ã‹ã‚‰ãŠå¢¨ä»˜ãçŠ¶æ…‹ã‚’ç¢ºèªã™ã‚‹
+/// ãƒ»NotifyHitCrate()       : æœ¨ç®±ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰ã‚¿ãƒƒã‚¯ãƒ«è¡çªæ™‚ã«å‘¼ã¶ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1ï¼‰
+/// ãƒ»NotifyLanternBounce()  : ç¯ç± ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰ãƒã‚¦ãƒ³ãƒ‰æ™‚ã«å‘¼ã¶ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ï¼‰
+/// ãƒ»GetRollDirection()     : ç¯ç± ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰è»¢ãŒã‚Šæ–¹å‘ã‚’å–å¾—ã™ã‚‹ãŸã‚ã«å‘¼ã¶
+/// ãƒ»SetRollDirection()     : ç¯ç± ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰ãƒã‚¦ãƒ³ãƒ‰å¾Œã®æ–¹å‘ã‚’è¨­å®šã™ã‚‹ãŸã‚ã«å‘¼ã¶
 /// </summary>
 public class Boss_SB : MonoBehaviour, IF_Enemy
 {
     // ====================================================================
-    //  ó‘Ô’è‹`
-    //  šV‚µ‚¢ó‘Ô‚ğ’Ç‰Á‚·‚é‚Æ‚«‚Í‚±‚±‚É’Ç‰Á‚·‚é
+    //  çŠ¶æ…‹å®šç¾©
+    //  â˜…æ–°ã—ã„çŠ¶æ…‹ã‚’è¿½åŠ ã™ã‚‹ã¨ãã¯ã“ã“ã«è¿½åŠ ã™ã‚‹
     // ====================================================================
 
     private enum BossState
     {
-        Idle,    // ‘Ò‹@iƒ{ƒXíŠJn‘Oj
-        Chase,   // ’Ç]
-        Charge,  // ƒ`ƒƒ[ƒWiƒ^ƒbƒNƒ‹‘O‚Ì—­‚ßjƒtƒF[ƒY1
-        Tackle,  // ƒ^ƒbƒNƒ‹i‹}’¼ijƒtƒF[ƒY1
-        Roll,    // ƒSƒƒSƒiƒz[ƒ~ƒ“ƒO“]‚ª‚èjƒtƒF[ƒY2
-        RollEnd, // ƒSƒƒSƒI—¹iƒWƒƒƒ“ƒv¨’…’njƒtƒF[ƒY2
-        Stop,    // ’â~iUŒ‚Œã3•bj
-        Stun,    // ƒXƒ^ƒ“i10•bj
-        Roar,    // ™ôšK
-        Defeated // Œ‚”j
+        Idle,    // å¾…æ©Ÿï¼ˆãƒœã‚¹æˆ¦é–‹å§‹å‰ï¼‰
+        Chase,   // è¿½å¾“
+        Charge,  // ãƒãƒ£ãƒ¼ã‚¸ï¼ˆã‚¿ãƒƒã‚¯ãƒ«å‰ã®æºœã‚ï¼‰ãƒ•ã‚§ãƒ¼ã‚º1
+        Tackle,  // ã‚¿ãƒƒã‚¯ãƒ«ï¼ˆæ€¥ç›´é€²ï¼‰ãƒ•ã‚§ãƒ¼ã‚º1
+        Roll,    // ã‚´ãƒ­ã‚´ãƒ­ï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°è»¢ãŒã‚Šï¼‰ãƒ•ã‚§ãƒ¼ã‚º2
+        RollEnd, // ã‚´ãƒ­ã‚´ãƒ­çµ‚äº†ï¼ˆã‚¸ãƒ£ãƒ³ãƒ—â†’ç€åœ°ï¼‰ãƒ•ã‚§ãƒ¼ã‚º2
+        HipDropCharge, // ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ã®ãƒãƒ£ãƒ¼ã‚¸ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ï¼‰
+        HipDrop,    // ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—é™ä¸‹ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ï¼‰
+        Stop,    // åœæ­¢ï¼ˆæ”»æ’ƒå¾Œ3ç§’ï¼‰
+        Stun,    // ã‚¹ã‚¿ãƒ³ï¼ˆ10ç§’ï¼‰
+        Roar,    // å’†å“®
+        Defeated // æ’ƒç ´
     }
 
     // ====================================================================
-    //  İ’èiInspectorj
+    //  è¨­å®šï¼ˆInspectorï¼‰
     // ====================================================================
 
-    [Header("„Ÿ„Ÿ ƒfƒoƒbƒO „Ÿ„Ÿ")]
-    [Tooltip("ŠJn‚ÌƒtƒF[ƒYi0=ƒtƒF[ƒY1, 1=ƒtƒF[ƒY2, 2=ƒtƒF[ƒY3jƒfƒoƒbƒO—p")]
+    [Header("â”€â”€ ãƒ‡ãƒãƒƒã‚° â”€â”€")]
+    [Tooltip("é–‹å§‹æ™‚ã®ãƒ•ã‚§ãƒ¼ã‚ºï¼ˆ0=ãƒ•ã‚§ãƒ¼ã‚º1, 1=ãƒ•ã‚§ãƒ¼ã‚º2, 2=ãƒ•ã‚§ãƒ¼ã‚º3ï¼‰ãƒ‡ãƒãƒƒã‚°ç”¨")]
     [SerializeField] private int debugStartPhase = 0;
 
-    [Header("„Ÿ„Ÿ ƒvƒŒƒCƒ„[QÆ „Ÿ„Ÿ")]
+    [Header("â”€â”€ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‚ç…§ â”€â”€")]
     [SerializeField] private Transform player;
 
-    [Header("„Ÿ„Ÿ ƒ‚ƒfƒ‹QÆ „Ÿ„Ÿ")]
-    [Tooltip("‹——£”»’è‚ÌŠî€‚É‚·‚éƒ‚ƒfƒ‹‚ÌTransformiqƒIƒuƒWƒFƒNƒgj")]
+    [Header("â”€â”€ ãƒ¢ãƒ‡ãƒ«å‚ç…§ â”€â”€")]
+    [Tooltip("è·é›¢åˆ¤å®šã®åŸºæº–ã«ã™ã‚‹ãƒ¢ãƒ‡ãƒ«ã®Transformï¼ˆå­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼‰")]
     [SerializeField] private Transform bodyTransform;
-    [Tooltip("ƒSƒƒSƒ‰ñ“]‚³‚¹‚éƒ‚ƒfƒ‹‚ÌTransformiqƒIƒuƒWƒFƒNƒgj")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­å›è»¢ã•ã›ã‚‹ãƒ¢ãƒ‡ãƒ«ã®Transformï¼ˆå­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼‰")]
     [SerializeField] private Transform rollModelTransform;
 
-    [Header("„Ÿ„Ÿ ˆÚ“® „Ÿ„Ÿ")]
-    [Tooltip("’Ç]‘¬“x")]
+    [Header("â”€â”€ ç§»å‹• â”€â”€")]
+    [Tooltip("è¿½å¾“é€Ÿåº¦")]
     [SerializeField] private float chaseSpeed = 3f;
-    [Tooltip("’Ç]’†‚ÌÕ“Ë”»’è‹——£")]
+    [Tooltip("è¿½å¾“ä¸­ã®è¡çªåˆ¤å®šè·é›¢")]
     [SerializeField] private float collideDistance = 2f;
 
-    [Header("„Ÿ„Ÿ áŠQ•¨‰ñ”ğ „Ÿ„Ÿ")]
-    [Tooltip("áŠQ•¨ŒŸ’m‹——£imj")]
+    [Header("â”€â”€ éšœå®³ç‰©å›é¿ â”€â”€")]
+    [Tooltip("éšœå®³ç‰©æ¤œçŸ¥è·é›¢ï¼ˆmï¼‰")]
     [SerializeField] private float avoidDistance = 2f;
 
-    [Header("„Ÿ„Ÿ ƒtƒF[ƒY2ƒIƒuƒWƒFƒNƒg¶¬i“”âÄj„Ÿ„Ÿ")]
-    [Tooltip("“”âÄ‚ÌPrefab")]
+    [Header("â”€â”€ ãƒ•ã‚§ãƒ¼ã‚º2ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆï¼ˆç¯ç± ï¼‰â”€â”€")]
+    [Tooltip("ç¯ç± ã®Prefab")]
     [SerializeField] private GameObject lanternPrefab;
-    [Tooltip("“”âÄ‚Ì¶¬ˆÊ’uiXZÀ•WjEYÀ•W‚Íã‚©‚ç—‚Æ‚·")]
+    [Tooltip("ç¯ç± ã®ç”Ÿæˆä½ç½®ï¼ˆXZåº§æ¨™ï¼‰ãƒ»Yåº§æ¨™ã¯ä¸Šã‹ã‚‰è½ã¨ã™")]
     [SerializeField] private List<Transform> lanternSpawnPoints = new List<Transform>();
-    [Tooltip("¶¬‚·‚éYÀ•W‚Ì‚‚³")]
+    [Tooltip("ç”Ÿæˆã™ã‚‹Yåº§æ¨™ã®é«˜ã•")]
     [SerializeField] private float spawnHeight = 20f;
-    [Tooltip("¶¬ŠÔŠui•bj")]
+    [Tooltip("ç”Ÿæˆé–“éš”ï¼ˆç§’ï¼‰")]
     [SerializeField] private float spawnInterval = 0.5f;
+    [Tooltip("ç¯ç± ãŒåœ°é¢ã«åŸ‹ã¾ã‚‹æ·±ã•ï¼ˆmï¼‰")]
+    [SerializeField] private float buriedDepth = 1f;
 
-    [Header("„Ÿ„Ÿ ƒtƒF[ƒY3ƒIƒuƒWƒFƒNƒg¶¬ „Ÿ„Ÿ")]
-    [Tooltip("ƒtƒF[ƒY3ƒIƒuƒWƒFƒNƒg‚ÌPrefab")]
+    [Header("â”€â”€ ãƒ•ã‚§ãƒ¼ã‚º3ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ â”€â”€")]
+    [Tooltip("ãƒ•ã‚§ãƒ¼ã‚º3ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®Prefab")]
     [SerializeField] private GameObject phase3ObjectPrefab;
-    [Tooltip("ƒtƒF[ƒY3ƒIƒuƒWƒFƒNƒg‚Ì¶¬ˆÊ’u")]
+    [Tooltip("ãƒ•ã‚§ãƒ¼ã‚º3ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆä½ç½®")]
     [SerializeField] private List<Transform> phase3SpawnPoints = new List<Transform>();
 
-    [Header("„Ÿ„Ÿ ƒ^ƒbƒNƒ‹iƒtƒF[ƒY1j„Ÿ„Ÿ")]
-    [Tooltip("ƒ^ƒbƒNƒ‹‘¬“x")]
+    [Header("â”€â”€ ã‚¿ãƒƒã‚¯ãƒ«ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1ï¼‰â”€â”€")]
+    [Tooltip("ã‚¿ãƒƒã‚¯ãƒ«é€Ÿåº¦")]
     [SerializeField] private float tackleSpeed = 12f;
-    [Tooltip("ƒ^ƒbƒNƒ‹‚ÌÅ‘åˆÚ“®‹——£imj")]
+    [Tooltip("ã‚¿ãƒƒã‚¯ãƒ«ã®æœ€å¤§ç§»å‹•è·é›¢ï¼ˆmï¼‰")]
     [SerializeField] private float tackleMaxDistance = 20f;
 
-    [Header("„Ÿ„Ÿ ƒSƒƒSƒiƒtƒF[ƒY2j„Ÿ„Ÿ")]
-    [Tooltip("ƒSƒƒSƒ‚Ì‘¬“x")]
+    [Header("â”€â”€ ã‚´ãƒ­ã‚´ãƒ­ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ï¼‰â”€â”€")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­ã®é€Ÿåº¦")]
     [SerializeField] private float rollSpeed = 8f;
-    [Tooltip("ƒSƒƒSƒ‚ÌÅ‘åŠÔi•bj")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­ã®æœ€å¤§æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float rollDuration = 10f;
-    [Tooltip("‹ß‹——£‚ÌÅ‘å‹È‚ª‚èŠp“xi“x/•bj")]
+    [Tooltip("è¿‘è·é›¢æ™‚ã®æœ€å¤§æ›²ãŒã‚Šè§’åº¦ï¼ˆåº¦/ç§’ï¼‰")]
     [SerializeField] private float rollMaxTurnAngle = 3f;
-    [Tooltip("‰“‹——£‚ÌÅ‘å‹È‚ª‚èŠp“xi“x/•bj")]
+    [Tooltip("é è·é›¢æ™‚ã®æœ€å¤§æ›²ãŒã‚Šè§’åº¦ï¼ˆåº¦/ç§’ï¼‰")]
     [SerializeField] private float rollMaxTurnAngleFar = 15f;
-    [Tooltip("‚±‚Ì‹——£ˆÈã—£‚ê‚½‚ç‰“‹——£ƒz[ƒ~ƒ“ƒO‚É‚È‚éimj")]
+    [Tooltip("ã“ã®è·é›¢ä»¥ä¸Šé›¢ã‚ŒãŸã‚‰é è·é›¢ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ã«ãªã‚‹ï¼ˆmï¼‰")]
     [SerializeField] private float rollHomingDistanceThreshold = 10f;
-    [Tooltip("ƒSƒƒSƒ’†‚ÌX²‰ñ“]‘¬“x")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­ä¸­ã®Xè»¸å›è»¢é€Ÿåº¦")]
     [SerializeField] private float rollRotateSpeed = 360f;
-    [Tooltip("ƒSƒƒSƒI—¹‚ÌƒWƒƒƒ“ƒv‚‚³")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­çµ‚äº†æ™‚ã®ã‚¸ãƒ£ãƒ³ãƒ—é«˜ã•")]
     [SerializeField] private float rollEndJumpHeight = 3f;
-    [Tooltip("ƒSƒƒSƒI—¹‚ÌƒWƒƒƒ“ƒvŠÔi•bj")]
+    [Tooltip("ã‚´ãƒ­ã‚´ãƒ­çµ‚äº†æ™‚ã®ã‚¸ãƒ£ãƒ³ãƒ—æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float rollEndJumpDuration = 0.5f;
 
-    [Header("„Ÿ„Ÿ ƒSƒƒSƒáŠQ•¨‰ñ”ğ „Ÿ„Ÿ")]
-    [Tooltip("áŠQ•¨ŒŸ’mRay‚Ì’·‚³")]
-    [SerializeField] private float rollAvoidRayLength = 2f;
-    [Tooltip("‰½ƒtƒŒ[ƒ€‚É1‰ñRaycast‚·‚é‚©id‚³ŒyŒ¸j")]
-    [SerializeField] private int rollAvoidRayInterval = 3;
-
-    [Header("„Ÿ„Ÿ “”âÄƒZƒbƒgiƒtƒF[ƒY2j„Ÿ„Ÿ")]
+    [Header("â”€â”€ ç¯ç± ã‚»ãƒƒãƒˆï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ï¼‰â”€â”€")]
     [SerializeField] private Boss_LanternSet lanternSet;
 
-    [Header("„Ÿ„Ÿ UŒ‚ƒ^ƒCƒ~ƒ“ƒOi‹¤’Êj„Ÿ„Ÿ")]
-    [Tooltip("’Ç]ŠJn‚©‚çUŒ‚‚Ü‚Å‚Ì‘Ò‹@ŠÔiÅ¬E•bj")]
+    [Header("â”€â”€ ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ï¼‰â”€â”€")]
+    [Tooltip("HipDropã‚’é¸ã¶ç¢ºç‡ï¼ˆ0ã€œ1ï¼‰æ®‹ã‚ŠãŒTackle")]
+    [SerializeField] private float hipDropChance = 0.7f;
+    [Tooltip("ã‚¸ãƒ£ãƒ³ãƒ—ã®é«˜ã•")]
+    [SerializeField] private float hipDropJumpHeight = 6f;
+    [Tooltip("ãƒãƒ£ãƒ¼ã‚¸æ™‚é–“ï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°ã™ã‚‹æ™‚é–“ãƒ»ç§’ï¼‰")]
+    [SerializeField] private float hipDropChargeDuration = 1.5f;
+    [Tooltip("é™ä¸‹é€Ÿåº¦")]
+    [SerializeField] private float hipDropFallSpeed = 25f;
+    [Tooltip("é€£ç¶šãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—å›æ•°")]
+    [SerializeField] private int hipDropCount = 3;
+    [Tooltip("ç€åœ°å¾Œã®ç¡¬ç›´æ™‚é–“ï¼ˆç§’ï¼‰")]
+    [SerializeField] private float hipDropRecoverTime = 0.3f;
+
+    [Header("â”€â”€ æ”»æ’ƒã‚¿ã‚¤ãƒŸãƒ³ã‚°ï¼ˆå…±é€šï¼‰â”€â”€")]
+    [Tooltip("è¿½å¾“é–‹å§‹ã‹ã‚‰æ”»æ’ƒã¾ã§ã®å¾…æ©Ÿæ™‚é–“ï¼ˆæœ€å°ãƒ»ç§’ï¼‰")]
     [SerializeField] private float attackDelayMin = 3f;
-    [Tooltip("’Ç]ŠJn‚©‚çUŒ‚‚Ü‚Å‚Ì‘Ò‹@ŠÔiÅ‘åE•bj")]
+    [Tooltip("è¿½å¾“é–‹å§‹ã‹ã‚‰æ”»æ’ƒã¾ã§ã®å¾…æ©Ÿæ™‚é–“ï¼ˆæœ€å¤§ãƒ»ç§’ï¼‰")]
     [SerializeField] private float attackDelayMax = 8f;
 
-    [Header("„Ÿ„Ÿ ƒ`ƒƒ[ƒW „Ÿ„Ÿ")]
-    [Tooltip("ƒ`ƒƒ[ƒWŠÔi•bj")]
+    [Header("â”€â”€ ãƒãƒ£ãƒ¼ã‚¸ â”€â”€")]
+    [Tooltip("ãƒãƒ£ãƒ¼ã‚¸æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float chargeDuration = 1f;
 
-    [Header("„Ÿ„Ÿ ’â~iUŒ‚Œãj „Ÿ„Ÿ")]
-    [Tooltip("UŒ‚Œã‚Ì’â~ŠÔi•bj")]
+    [Header("â”€â”€ åœæ­¢ï¼ˆæ”»æ’ƒå¾Œï¼‰ â”€â”€")]
+    [Tooltip("æ”»æ’ƒå¾Œã®åœæ­¢æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float stopDuration = 3f;
 
-    [Header("„Ÿ„Ÿ ƒXƒ^ƒ“ „Ÿ„Ÿ")]
-    [Tooltip("ƒXƒ^ƒ“ŠÔi•bj")]
+    [Header("â”€â”€ ã‚¹ã‚¿ãƒ³ â”€â”€")]
+    [Tooltip("ã‚¹ã‚¿ãƒ³æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float stunDuration = 10f;
-    [Tooltip("UŒ‚ƒqƒbƒg‚Éƒ^ƒCƒ}[‚ğƒŠƒZƒbƒg‚·‚é‚©")]
+    [Tooltip("æ”»æ’ƒãƒ’ãƒƒãƒˆæ™‚ã«ã‚¿ã‚¤ãƒãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã‹")]
     [SerializeField] private bool resetStunTimerOnHit = true;
 
-    [Header("„Ÿ„Ÿ ƒXƒe[ƒ^ƒX „Ÿ„Ÿ")]
-    [Tooltip("UŒ‚—ÍiƒtƒF[ƒY1:5 ƒtƒF[ƒY2:6j")]
+    [Header("â”€â”€ ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ â”€â”€")]
+    [Tooltip("æ”»æ’ƒåŠ›ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1:5 ãƒ•ã‚§ãƒ¼ã‚º2:6ï¼‰")]
     [SerializeField] private float[] attackPowers = { 5f, 6f, 7f };
-    [Tooltip("ã•ûŒü‚ÌƒmƒbƒNƒoƒbƒN‹­‚³")]
+    [Tooltip("ä¸Šæ–¹å‘ã®ãƒãƒƒã‚¯ãƒãƒƒã‚¯å¼·ã•")]
     [SerializeField] private float knockbackUpForce = 5f;
-    [Tooltip("ƒmƒbƒNƒoƒbƒN‚Ì‘±ŠÔi•bj")]
+    [Tooltip("ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã®æŒç¶šæ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float knockbackDuration = 0.8f;
-    [Tooltip("‰ñ•œ—ÊiƒtƒF[ƒY1:2 ƒtƒF[ƒY2:10j")]
+    [Tooltip("å›å¾©é‡ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1:2 ãƒ•ã‚§ãƒ¼ã‚º2:10ï¼‰")]
     [SerializeField] private float[] inkRecoveries = { 2f, 10f, 10f };
 
-    [Header("„Ÿ„Ÿ ƒtƒF[ƒY•ÊƒXƒe[ƒ^ƒX „Ÿ„Ÿ")]
-    [Tooltip("•K—v“h‚è‰ñ”iƒtƒF[ƒY1:10 ƒtƒF[ƒY2:12 ƒtƒF[ƒY3:15j")]
+    [Header("â”€â”€ ãƒ•ã‚§ãƒ¼ã‚ºåˆ¥ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ â”€â”€")]
+    [Tooltip("å¿…è¦å¡—ã‚Šå›æ•°ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1:10 ãƒ•ã‚§ãƒ¼ã‚º2:12 ãƒ•ã‚§ãƒ¼ã‚º3:15ï¼‰")]
     [SerializeField] private int[] requiredInkCounts = { 10, 12, 15 };
-    [Tooltip("™ôšK‚Ì‰~Œ`ƒŠƒZƒbƒg”ÍˆÍE’¼ŒaiƒtƒF[ƒY1:5 ƒtƒF[ƒY2:7 ƒtƒF[ƒY3:10j’PˆÊ:m")]
+    [Tooltip("å’†å“®ã®å††å½¢ãƒªã‚»ãƒƒãƒˆç¯„å›²ãƒ»ç›´å¾„ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1:5 ãƒ•ã‚§ãƒ¼ã‚º2:7 ãƒ•ã‚§ãƒ¼ã‚º3:10ï¼‰å˜ä½:m")]
     [SerializeField] private float[] roarRanges = { 5f, 7f, 10f };
 
-    [Header("„Ÿ„Ÿ ™ôšK „Ÿ„Ÿ")]
-    [Tooltip("™ôšK‚ÉƒWƒƒƒ“ƒv‚·‚éƒtƒB[ƒ‹ƒh’†‰›‚ÌÀ•W")]
+    [Header("â”€â”€ å’†å“® â”€â”€")]
+    [Tooltip("å’†å“®æ™‚ã«ã‚¸ãƒ£ãƒ³ãƒ—ã™ã‚‹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ä¸­å¤®ã®åº§æ¨™")]
     [SerializeField] private Transform fieldCenter;
-    [Tooltip("™ôšKƒWƒƒƒ“ƒv‚Ì‚‚³")]
+    [Tooltip("å’†å“®ã‚¸ãƒ£ãƒ³ãƒ—ã®é«˜ã•")]
     [SerializeField] private float roarJumpHeight = 5f;
-    [Tooltip("™ôšKƒWƒƒƒ“ƒv‚Ì‘¬“x")]
+    [Tooltip("å’†å“®ã‚¸ãƒ£ãƒ³ãƒ—ã®é€Ÿåº¦")]
     [SerializeField] private float roarJumpSpeed = 10f;
 
-    [Header("„Ÿ„Ÿ ™ôšKƒŠƒZƒbƒg‘ÎÛ „Ÿ„Ÿ")]
-    [Tooltip("ƒ{ƒX©g‚ÌPaintableSurface")]
+    [Header("â”€â”€ å’†å“®ãƒªã‚»ãƒƒãƒˆå¯¾è±¡ â”€â”€")]
+    [Tooltip("ãƒœã‚¹è‡ªèº«ã®PaintableSurface")]
     [SerializeField] private List<PaintableSurface> bossSurfaces = new List<PaintableSurface>();
 
-    [Header("„Ÿ„Ÿ –Ø” iƒtƒF[ƒY1j„Ÿ„Ÿ")]
-    [Tooltip("–Ø” ƒIƒuƒWƒFƒNƒgi™ôšK‚Å”ò‚Î‚·‘ÎÛj")]
+    [Header("â”€â”€ æœ¨ç®±ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1ï¼‰â”€â”€")]
+    [Tooltip("æœ¨ç®±ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆå’†å“®ã§é£›ã°ã™å¯¾è±¡ï¼‰")]
     [SerializeField] private List<GameObject> crateObjects = new List<GameObject>();
-    [Tooltip("–Ø” ‚ğ”ò‚Î‚·•ûŒü‚Æ‹­‚³")]
+    [Tooltip("æœ¨ç®±ã‚’é£›ã°ã™æ–¹å‘ã¨å¼·ã•")]
     [SerializeField] private Vector3 crateBlastForce = new Vector3(0f, 10f, 20f);
-    [Tooltip("–Ø” ‚ªÁ‚¦‚é‚Ü‚Å‚ÌŠÔi•bj")]
+    [Tooltip("æœ¨ç®±ãŒæ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float crateDestroyDelay = 3f;
 
-    [Header("„Ÿ„Ÿ “”âÄiƒtƒF[ƒY2j„Ÿ„Ÿ")]
-    [Tooltip("“”âÄƒIƒuƒWƒFƒNƒgi™ôšK‚Å”ò‚Î‚·‘ÎÛj")]
+    [Header("â”€â”€ ç¯ç± ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ï¼‰â”€â”€")]
+    [Tooltip("ç¯ç± ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆå’†å“®ã§é£›ã°ã™å¯¾è±¡ï¼‰")]
     [SerializeField] private List<GameObject> lanternObjects = new List<GameObject>();
-    [Tooltip("“”âÄ‚ğ”ò‚Î‚·•ûŒü‚Æ‹­‚³")]
+    [Tooltip("ç¯ç± ã‚’é£›ã°ã™æ–¹å‘ã¨å¼·ã•")]
     [SerializeField] private Vector3 lanternBlastForce = new Vector3(0f, 10f, 20f);
-    [Tooltip("“”âÄ‚ªÁ‚¦‚é‚Ü‚Å‚ÌŠÔi•bj")]
+    [Tooltip("ç¯ç± ãŒæ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float lanternDestroyDelay = 3f;
 
-    [Header("„Ÿ„Ÿ ƒXƒ^ƒ“‰‰o „Ÿ„Ÿ")]
-    [Tooltip("Œã‘Ş‘¬“x")]
+    [Header("â”€â”€ ã‚¹ã‚¿ãƒ³æ¼”å‡º â”€â”€")]
+    [Tooltip("å¾Œé€€é€Ÿåº¦")]
     [SerializeField] private float recoilSpeed = 5f;
-    [Tooltip("Œã‘ŞŠÔi•bj")]
+    [Tooltip("å¾Œé€€æ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float recoilDuration = 0.5f;
-    [Tooltip("ŒX‚­ŠÔi•bj")]
+    [Tooltip("å‚¾ãæ™‚é–“ï¼ˆç§’ï¼‰")]
     [SerializeField] private float tiltDuration = 0.3f;
 
-    [Header("„Ÿ„Ÿ ƒ{ƒXƒGƒŠƒA „Ÿ„Ÿ")]
-    [Tooltip("ƒ{ƒXƒGƒŠƒA‚ÌPointA")]
+    [Header("â”€â”€ ãƒœã‚¹ã‚¨ãƒªã‚¢ â”€â”€")]
+    [Tooltip("ãƒœã‚¹ã‚¨ãƒªã‚¢ã®PointA")]
     [SerializeField] private Transform areaPointA;
-    [Tooltip("ƒ{ƒXƒGƒŠƒA‚ÌPointB")]
+    [Tooltip("ãƒœã‚¹ã‚¨ãƒªã‚¢ã®PointB")]
     [SerializeField] private Transform areaPointB;
 
-    [Header("„Ÿ„Ÿ UŒ‚—\ „Ÿ„Ÿ")]
+    [Header("â”€â”€ æ”»æ’ƒäºˆå‘Š â”€â”€")]
     [SerializeField] private AttackIndicator attackIndicator;
 
-    [Header("„Ÿ„Ÿ ’n–Ê’Ç] „Ÿ„Ÿ")]
+    [Header("â”€â”€ åœ°é¢è¿½å¾“ â”€â”€")]
     [SerializeField] private float groundFollowSpeed = 10f;
 
     // ====================================================================
-    //  “à•”ó‘Ôi‘S‚Äprivatej
+    //  å†…éƒ¨çŠ¶æ…‹ï¼ˆå…¨ã¦privateï¼‰
     // ====================================================================
 
     private BossState state = BossState.Idle;
@@ -216,44 +228,52 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private int inkHitCount = 0;
     private bool isAlly = false;
 
-    // Chase—p
+    // Chaseç”¨
     private float attackTimer = 0f;
     private float attackDelay = 0f;
 
-    // Charge—p
+    // Chargeç”¨
     private float chargeTimer = 0f;
     private Vector3 chargeTargetDir;
 
-    // Tackle—piƒtƒF[ƒY1j
+    // Tackleç”¨ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1ï¼‰
     private Vector3 tackleDirection;
     private Vector3 tackleStartPos;
 
-    // Roll—piƒtƒF[ƒY2j
+    // Rollç”¨ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ï¼‰
     private float rollTimer = 0f;
     private Vector3 rollDirection;
-    private int bounceCount = 0; // ƒoƒEƒ“ƒhƒtƒ‰ƒO¬—§‰ñ”
-    private bool canStunOnBounce = true; // ƒoƒEƒ“ƒh‚ÅƒXƒ^ƒ“‚Å‚«‚é‚©
+    private int bounceCount = 0; // ãƒã‚¦ãƒ³ãƒ‰ãƒ•ãƒ©ã‚°æˆç«‹å›æ•°
+    private bool canStunOnBounce = true; // ãƒã‚¦ãƒ³ãƒ‰ã§ã‚¹ã‚¿ãƒ³ã§ãã‚‹ã‹
     private float rollXRotation = 0f;
     private float avoidTimer = 0f;
-    private float avoidDuration = 0.5f; // ‰ñ”ğŒã‚±‚ÌŠÔ‚ÅŒ³‚É–ß‚é
+    private float avoidDuration = 0.5f; // å›é¿å¾Œã“ã®æ™‚é–“ã§å…ƒã«æˆ»ã‚‹
     private bool isAvoiding = false;
     private float bounceHomingDisableTimer = 0f;
-    private float bounceHomingDisableDuration = 1.5f; // ƒoƒEƒ“ƒhŒã‚±‚ÌŠÔ‚Íƒz[ƒ~ƒ“ƒO–³Œø
-    /// <summary>ƒSƒƒSƒ’†‚©‚Ç‚¤‚©‚ğ•Ô‚·</summary>
+    private float bounceHomingDisableDuration = 1.5f; // ãƒã‚¦ãƒ³ãƒ‰å¾Œã“ã®æ™‚é–“ã¯ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ç„¡åŠ¹
+    /// <summary>ã‚´ãƒ­ã‚´ãƒ­ä¸­ã‹ã©ã†ã‹ã‚’è¿”ã™</summary>
     public bool GetIsRolling() => state == BossState.Roll;
 
-    private int rollAvoidFrameCount = 0;
-    private Vector3 rollAvoidMoveDir; // ƒLƒƒƒbƒVƒ…‚µ‚½ˆÚ“®•ûŒü
+    // HipDropç”¨ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ï¼‰
+    private int hipDropCurrentCount = 0;     // ç¾åœ¨ä½•å›ç›®ã®é™ä¸‹ã‹
+    private float hipDropChargeTimer = 0f;
+    private Vector3 hipDropTargetPos;        // ç¢ºå®šã—ãŸé™ä¸‹å…ˆ
+    private bool isHitCannon = false;        // ç ²å£ã«å½“ãŸã£ãŸã‹
+    /// <summary>ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ä¸­ï¼ˆé™ä¸‹ä¸­ï¼‰ã‹ã‚’è¿”ã™</summary>
+    public bool GetIsHipDropping() => state == BossState.HipDrop;
 
-    // Stop—p
+    private int rollAvoidFrameCount = 0;
+    private Vector3 rollAvoidMoveDir; // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ãŸç§»å‹•æ–¹å‘
+
+    // Stopç”¨
     private float stopTimer = 0f;
 
-    // Stun—p
+    // Stunç”¨
     private float stunTimer = 0f;
     private float lastInkTime = -999f;
     private float inkCooldown = 0.5f;
 
-    // ƒmƒbƒNƒoƒbƒN
+    // ãƒãƒƒã‚¯ãƒãƒƒã‚¯
     private CharacterController playerController;
     private PlayerMove playerMove;
     private Vector3 knockbackVelocity;
@@ -263,7 +283,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private CharacterController bossController;
 
     // ====================================================================
-    //  ‰Šú‰»
+    //  åˆæœŸåŒ–
     // ====================================================================
 
     private void Start()
@@ -301,16 +321,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         bossController = GetComponent<CharacterController>();
 
-        // ƒfƒoƒbƒO—pƒtƒF[ƒYİ’è
+        // ãƒ‡ãƒãƒƒã‚°ç”¨ãƒ•ã‚§ãƒ¼ã‚ºè¨­å®š
         currentPhase = Mathf.Clamp(debugStartPhase, 0, 2);
         inkHitCount = 0;
         state = BossState.Idle;
 
-        Debug.Log($"[Boss_SB] ŠJnƒtƒF[ƒY: {currentPhase + 1}");
+        Debug.Log($"[Boss_SB] é–‹å§‹ãƒ•ã‚§ãƒ¼ã‚º: {currentPhase + 1}");
     }
 
     // ====================================================================
-    //  –ˆƒtƒŒ[ƒ€
+    //  æ¯ãƒ•ãƒ¬ãƒ¼ãƒ 
     // ====================================================================
 
     private void Update()
@@ -328,7 +348,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Charge: UpdateCharge(); break;
             case BossState.Tackle: UpdateTackle(); break;
             case BossState.Roll: UpdateRoll(); break;
-            case BossState.RollEnd: break; // ƒRƒ‹[ƒ`ƒ“‚Åˆ—
+            case BossState.RollEnd: break; // ã‚³ãƒ«ãƒ¼ãƒãƒ³ã§å‡¦ç†
+            case BossState.HipDropCharge: UpdateHipDropCharge(); break;
+            case BossState.HipDrop: UpdateHipDrop(); break;
             case BossState.Stop: UpdateStop(); break;
             case BossState.Stun: UpdateStun(); break;
             case BossState.Roar: break;
@@ -337,19 +359,19 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  ŠO•”‚©‚çŒÄ‚ÔŠÖ”
+    //  å¤–éƒ¨ã‹ã‚‰å‘¼ã¶é–¢æ•°
     // ====================================================================
 
-    /// <summary>ƒ{ƒXí‚ğŠJn‚·‚éiBossAreaTrigger‚©‚çŒÄ‚Ôj</summary>
+    /// <summary>ãƒœã‚¹æˆ¦ã‚’é–‹å§‹ã™ã‚‹ï¼ˆBossAreaTriggerã‹ã‚‰å‘¼ã¶ï¼‰</summary>
     public void StartBossBattle()
     {
         if (state != BossState.Idle) return;
         inkHitCount = 0;
-        Debug.Log($"[Boss_SB] ƒ{ƒXíŠJnIƒtƒF[ƒY{currentPhase + 1}");
+        Debug.Log($"[Boss_SB] ãƒœã‚¹æˆ¦é–‹å§‹ï¼ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
         EnterChase();
     }
 
-    /// <summary>–n‚ğ“h‚ç‚ê‚½‚Æ‚«‚Ìˆ—iEnemyHitReceiver‚©‚çŒÄ‚Ôj</summary>
+    /// <summary>å¢¨ã‚’å¡—ã‚‰ã‚ŒãŸã¨ãã®å‡¦ç†ï¼ˆEnemyHitReceiverã‹ã‚‰å‘¼ã¶ï¼‰</summary>
     public void ReceiveInk()
     {
         if (isAlly) return;
@@ -365,12 +387,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             if (inkHitCount >= required - 1) return;
             inkHitCount++;
-            Debug.Log($"[Boss_SB] “h‚è‰ñ”: {inkHitCount} / {required - 1}iƒXƒ^ƒ“ŠOãŒÀjƒtƒF[ƒY{currentPhase + 1}");
+            Debug.Log($"[Boss_SB] å¡—ã‚Šå›æ•°: {inkHitCount} / {required - 1}ï¼ˆã‚¹ã‚¿ãƒ³å¤–ä¸Šé™ï¼‰ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
             return;
         }
 
         inkHitCount++;
-        Debug.Log($"[Boss_SB] “h‚è‰ñ”(ƒXƒ^ƒ“’†): {inkHitCount} / {required} ƒtƒF[ƒY{currentPhase + 1}");
+        Debug.Log($"[Boss_SB] å¡—ã‚Šå›æ•°(ã‚¹ã‚¿ãƒ³ä¸­): {inkHitCount} / {required} ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
 
         if (resetStunTimerOnHit)
             stunTimer = 0f;
@@ -382,35 +404,35 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
     }
 
-    /// <summary>‚¨–n•t‚«ó‘Ô‚ğ•Ô‚·</summary>
+    /// <summary>ãŠå¢¨ä»˜ãçŠ¶æ…‹ã‚’è¿”ã™</summary>
     public bool GetIsAlly() => isAlly;
 
-    /// <summary>Œ»İ‚ÌƒtƒF[ƒY‚ğ•Ô‚·</summary>
+    /// <summary>ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚ºã‚’è¿”ã™</summary>
     public int GetCurrentPhase() => currentPhase;
 
     /// <summary>
-    /// –Ø” ‚ÉÕ“Ë‚µ‚½‚Æ‚«‚ÉŒÄ‚ÔiƒtƒF[ƒY1E–Ø” ƒXƒNƒŠƒvƒg‚©‚çŒÄ‚Ôj
-    /// ƒ^ƒbƒNƒ‹’†‚Ì‚İƒXƒ^ƒ“‚ÉˆÚs‚·‚é
+    /// æœ¨ç®±ã«è¡çªã—ãŸã¨ãã«å‘¼ã¶ï¼ˆãƒ•ã‚§ãƒ¼ã‚º1ãƒ»æœ¨ç®±ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰å‘¼ã¶ï¼‰
+    /// ã‚¿ãƒƒã‚¯ãƒ«ä¸­ã®ã¿ã‚¹ã‚¿ãƒ³ã«ç§»è¡Œã™ã‚‹
     /// </summary>
     public void NotifyHitCrate()
     {
         if (currentPhase != 0) return;
         if (state != BossState.Tackle) return;
-        Debug.Log("[Boss_SB] –Ø” ‚ÉÕ“ËIƒXƒ^ƒ“ŠJn");
+        Debug.Log("[Boss_SB] æœ¨ç®±ã«è¡çªï¼ã‚¹ã‚¿ãƒ³é–‹å§‹");
         EnterStun();
     }
 
     /// <summary>
-    /// “”âÄ‚ÉƒoƒEƒ“ƒh‚µ‚½‚Æ‚«‚ÉŒÄ‚ÔiƒtƒF[ƒY2E“”âÄƒXƒNƒŠƒvƒg‚©‚çŒÄ‚Ôj
-    /// isInner: “à–Ê‚É“–‚½‚Á‚½‚©itrue‚ÅƒoƒEƒ“ƒhƒtƒ‰ƒO¬—§j
-    /// newDirection: ƒoƒEƒ“ƒhŒã‚Ì•ûŒü
+    /// ç¯ç± ã«ãƒã‚¦ãƒ³ãƒ‰ã—ãŸã¨ãã«å‘¼ã¶ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2ãƒ»ç¯ç± ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰å‘¼ã¶ï¼‰
+    /// isInner: å†…é¢ã«å½“ãŸã£ãŸã‹ï¼ˆtrueã§ãƒã‚¦ãƒ³ãƒ‰ãƒ•ãƒ©ã‚°æˆç«‹ï¼‰
+    /// newDirection: ãƒã‚¦ãƒ³ãƒ‰å¾Œã®æ–¹å‘
     /// </summary>
     public void NotifyLanternBounce(bool isInner, Vector3 newDirection)
     {
         if (currentPhase != 1) return;
         if (state != BossState.Roll) return;
 
-        // •ûŒü‚ğXV
+        // æ–¹å‘ã‚’æ›´æ–°
         rollDirection = newDirection.normalized;
         rollDirection.y = 0f;
 
@@ -418,26 +440,26 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (isInner)
         {
-            // “à–ÊƒoƒEƒ“ƒh ¨ ƒtƒ‰ƒO¬—§
+            // å†…é¢ãƒã‚¦ãƒ³ãƒ‰ â†’ ãƒ•ãƒ©ã‚°æˆç«‹
             bounceCount++;
-            Debug.Log($"[Boss_SB] “”âÄ“à–ÊƒoƒEƒ“ƒhIƒtƒ‰ƒO¬—§: {bounceCount}/3");
+            Debug.Log($"[Boss_SB] ç¯ç± å†…é¢ãƒã‚¦ãƒ³ãƒ‰ï¼ãƒ•ãƒ©ã‚°æˆç«‹: {bounceCount}/3");
 
             if (bounceCount >= 3)
             {
-                // 3‰ñ‚ÅƒXƒ^ƒ“
-                Debug.Log("[Boss_SB] 3‰ñƒoƒEƒ“ƒhIƒXƒ^ƒ“ŠJn");
+                // 3å›ã§ã‚¹ã‚¿ãƒ³
+                Debug.Log("[Boss_SB] 3å›ãƒã‚¦ãƒ³ãƒ‰ï¼ã‚¹ã‚¿ãƒ³é–‹å§‹");
                 EnterStun();
             }
         }
         else
         {
-            // ŠO–ÊƒoƒEƒ“ƒh ¨ ƒtƒ‰ƒO•s¬—§E3•bŒã‚ÉˆÚ“®‚É–ß‚é
-            Debug.Log("[Boss_SB] “”âÄŠO–ÊƒoƒEƒ“ƒhB3•bŒã‚ÉˆÚ“®‚É–ß‚é");
+            // å¤–é¢ãƒã‚¦ãƒ³ãƒ‰ â†’ ãƒ•ãƒ©ã‚°ä¸æˆç«‹ãƒ»3ç§’å¾Œã«ç§»å‹•ã«æˆ»ã‚‹
+            Debug.Log("[Boss_SB] ç¯ç± å¤–é¢ãƒã‚¦ãƒ³ãƒ‰ã€‚3ç§’å¾Œã«ç§»å‹•ã«æˆ»ã‚‹");
             StartCoroutine(RollEndAfterDelay(3f));
         }
     }
 
-    /// <summary>Œ»İ‚ÌƒSƒƒSƒ•ûŒü‚ğ•Ô‚·i“”âÄƒXƒNƒŠƒvƒg‚©‚çƒoƒEƒ“ƒhŒvZ—pj</summary>
+    /// <summary>ç¾åœ¨ã®ã‚´ãƒ­ã‚´ãƒ­æ–¹å‘ã‚’è¿”ã™ï¼ˆç¯ç± ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰ãƒã‚¦ãƒ³ãƒ‰è¨ˆç®—ç”¨ï¼‰</summary>
     public Vector3 GetRollDirection() => rollDirection;
 
     private void CheckPlayerCollision()
@@ -447,6 +469,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             state == BossState.Stun ||
             state == BossState.Roar ||
             state == BossState.RollEnd ||
+            state == BossState.HipDropCharge ||
             state == BossState.Defeated) return;
 
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
@@ -470,7 +493,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  Chasei’Ç]j
+    //  Chaseï¼ˆè¿½å¾“ï¼‰
     // ====================================================================
 
     private void EnterChase()
@@ -485,7 +508,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (lanternSet != null)
             lanternSet.ResetBounceHistory();
 
-        Debug.Log($"[Boss_SB] ChaseŠJnBUŒ‚‚Ü‚Å{attackDelay:F1}•b ƒtƒF[ƒY{currentPhase + 1}");
+        Debug.Log($"[Boss_SB] Chaseé–‹å§‹ã€‚æ”»æ’ƒã¾ã§{attackDelay:F1}ç§’ ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
     }
 
     private void UpdateChase()
@@ -496,11 +519,23 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         attackTimer += Time.deltaTime;
         if (attackTimer >= attackDelay)
         {
-            // ƒtƒF[ƒY‚É‚æ‚Á‚ÄUŒ‚ƒpƒ^[ƒ“‚ğØ‚è‘Ö‚¦‚é
+            // ãƒ•ã‚§ãƒ¼ã‚ºã«ã‚ˆã£ã¦æ”»æ’ƒãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
             if (currentPhase == 0)
-                EnterCharge(); // ƒtƒF[ƒY1: ƒ^ƒbƒNƒ‹
+            {
+                EnterCharge(); // ãƒ•ã‚§ãƒ¼ã‚º1: ã‚¿ãƒƒã‚¯ãƒ«
+            }
+            else if (currentPhase == 1)
+            {
+                EnterRoll();   // ãƒ•ã‚§ãƒ¼ã‚º2: ã‚´ãƒ­ã‚´ãƒ­
+            }
             else
-                EnterRoll();   // ƒtƒF[ƒY2ˆÈ~: ƒSƒƒSƒ
+            {
+                // ãƒ•ã‚§ãƒ¼ã‚º3: ãƒ©ãƒ³ãƒ€ãƒ ã§ã‚¿ãƒƒã‚¯ãƒ« or ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—
+                if (Random.value < hipDropChance)
+                    EnterHipDropCharge(); // ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—
+                else
+                    EnterCharge();        // ã‚¿ãƒƒã‚¯ãƒ«
+            }
             return;
         }
 
@@ -522,7 +557,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  Chargeiƒ`ƒƒ[ƒWEƒtƒF[ƒY1j
+    //  Chargeï¼ˆãƒãƒ£ãƒ¼ã‚¸ãƒ»ãƒ•ã‚§ãƒ¼ã‚º1ï¼‰
     // ====================================================================
 
     private void EnterCharge()
@@ -535,7 +570,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (attackIndicator != null)
             attackIndicator.Show(chargeTargetDir);
 
-        Debug.Log("[Boss_SB] ƒ`ƒƒ[ƒWŠJnI");
+        Debug.Log("[Boss_SB] ãƒãƒ£ãƒ¼ã‚¸é–‹å§‹ï¼");
     }
 
     private void UpdateCharge()
@@ -548,7 +583,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  Tackleiƒ^ƒbƒNƒ‹EƒtƒF[ƒY1j
+    //  Tackleï¼ˆã‚¿ãƒƒã‚¯ãƒ«ãƒ»ãƒ•ã‚§ãƒ¼ã‚º1ï¼‰
     // ====================================================================
 
     private void EnterTackle()
@@ -560,7 +595,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (attackIndicator != null)
             attackIndicator.Hide();
 
-        Debug.Log("[Boss_SB] ƒ^ƒbƒNƒ‹ŠJnI");
+        Debug.Log("[Boss_SB] ã‚¿ãƒƒã‚¯ãƒ«é–‹å§‹ï¼");
     }
 
     private void UpdateTackle()
@@ -589,8 +624,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  RolliƒSƒƒSƒEƒtƒF[ƒY2j
-    //  šƒSƒƒSƒ‚Ì‹““®‚ğ•Ï‚¦‚½‚¢‚Æ‚«‚Í‚±‚±‚ğ•ÒW
+    //  Rollï¼ˆã‚´ãƒ­ã‚´ãƒ­ãƒ»ãƒ•ã‚§ãƒ¼ã‚º2ï¼‰
+    //  â˜…ã‚´ãƒ­ã‚´ãƒ­ã®æŒ™å‹•ã‚’å¤‰ãˆãŸã„ã¨ãã¯ã“ã“ã‚’ç·¨é›†
     // ====================================================================
 
     private void EnterRoll()
@@ -600,7 +635,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
-        Debug.Log("[Boss_SB] ƒSƒƒSƒŠJnI");
+        Debug.Log("[Boss_SB] ã‚´ãƒ­ã‚´ãƒ­é–‹å§‹ï¼");
     }
 
     private void UpdateRoll()
@@ -612,7 +647,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
 
-        // ƒz[ƒ~ƒ“ƒOiƒoƒEƒ“ƒhŒã‚Íˆê–³Œøj
+        // ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ï¼ˆãƒã‚¦ãƒ³ãƒ‰å¾Œã¯ä¸€æ™‚ç„¡åŠ¹ï¼‰
         if (bounceHomingDisableTimer > 0f)
         {
             bounceHomingDisableTimer -= Time.deltaTime;
@@ -621,16 +656,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             Vector3 toPlayer = (player.position - transform.position).normalized;
             toPlayer.y = 0f;
-
             float distToPlayer = Vector3.Distance(
                 new Vector3(transform.position.x, 0, transform.position.z),
                 new Vector3(player.position.x, 0, player.position.z));
-
             float homingRate = Mathf.Lerp(
                 rollMaxTurnAngle,
                 rollMaxTurnAngleFar,
                 Mathf.Clamp01(distToPlayer / rollHomingDistanceThreshold));
-
             rollDirection = Vector3.RotateTowards(
                 rollDirection,
                 toPlayer,
@@ -639,57 +671,24 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             rollDirection.y = 0f;
         }
 
-        Vector3 moveDir = rollDirection;
-
-        // ƒtƒŒ[ƒ€‚ğŠÔˆø‚¢‚ÄRaycast
-        rollAvoidFrameCount++;
-        if (rollAvoidFrameCount >= rollAvoidRayInterval)
-        {
-            rollAvoidFrameCount = 0;
-            rollAvoidMoveDir = rollDirection; // ƒfƒtƒHƒ‹ƒg‚Íis•ûŒü
-
-            if (Physics.Raycast(
-                transform.position + Vector3.up * 0.5f,
-                rollDirection,
-                rollAvoidRayLength,
-                ~0,
-                QueryTriggerInteraction.Ignore))
-            {
-                Vector3 rightDir = Quaternion.Euler(0, 45f, 0) * rollDirection;
-                if (!Physics.Raycast(
-                    transform.position + Vector3.up * 0.5f,
-                    rightDir,
-                    rollAvoidRayLength,
-                    ~0,
-                    QueryTriggerInteraction.Ignore))
-                {
-                    rollAvoidMoveDir = rightDir;
-                }
-                else
-                {
-                    rollAvoidMoveDir = Quaternion.Euler(0, -45f, 0) * rollDirection;
-                }
-            }
-        }
-
-        // ƒLƒƒƒbƒVƒ…‚µ‚½•ûŒü‚ÅˆÚ“®
-        Vector3 move = rollAvoidMoveDir * rollSpeed * Time.deltaTime;
+        // ç§»å‹•
+        Vector3 move = rollDirection * rollSpeed * Time.deltaTime;
         move.y = -9.8f * Time.deltaTime;
         bossController.Move(move);
 
-        // eƒIƒuƒWƒFƒNƒg‚ÍY²i¶‰Ej‚¾‚¯‰ñ“]
+        // è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯Yè»¸ï¼ˆå·¦å³ï¼‰ã ã‘å›è»¢
         if (rollDirection.sqrMagnitude > 0.01f)
         {
             float targetY = Quaternion.LookRotation(rollDirection).eulerAngles.y;
             transform.rotation = Quaternion.Euler(0f, targetY, 0f);
         }
 
-        // qƒIƒuƒWƒFƒNƒg‚ÍX²iƒSƒƒSƒj‚¾‚¯‰ñ“]
+        // å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯Xè»¸ï¼ˆã‚´ãƒ­ã‚´ãƒ­ï¼‰ã ã‘å›è»¢
         rollXRotation += rollRotateSpeed * Time.deltaTime;
         if (rollModelTransform != null)
             rollModelTransform.localRotation = Quaternion.Euler(rollXRotation, 0f, 0f);
 
-        // ƒGƒŠƒAŠO‚Éo‚½‚ç’â~
+        // ã‚¨ãƒªã‚¢å¤–ã«å‡ºãŸã‚‰åœæ­¢
         if (IsOutOfArea())
         {
             ClampToArea();
@@ -698,7 +697,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
     }
 
-    /// <summary>ˆê’èŠÔŒã‚ÉƒSƒƒSƒ‚ğI—¹‚·‚éiŠO–ÊƒoƒEƒ“ƒh‚Ég‚¤j</summary>
+    /// <summary>ä¸€å®šæ™‚é–“å¾Œã«ã‚´ãƒ­ã‚´ãƒ­ã‚’çµ‚äº†ã™ã‚‹ï¼ˆå¤–é¢ãƒã‚¦ãƒ³ãƒ‰æ™‚ã«ä½¿ã†ï¼‰</summary>
     private IEnumerator RollEndAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -706,14 +705,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             StartCoroutine(RollEndCoroutine());
     }
 
-    /// <summary>ƒSƒƒSƒI—¹FƒWƒƒƒ“ƒv¨’…’n¨ˆÚ“®</summary>
+    /// <summary>ã‚´ãƒ­ã‚´ãƒ­çµ‚äº†ï¼šã‚¸ãƒ£ãƒ³ãƒ—â†’ç€åœ°â†’ç§»å‹•</summary>
     private IEnumerator RollEndCoroutine()
     {
         state = BossState.RollEnd;
-        Debug.Log("[Boss_SB] ƒSƒƒSƒI—¹BƒWƒƒƒ“ƒv¨’…’n");
+        Debug.Log("[Boss_SB] ã‚´ãƒ­ã‚´ãƒ­çµ‚äº†ã€‚ã‚¸ãƒ£ãƒ³ãƒ—â†’ç€åœ°");
 
         Vector3 startPos = transform.position;
-        Vector3 jumpVelocity = rollDirection * rollSpeed; // Šµ«‚Æ‚µ‚Ä“]‚ª‚è•ûŒü‚Ì‘¬“x‚ğˆø‚«Œp‚®
+        Vector3 jumpVelocity = rollDirection * rollSpeed; // æ…£æ€§ã¨ã—ã¦è»¢ãŒã‚Šæ–¹å‘ã®é€Ÿåº¦ã‚’å¼•ãç¶™ã
         float elapsed = 0f;
 
         Quaternion startModelRot = rollModelTransform != null
@@ -725,7 +724,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             elapsed += Time.deltaTime;
             float t = elapsed / rollEndJumpDuration;
 
-            // Šµ«ˆÚ“®
+            // æ…£æ€§ç§»å‹•
             float inertiaRate = 1f - t;
             Vector3 inertiaMove = jumpVelocity * inertiaRate * Time.deltaTime;
             inertiaMove.y = 0f;
@@ -742,7 +741,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 startPos.y,
                 transform.position.z);
 
-            // « ƒWƒƒƒ“ƒv’†‚É‰ñ“]‚ğ–ß‚·
+            // â†“ ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã«å›è»¢ã‚’æˆ»ã™
             if (rollModelTransform != null)
                 rollModelTransform.localRotation = Quaternion.RotateTowards(
                     rollModelTransform.localRotation,
@@ -760,7 +759,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         float resetDuration = 0.3f;
         elapsed = 0f;
 
-        // ŠÔ‚Å‚Í‚È‚­‰ñ“]‚ª–ß‚è‚«‚Á‚½‚çI—¹
+        // æ™‚é–“ã§ã¯ãªãå›è»¢ãŒæˆ»ã‚Šãã£ãŸã‚‰çµ‚äº†
         while (rollModelTransform != null &&
                Quaternion.Angle(rollModelTransform.localRotation, Quaternion.identity) > 0.1f)
         {
@@ -778,15 +777,148 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         EnterChase();
     }
+
     // ====================================================================
-    //  Stopi’â~j
+    //  HipDropï¼ˆãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ãƒ»ãƒ•ã‚§ãƒ¼ã‚º3ï¼‰
+    // ====================================================================
+
+    private void EnterHipDropCharge()
+    {
+        state = BossState.HipDropCharge;
+        hipDropChargeTimer = 0f;
+        hipDropCurrentCount = 0;
+        isHitCannon = false;
+        Debug.Log("[Boss_SB] ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—é–‹å§‹ï¼");
+        StartCoroutine(HipDropSequence());
+    }
+
+    /// <summary>ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ã‚’é€£ç¶šã§è¡Œã†ã‚³ãƒ«ãƒ¼ãƒãƒ³</summary>
+    private IEnumerator HipDropSequence()
+    {
+        for (int i = 0; i < hipDropCount; i++)
+        {
+            hipDropCurrentCount = i;
+
+            // â‘  ã‚¸ãƒ£ãƒ³ãƒ—ï¼‹ãƒãƒ£ãƒ¼ã‚¸ï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°ï¼‰
+            yield return StartCoroutine(HipDropChargeCoroutine());
+
+            // â‘¡ é™ä¸‹
+            yield return StartCoroutine(HipDropFallCoroutine());
+
+            // ç ²å£ã«å½“ãŸã£ãŸã‚‰ã‚¹ã‚¿ãƒ³ã¸ï¼ˆä¸­æ–­ï¼‰
+            if (isHitCannon)
+            {
+                Debug.Log("[Boss_SB] ç ²å£ãƒ’ãƒƒãƒˆï¼ã‚¹ã‚¿ãƒ³ã¸");
+                EnterStun();
+                yield break;
+            }
+
+            // ç€åœ°å¾Œã®ç¡¬ç›´
+            yield return new WaitForSeconds(hipDropRecoverTime);
+        }
+
+        // 3å›çµ‚ã‚ã£ãŸã‚‰åœæ­¢â†’ç§»å‹•
+        EnterStop();
+    }
+
+    /// <summary>ã‚¸ãƒ£ãƒ³ãƒ—ã—ã¦ç©ºä¸­ã§ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ã—ãªãŒã‚‰ãƒãƒ£ãƒ¼ã‚¸</summary>
+    private IEnumerator HipDropChargeCoroutine()
+    {
+        state = BossState.HipDropCharge;
+
+        Vector3 startPos = transform.position;
+        Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
+
+        // ã‚¸ãƒ£ãƒ³ãƒ—ï¼ˆä¸Šæ˜‡ï¼‰
+        float jumpTime = 0.3f;
+        float elapsed = 0f;
+        while (elapsed < jumpTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / jumpTime;
+            transform.position = Vector3.Lerp(startPos, apexPos, t);
+            yield return null;
+        }
+
+        // ãƒãƒ£ãƒ¼ã‚¸ä¸­ï¼šãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ãƒ›ãƒ¼ãƒŸãƒ³ã‚°ï¼ˆè½ä¸‹å…ˆã‚’è¿½ã†ï¼‰
+        if (attackIndicator != null)
+            attackIndicator.ShowAt(transform.position, Vector3.down);
+
+        hipDropChargeTimer = 0f;
+        while (hipDropChargeTimer < hipDropChargeDuration)
+        {
+            hipDropChargeTimer += Time.deltaTime;
+
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çœŸä¸Šã«ç§»å‹•ã—ã‚ˆã†ã¨ã™ã‚‹ï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°ï¼‰
+            Vector3 targetXZ = new Vector3(player.position.x, transform.position.y, player.position.z);
+            transform.position = Vector3.MoveTowards(
+                transform.position, targetXZ, hipDropFallSpeed * 0.5f * Time.deltaTime);
+
+            yield return null;
+        }
+
+        // é™ä¸‹å…ˆã‚’ç¢ºå®šï¼ˆã“ã®æ™‚ç‚¹ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼çœŸä¸‹ï¼‰
+        hipDropTargetPos = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            transform.position.z);
+
+        if (attackIndicator != null)
+            attackIndicator.Hide();
+    }
+
+    /// <summary>é™ä¸‹ã™ã‚‹ï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°ãªã—ï¼‰</summary>
+    private IEnumerator HipDropFallCoroutine()
+    {
+        state = BossState.HipDrop;
+
+        // çœŸä¸‹ã«é™ä¸‹ã—ç¶šã‘ã‚‹ï¼ˆåœ°é¢ã‹ç ²å£ã«å½“ãŸã‚‹ã¾ã§ï¼‰
+        while (true)
+        {
+            Vector3 move = Vector3.down * hipDropFallSpeed * Time.deltaTime;
+            bossController.Move(move);
+
+            // ç ²å£ã«å½“ãŸã£ãŸã‚‰ä¸­æ–­
+            if (isHitCannon) yield break;
+
+            // åœ°é¢ã«ç€åœ°ã—ãŸã‹ï¼ˆCharacterControllerãŒæ¥åœ°ï¼‰
+            if (bossController.isGrounded)
+            {
+                Debug.Log("[Boss_SB] ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ç€åœ°");
+                yield break;
+            }
+
+            yield return null;
+        }
+    }
+
+    /// <summary>UpdateHipDropChargeã¯ã‚³ãƒ«ãƒ¼ãƒãƒ³ã§å‡¦ç†ã™ã‚‹ãŸã‚ç©º</summary>
+    private void UpdateHipDropCharge() { }
+
+    /// <summary>UpdateHipDropã¯ã‚³ãƒ«ãƒ¼ãƒãƒ³ã§å‡¦ç†ã™ã‚‹ãŸã‚ç©º</summary>
+    private void UpdateHipDrop() { }
+
+    /// <summary>
+    /// å¤§ç ²ã®ç ²å£ã«å½“ãŸã£ãŸã¨ãã«å‘¼ã¶ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ãƒ»CannonMuzzleã‹ã‚‰å‘¼ã¶ï¼‰
+    /// ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ä¸­ã®ã¿æœ‰åŠ¹
+    /// </summary>
+    public void NotifyHitCannon()
+    {
+        if (currentPhase != 2) return;
+        if (state != BossState.HipDrop) return;
+        Debug.Log("[Boss_SB] ç ²å£ã«å½“ãŸã£ãŸï¼");
+        isHitCannon = true;
+    }
+
+    // ====================================================================
+    //  Stopï¼ˆåœæ­¢ï¼‰
     // ====================================================================
 
     private void EnterStop()
     {
         state = BossState.Stop;
         stopTimer = 0f;
-        Debug.Log("[Boss_SB] ’â~");
+        Debug.Log("[Boss_SB] åœæ­¢");
     }
 
     private void UpdateStop()
@@ -797,14 +929,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  StuniƒXƒ^ƒ“j
+    //  Stunï¼ˆã‚¹ã‚¿ãƒ³ï¼‰
     // ====================================================================
 
     private void EnterStun()
     {
         state = BossState.Stun;
         stunTimer = 0f;
-        Debug.Log("[Boss_SB] ƒXƒ^ƒ“I");
+        Debug.Log("[Boss_SB] ã‚¹ã‚¿ãƒ³ï¼");
 
         StartCoroutine(StunRecoilCoroutine());
         StartCoroutine(StunTiltCoroutine());
@@ -822,30 +954,30 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (stunTimer >= stunDuration)
         {
-            Debug.Log("[Boss_SB] ƒXƒ^ƒ“‰ğœB“h‚èˆø‚«Œp‚¬");
+            Debug.Log("[Boss_SB] ã‚¹ã‚¿ãƒ³è§£é™¤ã€‚å¡—ã‚Šå¼•ãç¶™ã");
             EnterChase();
         }
     }
 
     /// <summary>
-    /// –Ø” ‚É“–‚½‚Á‚½‚ªƒXƒ^ƒ“‚µ‚È‚¢ê‡i“h‚è—Ê•s‘«j
-    /// ƒ^ƒbƒNƒ‹‚ğ~‚ß‚é‚¾‚¯
+    /// æœ¨ç®±ã«å½“ãŸã£ãŸãŒã‚¹ã‚¿ãƒ³ã—ãªã„å ´åˆï¼ˆå¡—ã‚Šé‡ä¸è¶³ï¼‰
+    /// ã‚¿ãƒƒã‚¯ãƒ«ã‚’æ­¢ã‚ã‚‹ã ã‘
     /// </summary>
     public void NotifyHitCrateNoStun()
     {
         if (state != BossState.Tackle) return;
-        Debug.Log("[Boss_SB] –Ø” ‚É“–‚½‚Á‚½‚ª“h‚è—Ê•s‘«B’â~‚Ì‚İ");
+        Debug.Log("[Boss_SB] æœ¨ç®±ã«å½“ãŸã£ãŸãŒå¡—ã‚Šé‡ä¸è¶³ã€‚åœæ­¢ã®ã¿");
         EnterStop();
     }
 
     // ====================================================================
-    //  Roari™ôšKj
+    //  Roarï¼ˆå’†å“®ï¼‰
     // ====================================================================
 
     private void EnterRoar()
     {
         state = BossState.Roar;
-        Debug.Log($"[Boss_SB] ™ôšKIƒtƒF[ƒY{currentPhase + 1}");
+        Debug.Log($"[Boss_SB] å’†å“®ï¼ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
         StartCoroutine(RoarCoroutine());
     }
 
@@ -858,38 +990,38 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         yield return new WaitForSeconds(0.5f);
 
-        // ƒ{ƒX©g‚Ì–n‚ğƒŠƒZƒbƒg
+        // ãƒœã‚¹è‡ªèº«ã®å¢¨ã‚’ãƒªã‚»ãƒƒãƒˆ
         foreach (var surface in bossSurfaces)
         {
             if (surface == null || !surface.enabled) continue;
             try { InkPaintService.ClearAll(surface); } catch { }
         }
 
-        // ƒtƒB[ƒ‹ƒh‚ğ‰~Œ`‚ÉƒŠƒZƒbƒg
+        // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’å††å½¢ã«ãƒªã‚»ãƒƒãƒˆ
         float roarRange = roarRanges[currentPhase];
         ResetFieldInRange(roarRange * 0.5f);
 
-        // ƒtƒF[ƒY‚É‰‚¶‚ÄƒIƒuƒWƒFƒNƒg‚ğ”ò‚Î‚µ‚ÄŸ‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
+        // ãƒ•ã‚§ãƒ¼ã‚ºã«å¿œã˜ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é£›ã°ã—ã¦æ¬¡ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
         if (currentPhase == 0)
         {
-            // –Ø” ‚ğ”ò‚Î‚·
+            // æœ¨ç®±ã‚’é£›ã°ã™
             BlastObjects(crateObjects, crateBlastForce, crateDestroyDelay);
 
-            // “”âÄ‚ğã‚©‚ç¶¬
+            // ç¯ç± ã‚’ä¸Šã‹ã‚‰ç”Ÿæˆ
             yield return StartCoroutine(SpawnObjectsFromAbove(
                 lanternPrefab, lanternSpawnPoints));
         }
         else if (currentPhase == 1)
         {
-            // “”âÄ‚ğ”ò‚Î‚·
+            // ç¯ç± ã‚’é£›ã°ã™
             BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
 
-            // ƒtƒF[ƒY3ƒIƒuƒWƒFƒNƒg‚ğã‚©‚ç¶¬
+            // ãƒ•ã‚§ãƒ¼ã‚º3ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä¸Šã‹ã‚‰ç”Ÿæˆ
             yield return StartCoroutine(SpawnObjectsFromAbove(
                 phase3ObjectPrefab, phase3SpawnPoints));
         }
 
-        Debug.Log($"[Boss_SB] ™ôšKŠ®—¹BƒtƒF[ƒY{currentPhase + 1}");
+        Debug.Log($"[Boss_SB] å’†å“®å®Œäº†ã€‚ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}");
 
         yield return new WaitForSeconds(0.5f);
 
@@ -900,14 +1032,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         else
         {
             inkHitCount = 0;
-            Debug.Log($"[Boss_SB] ƒtƒF[ƒY{currentPhase + 1}‚ÖˆÚs");
+            Debug.Log($"[Boss_SB] ãƒ•ã‚§ãƒ¼ã‚º{currentPhase + 1}ã¸ç§»è¡Œ");
             EnterChase();
         }
     }
 
-    /// <summary>ƒIƒuƒWƒFƒNƒg‚ğã‚©‚ç‡”Ô‚É—‚Æ‚·ƒRƒ‹[ƒ`ƒ“</summary>
+    /// <summary>ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä¸Šã‹ã‚‰é †ç•ªã«è½ã¨ã™ã‚³ãƒ«ãƒ¼ãƒãƒ³</summary>
     private IEnumerator SpawnObjectsFromAbove(
-        GameObject prefab, List<Transform> spawnPoints)
+    GameObject prefab, List<Transform> spawnPoints)
     {
         if (prefab == null || spawnPoints == null) yield break;
 
@@ -915,7 +1047,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             if (point == null) continue;
 
-            // ¶¬ˆÊ’uiXZ‚ÍSpawnPointEY‚Íã‚©‚çj
             Vector3 spawnPos = new Vector3(
                 point.position.x,
                 point.position.y + spawnHeight,
@@ -923,19 +1054,75 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
             GameObject obj = Instantiate(prefab, spawnPos, Quaternion.identity);
 
-            // Rigidbody‚ª‚ ‚ê‚Îd—Í‚Å—‚¿‚é
-            var rb = obj.GetComponent<Rigidbody>();
-            if (rb != null)
+            var rigidbodies = obj.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
             {
                 rb.isKinematic = false;
                 rb.useGravity = true;
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             }
 
-            Debug.Log($"[Boss_SB] ¶¬: {obj.name} at {spawnPos}");
+            // ç€åœ°å¾Œã«Rigidbodyã‚’Kinematicã«æˆ»ã™ï¼ˆåŸ‹ã¾ã£ãŸä½ç½®ã§å›ºå®šï¼‰
+            StartCoroutine(FreezeAfterLanding(obj, point.position));
 
-            // ŠÔŠu‚ğ‚ ‚¯‚Ä‡”Ô‚É—‚Æ‚·
             yield return new WaitForSeconds(spawnInterval);
         }
+    }
+
+    /// <summary>ç€åœ°å¾Œã«Rigidbodyã‚’Kinematicã«å›ºå®šã™ã‚‹</summary>
+    private IEnumerator FreezeAfterLanding(GameObject obj, Vector3 landPos)
+    {
+        if (obj == null) yield break;
+
+        var rigidbodies = obj.GetComponentsInChildren<Rigidbody>();
+        Rigidbody mainRb = rigidbodies.Length > 0 ? rigidbodies[0] : null;
+
+        if (mainRb == null) yield break;
+
+        // ç€åœ°ã‚’å¾…ã¤ï¼ˆé€Ÿåº¦ãŒã»ã¼ã‚¼ãƒ­ã«ãªã‚‹ã¾ã§å¾…ã¤ï¼‰
+        float timeout = 2.1f; // æœ€å¤§10ç§’å¾…ã¤
+        float elapsed = 0f;
+
+        while (elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+
+            // é€Ÿåº¦ãŒã»ã¼ã‚¼ãƒ­ = ç€åœ°ã—ãŸ
+            if (mainRb.linearVelocity.magnitude < 0.1f && elapsed > 0.5f)
+            {
+                Debug.Log($"[Boss_SB] ç€åœ°æ¤œçŸ¥ï¼velocity={mainRb.linearVelocity.magnitude}");
+                break;
+            }
+
+            yield return null;
+        }
+
+        if (obj == null) yield break;
+
+        // ç€åœ°ä½ç½®ã®Yåº§æ¨™ã‚’å–å¾—
+        float groundY = obj.transform.position.y;
+        if (Physics.Raycast(
+            obj.transform.position + Vector3.up * 1f,
+            Vector3.down,
+            out RaycastHit hit,
+            5f,
+            ~0,
+            QueryTriggerInteraction.Ignore))
+        {
+            groundY = hit.point.y;
+        }
+
+        // Rigidbodyã‚’å›ºå®š
+        foreach (var rb in rigidbodies)
+            rb.isKinematic = true;
+
+        // åœ°é¢ã‹ã‚‰buriedDepthåˆ†ã ã‘ä¸‹ã«å›ºå®š
+        obj.transform.position = new Vector3(
+            obj.transform.position.x,
+            groundY - buriedDepth,
+            obj.transform.position.z);
+
+        Debug.Log($"[Boss_SB] ç¯ç± å›ºå®š: {obj.transform.position}");
     }
 
     private IEnumerator JumpToCenter()
@@ -975,7 +1162,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
     }
 
-    /// <summary>ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚ğ”ò‚Î‚·i–Ø” E“”âÄ‹¤’Êj</summary>
+    /// <summary>ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆã‚’é£›ã°ã™ï¼ˆæœ¨ç®±ãƒ»ç¯ç± å…±é€šï¼‰</summary>
     private void BlastObjects(List<GameObject> objects, Vector3 blastForce, float destroyDelay)
     {
         foreach (var obj in objects)
@@ -1003,18 +1190,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  DefeatediŒ‚”jj
+    //  Defeatedï¼ˆæ’ƒç ´ï¼‰
     // ====================================================================
 
     private void EnterDefeated()
     {
         state = BossState.Defeated;
-        Debug.Log("[Boss_SB] ƒ{ƒXŒ‚”jI");
+        Debug.Log("[Boss_SB] ãƒœã‚¹æ’ƒç ´ï¼");
         Destroy(gameObject, 1f);
     }
 
     // ====================================================================
-    //  ƒmƒbƒNƒoƒbƒN
+    //  ãƒãƒƒã‚¯ãƒãƒƒã‚¯
     // ====================================================================
 
     private void ApplyKnockbackToPlayer()
@@ -1056,7 +1243,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  ƒGƒŠƒA§ŒÀ
+    //  ã‚¨ãƒªã‚¢åˆ¶é™
     // ====================================================================
 
     private void ClampToArea()
@@ -1091,7 +1278,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  áŠQ•¨‰ñ”ğ
+    //  éšœå®³ç‰©å›é¿
     // ====================================================================
 
     private Vector3 GetAvoidanceDirection(Vector3 desiredDir)
@@ -1105,7 +1292,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return desiredDir;
         }
 
-        // ‰E•ûŒü‚ğŠm”F
+        // å³æ–¹å‘ã‚’ç¢ºèª
         Vector3 rightDir = Quaternion.Euler(0, 45f, 0) * desiredDir;
         if (!Physics.Raycast(
             transform.position + Vector3.up * 0.5f,
@@ -1116,7 +1303,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return rightDir;
         }
 
-        // ¶•ûŒü‚ğŠm”F
+        // å·¦æ–¹å‘ã‚’ç¢ºèª
         Vector3 leftDir = Quaternion.Euler(0, -45f, 0) * desiredDir;
         if (!Physics.Raycast(
             transform.position + Vector3.up * 0.5f,
@@ -1131,13 +1318,21 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  ƒXƒ^ƒ“‰‰o
+    //  ã‚¹ã‚¿ãƒ³æ¼”å‡º
     // ====================================================================
 
     private IEnumerator StunRecoilCoroutine()
     {
         float elapsed = 0f;
-        Vector3 recoilDir = state == BossState.Roll ? -rollDirection : -tackleDirection;
+
+        // çŠ¶æ…‹ã«å¿œã˜ãŸå¾Œé€€æ–¹å‘
+        Vector3 recoilDir;
+        if (state == BossState.Roll)
+            recoilDir = -rollDirection;
+        else if (state == BossState.HipDrop)
+            recoilDir = -transform.forward; // ãƒ’ãƒƒãƒ—ãƒ‰ãƒ­ãƒƒãƒ—ã¯å¾Œã‚ã«å€’ã‚Œã‚‹
+        else
+            recoilDir = -tackleDirection;
 
         while (elapsed < recoilDuration)
         {
@@ -1186,7 +1381,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     // ====================================================================
-    //  ƒ†[ƒeƒBƒŠƒeƒB
+    //  ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
     // ====================================================================
 
     private void LookAt(Vector3 direction)
@@ -1217,7 +1412,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             Gizmos.DrawWireSphere(transform.position, range * 0.5f);
         }
 
-        // ƒGƒŠƒA”ÍˆÍ
+        // ã‚¨ãƒªã‚¢ç¯„å›²
         if (areaPointA != null && areaPointB != null)
         {
             Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
