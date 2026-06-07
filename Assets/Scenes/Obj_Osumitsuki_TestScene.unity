@@ -246,6 +246,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5216519f10bad24489f65e2ba874ed7a, type: 3}
+--- !u!1 &176905075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 822824425756683417, guid: 3baa256d1b5e7d3499d00e5fc713bb1d, type: 3}
+  m_PrefabInstance: {fileID: 1038946892}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &239338292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -351,6 +356,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+--- !u!1 &258679107 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 29504033274225991, guid: 0ecab0f5929c3df4ab156b911735e034, type: 3}
+  m_PrefabInstance: {fileID: 791434287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &284533808 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5778030476701971648, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
@@ -1815,9 +1825,25 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
+      propertyPath: Y_lock
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: allyEnemyManager
       value: 
       objectReference: {fileID: 1672773826}
+    - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
+      propertyPath: targets.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
+      propertyPath: 'targets.Array.data[0]'
+      value: 
+      objectReference: {fileID: 258679107}
+    - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
+      propertyPath: 'targets.Array.data[1]'
+      value: 
+      objectReference: {fileID: 176905075}
     - target: {fileID: 140201724112460671, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: m_Name
       value: STAIR
