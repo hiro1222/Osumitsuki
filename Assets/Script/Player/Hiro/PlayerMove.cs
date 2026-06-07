@@ -45,6 +45,11 @@ public class PlayerMove : MonoBehaviour
     private bool jumpRequestedThisFrame;
     private float lastGroundedTime;
 
+    private Vector3 knockbackVelocity;
+    private float knockbackTimer;
+    private float knockbackDuration;
+    private bool isKnockback;
+
     private bool waitingJump;
     private float jumpTimer;
     private bool hasJumpDelayStarted;
@@ -58,6 +63,7 @@ public class PlayerMove : MonoBehaviour
     private float climbTimer;
     private Vector3 climbStartPos;
     private Vector3 climbTargetPos;
+    public bool KnockbackStartedThisFrame { get; private set; }
 
     public bool IsGrounded { get; private set; }
 
@@ -106,6 +112,14 @@ public class PlayerMove : MonoBehaviour
 
     public void Tick()
     {
+        KnockbackStartedThisFrame = false;
+
+        if (isKnockback)
+        {
+            TickKnockback();
+            return;
+        }
+
         if (isClimbing)
         {
             TickClimbInputRotation();
@@ -415,6 +429,54 @@ public class PlayerMove : MonoBehaviour
             velocity.y = controller.Stats.groundedY;
             IsGrounded = characterController.isGrounded;
             lastGroundedTime = Time.time;
+        }
+    }
+
+    public void ApplyKnockback(Vector3 velocity, float duration)
+    {
+        if (duration <= 0.0f) return;
+
+        waitingJump = false;
+        hasJumpDelayStarted = false;
+        jumpRequestedThisFrame = false;
+
+        this.velocity.y = 0.0f;
+
+        knockbackVelocity = velocity;
+        knockbackDuration = duration;
+        knockbackTimer = 0.0f;
+        isKnockback = true;
+
+        KnockbackStartedThisFrame = true;
+    }
+
+    private void TickKnockback()
+    {
+        if (characterController == null)
+        {
+            isKnockback = false;
+            return;
+        }
+
+        PlayerStats stats = controller.Stats;
+
+        knockbackVelocity.y += stats.gravity * Time.deltaTime;
+
+        characterController.Move(knockbackVelocity * Time.deltaTime);
+
+        knockbackTimer += Time.deltaTime;
+
+        IsGrounded = characterController.isGrounded;
+
+        if (IsGrounded)
+        {
+            lastGroundedTime = Time.time;
+        }
+
+        if (knockbackTimer >= knockbackDuration)
+        {
+            isKnockback = false;
+            velocity.y = IsGrounded ? stats.groundedY : knockbackVelocity.y;
         }
     }
 }

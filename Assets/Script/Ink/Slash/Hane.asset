@@ -18,6 +18,8 @@ MonoBehaviour:
   length: 3.45
   width: 48.1
   arcAngle: 0
+  arcProjectileCount: 5
+  hideSubProjectiles: 1
   speed: 15
   gravity: 0
   lifetime: 0.8

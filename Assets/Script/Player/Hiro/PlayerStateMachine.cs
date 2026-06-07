@@ -46,38 +46,23 @@ public class PlayerStateMachine : MonoBehaviour
     public void Tick()
     {
         UpdateTimers();
-
-        if (enableEnemyContactDamage)
+        if (controller.Move.KnockbackStartedThisFrame)
         {
-            if (CheckEnemyContactDamage())
-            {
-                return;
-            }
-        }
+            controller.Stats.Damage(contactDamage);
 
-        if (damageStateTimer > 0.0f)
-        {
+            damageStateTimer = damageStateTime;
             ChangeState(PlayerState.Damage);
+
+            if (debugLogDamage)
+            {
+                Debug.Log(
+                    "[PlayerStateMachine] Damage from Knockback / HP : " +
+                    controller.Stats.CurrentHP
+                );
+            }
+
             return;
         }
-
-        if (controller.ActionManager.IsActing)
-        {
-            ChangeState(PlayerState.Action);
-            return;
-        }
-
-        bool grounded = controller.Move.IsGrounded;
-        bool moving = controller.InputHandler.MoveInput.sqrMagnitude > 0.01f;
-        float verticalVelocity = controller.Move.VerticalVelocity;
-
-        if (!grounded)
-        {
-            ChangeState(verticalVelocity > 0.1f ? PlayerState.Jump : PlayerState.Fall);
-            return;
-        }
-
-        ChangeState(moving ? PlayerState.Move : PlayerState.Idle);
     }
 
     private void UpdateTimers()
