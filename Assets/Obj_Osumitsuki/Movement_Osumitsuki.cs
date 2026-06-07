@@ -12,6 +12,7 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     [SerializeField] private List<GameObject> targets;  //自信が移動する目的地
     [SerializeField] private float turnSpd = 60;    //回転速度(１～１００)
     [SerializeField] private float moveSpd = 10;    //移動速度
+    [SerializeField] private bool Y_lock = true;
 
     private Vector3 targetPos;          //目的地
     private int curTargetIndex = 0;     //現在ターゲットの
@@ -36,35 +37,41 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     private void Move()
     {
         Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpd * Time.deltaTime);
-        newPos.y = transform.position.y;
+        if (Y_lock)
+            newPos.y = transform.position.y;
+
         transform.position = newPos;
 
         Vector3 difPos = targetPos - transform.position;
         float absDifX = Mathf.Abs(difPos.x);
+        float absDifY = Mathf.Abs(difPos.y);
         float absDifZ = Mathf.Abs(difPos.z);
 
         if (absDifX < 0.01f && absDifZ < 0.01f)
+        {
+            if (!Y_lock && absDifX >= 0.01f) return;
             ChangeTarget();
+        }
 
     }
 
-	//目標変更
-	private void ChangeTarget()
-	{
-		curTargetIndex++;
-		if (curTargetIndex >= targets.Count)
-		{
-			curTargetIndex = -1;
-			return;
-		}
-		targetPos = targets[curTargetIndex].transform.position;
-		Switch_State();
-	}
+    //目標変更
+    private void ChangeTarget()
+    {
+        curTargetIndex++;
+        if (curTargetIndex >= targets.Count)
+        {
+            curTargetIndex = -1;
+            return;
+        }
+        targetPos = targets[curTargetIndex].transform.position;
+        Switch_State();
+    }
 
 
 
-	//回転処理
-	private void Rotate()
+    //回転処理
+    private void Rotate()
     {
         //ターゲットの向き
         Vector3 dir = (targetPos - transform.position).normalized;
@@ -94,7 +101,7 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     {
 
         //ターゲットがいなければ終了
-		if (curTargetIndex == -1)
+        if (curTargetIndex == -1)
         {
             End();
             return;
