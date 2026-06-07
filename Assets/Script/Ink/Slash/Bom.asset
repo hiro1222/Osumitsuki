@@ -20,9 +20,9 @@ MonoBehaviour:
   arcAngle: 0
   arcProjectileCount: 1
   hideSubProjectiles: 1
-  speed: 10
-  gravity: 10
-  lifetime: 0.4
+  speed: 12
+  gravity: 30
+  lifetime: 0.6
   spawnDelay: 0.3
   baseDamage: 30
   damageDecay: 0.3
@@ -33,10 +33,10 @@ MonoBehaviour:
   impactRadius: 2
   inkCost: 0.15
   slashTexture: {fileID: 0}
-  effectPrefab: {fileID: 1446626579872362356, guid: 0ad6bea0045daaa44aadfb33d896f2b2, type: 3}
+  effectPrefab: {fileID: 8812002513126487662, guid: 2658e40995bc6ec48b62aa7e1ccb873c, type: 3}
   effectOffset: {x: 0, y: 1, z: -2}
   effectRotation: {x: 0, y: 0, z: 0}
-  effectScale: {x: 0.4, y: 0.4, z: 0.4}
+  effectScale: {x: 3, y: 3, z: 3}
   visualSize: {x: 1, y: 1}
   visualRotation: 0
   fadeSpeed: 1
