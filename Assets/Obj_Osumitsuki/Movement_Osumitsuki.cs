@@ -37,21 +37,18 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     private void Move()
     {
         Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpd * Time.deltaTime);
+
         if (Y_lock)
+        {
             newPos.y = transform.position.y;
+        }
 
         transform.position = newPos;
-
+        
         Vector3 difPos = targetPos - transform.position;
-        float absDifX = Mathf.Abs(difPos.x);
-        float absDifY = Mathf.Abs(difPos.y);
-        float absDifZ = Mathf.Abs(difPos.z);
 
-        if (absDifX < 0.01f && absDifZ < 0.01f)
-        {
-            if (!Y_lock && absDifX >= 0.01f) return;
+        if (difPos.sqrMagnitude < 0.01f)
             ChangeTarget();
-        }
 
     }
 
@@ -82,7 +79,7 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
 
         //方向がゼロでないか確認
         if (dir.sqrMagnitude < 0.0001f)
-            return;
+            Switch_State();
 
         //現在の向きからターゲットの方向へ向く(補間アリ)
         Quaternion targetRot = Quaternion.LookRotation(dir);
