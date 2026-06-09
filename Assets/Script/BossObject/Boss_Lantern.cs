@@ -1,56 +1,51 @@
 using UnityEngine;
 
-/// <summary>
-/// 灯籠の体部分にアタッチするスクリプト
-/// ボスのゴロゴロが実体化したPaintableSurfaceに当たったときに
-/// Boss_LanternSetに通知する
-///
-/// 【セットアップ】
-/// ① 灯籠の体部分のオブジェクトにアタッチ
-/// ② InspectorにBoss_LanternSetをドラッグ
-/// ③ PaintableSurfaceが同じオブジェクトについていること
-/// </summary>
 public class Boss_Lantern : MonoBehaviour
 {
     [SerializeField] private Boss_LanternSet lanternSet;
-
     private float lastHitTime = -999f;
     private float hitCooldown = 3f;
-
-    // 起動時にキャッシュ
     private int inkLayer;
     private Collider[] cachedColliders;
 
     private void Awake()
     {
         inkLayer = LayerMask.NameToLayer("PlayerVSObject");
-        cachedColliders = GetComponentsInChildren<Collider>();
     }
-    private void Update()
+
+    private void Start()
     {
-        var stairs = GetComponent<Stairs_Osumitsuki>();
-        if (stairs != null)
-        {
-            Debug.Log($"[Lantern] osumitsukiTrg={stairs.OsumiTrg} osumitsukiFlg={stairs.OsumiFlg} endFlg={stairs.EndFlg}");
-        }
+        cachedColliders = GetComponentsInChildren<Collider>();
+
+        // ★ lanternSetを自動取得
+        if (lanternSet == null)
+            lanternSet = GetComponentInParent<Boss_LanternSet>();
+        if (lanternSet == null)
+            lanternSet = FindObjectOfType<Boss_LanternSet>();
+
+        Debug.Log($"[Boss_Lantern] lanternSet={lanternSet?.gameObject.name}");
     }
 
     private void OnTriggerEnter(Collider other)
-    {
+{
         if (Time.time - lastHitTime < hitCooldown) return;
+        Debug.Log($"[Boss_Lantern] lanternSet={lanternSet}");
         if (lanternSet == null) return;
 
-        var boss = other.GetComponent<Boss_SB>();
+         var boss = other.GetComponent<Boss_SB>();
         if (boss == null)
             boss = other.GetComponentInParent<Boss_SB>();
         if (boss == null) return;
-
         if (boss.GetCurrentPhase() != 1) return;
         if (!boss.GetIsRolling()) return;
-        if (!IsBodySurfacePainted()) return;
+
+        // ★ 塗り判定の結果をログ
+         bool isPainted = IsBodySurfacePainted();
+         Debug.Log($"[Boss_Lantern] 当たった！塗り判定={isPainted} オブジェクト={gameObject.name}");
+
+        if (!isPainted) return;
 
         lastHitTime = Time.time;
-
         Debug.Log("[Boss_Lantern] ボスが灯籠に当たった！");
         Vector3 bossDir = boss.GetRollDirection();
         lanternSet.NotifyBossHit(boss.transform.position, bossDir);
@@ -58,14 +53,17 @@ public class Boss_Lantern : MonoBehaviour
 
     private bool IsBodySurfacePainted()
     {
-        if (inkLayer < 0) return false;
+        var osumi = GetComponent<Obj_Osumitsuki>();
+        if (osumi == null)
+            osumi = GetComponentInParent<Obj_Osumitsuki>();
+        if (osumi == null)
+            osumi = GetComponentInChildren<Obj_Osumitsuki>();
 
-        // キャッシュ済みのコライダーを使う
-        foreach (var col in cachedColliders)
-        {
-            if (col.gameObject.layer == inkLayer && col.enabled)
-                return true;
-        }
+        Debug.Log($"[Boss_Lantern] osumi={osumi?.gameObject.name} OsumiTrg={osumi?.OsumiTrg}");
+
+        if (osumi != null)
+            return osumi.OsumiTrg;
+
         return false;
     }
 }

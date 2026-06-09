@@ -14,6 +14,16 @@ public class BossTackleHitbox : MonoBehaviour
     {
         if (boss == null) return;
 
+        var cannon = other.GetComponent<Cannon_Osumitsuki>();
+        if (cannon == null)
+            cannon = other.GetComponentInParent<Cannon_Osumitsuki>();
+        if (cannon != null)
+        {
+            Debug.Log("[BossTackleHitbox] 大砲に当たった！停止");
+            boss.NotifyHitCrateNoStun();
+            return;
+        }
+
         var woodBox = other.GetComponent<Boss_WoodBox>();
         if (woodBox == null)
             woodBox = other.GetComponentInParent<Boss_WoodBox>();

@@ -17,6 +17,9 @@ public class LanternSetSetup : MonoBehaviour
             return;
         }
 
+        var lanternSet = GetComponentInChildren<Boss_LanternSet>();
+        if (lanternSet == null) return;
+
         // 子オブジェクトのObj_Osumitsukiに設定
         var objList = GetComponentsInChildren<Obj_Osumitsuki>();
 

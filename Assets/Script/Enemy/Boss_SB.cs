@@ -66,6 +66,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("ゴロゴロ回転させるモデルのTransform（子オブジェクト）")]
     [SerializeField] private Transform rollModelTransform;
 
+    [Header("── ヒップドロップ予告 ──")]
+    [SerializeField] private HipDropIndicator hipDropIndicator;
+
     [Header("── 移動 ──")]
     [Tooltip("追従速度")]
     [SerializeField] private float chaseSpeed = 3f;
@@ -128,12 +131,17 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float hipDropJumpHeight = 6f;
     [Tooltip("チャージ時間（ホーミングする時間・秒）")]
     [SerializeField] private float hipDropChargeDuration = 1.5f;
+    [Tooltip("チャージ中のホーミング速度（小さいほど避けやすい）")]
+    [SerializeField] private float hipDropHomingSpeed = 4f;
     [Tooltip("降下速度")]
     [SerializeField] private float hipDropFallSpeed = 25f;
+    [Tooltip("位置確定から降下開始までの待機時間（秒）")]
+    [SerializeField] private float hipDropDelayBeforeFall = 0.4f;
     [Tooltip("連続ヒップドロップ回数")]
     [SerializeField] private int hipDropCount = 3;
     [Tooltip("着地後の硬直時間（秒）")]
     [SerializeField] private float hipDropRecoverTime = 0.3f;
+
 
     [Header("── 攻撃タイミング（共通）──")]
     [Tooltip("追従開始から攻撃までの待機時間（最小・秒）")]
@@ -261,6 +269,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private bool isHitCannon = false;        // 砲口に当たったか
     /// <summary>ヒップドロップ中（降下中）かを返す</summary>
     public bool GetIsHipDropping() => state == BossState.HipDrop;
+    private bool isLaunching = false; // 打ち上げ中フラグ
 
     private int rollAvoidFrameCount = 0;
     private Vector3 rollAvoidMoveDir; // キャッシュした移動方向
@@ -276,11 +285,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // ノックバック
     private CharacterController playerController;
     private PlayerMove playerMove;
-    private Vector3 knockbackVelocity;
-    private float knockbackTimer;
-    private bool isPlayerKnockedBack;
 
     private CharacterController bossController;
+    private PlayerStats playerStats;
 
     // ====================================================================
     //  初期化
@@ -317,6 +324,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 playerMove = player.GetComponentInChildren<PlayerMove>();
             if (playerMove == null)
                 playerMove = player.GetComponentInParent<PlayerMove>();
+            playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInChildren<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInParent<PlayerStats>();
         }
 
         bossController = GetComponent<CharacterController>();
@@ -337,7 +349,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (player == null) return;
 
-        UpdatePlayerKnockback();
         ClampToArea();
         CheckPlayerCollision();
 
@@ -625,7 +636,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     // ====================================================================
     //  Roll（ゴロゴロ・フェーズ2）
-    //  ★ゴロゴロの挙動を変えたいときはここを編集
+    //  ゴロゴロの挙動を変えたいときはここを編集
     // ====================================================================
 
     private void EnterRoll()
@@ -778,6 +789,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         EnterChase();
     }
 
+    /// <summary>動的生成された灯籠を登録する（LanternSetSetupから呼ぶ）</summary>
+    public void RegisterLanternObject(GameObject lantern)
+    {
+        if (!lanternObjects.Contains(lantern))
+            lanternObjects.Add(lantern);
+        Debug.Log($"[Boss_SB] 灯籠登録: {lantern.name} 合計{lanternObjects.Count}個");
+    }
+
     // ====================================================================
     //  HipDrop（ヒップドロップ・フェーズ3）
     // ====================================================================
@@ -799,10 +818,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             hipDropCurrentCount = i;
 
-            // ① ジャンプ＋チャージ（ホーミング）
+            // ジャンプ＋チャージ（ホーミング）
             yield return StartCoroutine(HipDropChargeCoroutine());
 
-            // ② 降下
+            // 降下
             yield return StartCoroutine(HipDropFallCoroutine());
 
             // 砲口に当たったらスタンへ（中断）
@@ -840,7 +859,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             yield return null;
         }
 
-        // チャージ中：プレイヤーをホーミング（落下先を追う）
         if (attackIndicator != null)
             attackIndicator.ShowAt(transform.position, Vector3.down);
 
@@ -849,22 +867,35 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             hipDropChargeTimer += Time.deltaTime;
 
-            // プレイヤーの真上に移動しようとする（ホーミング）
-            Vector3 targetXZ = new Vector3(player.position.x, transform.position.y, player.position.z);
-            transform.position = Vector3.MoveTowards(
-                transform.position, targetXZ, hipDropFallSpeed * 0.5f * Time.deltaTime);
+            float homingEndTime = hipDropChargeDuration * 0.5f;
+            if (hipDropChargeTimer < homingEndTime)
+            {
+                Vector3 targetXZ = new Vector3(player.position.x, transform.position.y, player.position.z);
+                transform.position = Vector3.MoveTowards(
+                    transform.position, targetXZ, hipDropHomingSpeed * Time.deltaTime);
+            }
+
+            Vector3 lookDir = player.position - transform.position;
+            lookDir.y = 0f;
+            LookAt(lookDir);
+
+            // チャージ中はプレイヤーの位置にサークルを追従
+            if (hipDropIndicator != null && hipDropChargeTimer < hipDropChargeDuration * 0.5f)
+                hipDropIndicator.Show(new Vector3(
+                    player.position.x, 0f, player.position.z));
 
             yield return null;
         }
 
-        // 降下先を確定（この時点のプレイヤー真下）
-        hipDropTargetPos = new Vector3(
-            transform.position.x,
-            transform.position.y,
-            transform.position.z);
+        // 降下先を確定
+        hipDropTargetPos = transform.position;
+
+ 
 
         if (attackIndicator != null)
             attackIndicator.Hide();
+
+        yield return new WaitForSeconds(hipDropDelayBeforeFall);
     }
 
     /// <summary>降下する（ホーミングなし）</summary>
@@ -872,19 +903,21 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         state = BossState.HipDrop;
 
-        // 真下に降下し続ける（地面か砲口に当たるまで）
         while (true)
         {
+            // 先にチェック
+            if (!bossController.enabled) yield break;
+            if (isLaunching) yield break;
+            if (isHitCannon) yield break;
+
             Vector3 move = Vector3.down * hipDropFallSpeed * Time.deltaTime;
             bossController.Move(move);
 
-            // 砲口に当たったら中断
-            if (isHitCannon) yield break;
-
-            // 地面に着地したか（CharacterControllerが接地）
             if (bossController.isGrounded)
             {
                 Debug.Log("[Boss_SB] ヒップドロップ着地");
+                if (hipDropIndicator != null)
+                    hipDropIndicator.Hide();
                 yield break;
             }
 
@@ -901,13 +934,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     /// <summary>
     /// 大砲の砲口に当たったときに呼ぶ（フェーズ3・CannonMuzzleから呼ぶ）
     /// ヒップドロップ中のみ有効
-    /// </summary>
     public void NotifyHitCannon()
     {
         if (currentPhase != 2) return;
         if (state != BossState.HipDrop) return;
         Debug.Log("[Boss_SB] 砲口に当たった！");
         isHitCannon = true;
+    }
+
+    /// <summary>打ち上げ中フラグのセット（CannonMuzzleから呼ぶ）</summary>
+    public void SetLaunching(bool value)
+    {
+        isLaunching = value;
     }
 
     // ====================================================================
@@ -939,7 +977,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Debug.Log("[Boss_SB] スタン！");
 
         StartCoroutine(StunRecoilCoroutine());
-        StartCoroutine(StunTiltCoroutine());
+
+        // フェーズ3はCannonMuzzleで向きを設定するのでSkip
+        if (currentPhase != 2)
+            StartCoroutine(StunTiltCoroutine());
 
         if (rollModelTransform != null)
         {
@@ -1013,10 +1054,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
         else if (currentPhase == 1)
         {
-            // 灯籠を飛ばす
-            BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
+            if (lanternSet != null)
+                lanternSet.ResetLanterns();
 
-            // フェーズ3オブジェクトを上から生成
+            // ★ 登録済みの灯籠を飛ばす
+            Debug.Log($"[Boss_SB] 灯籠を飛ばす: {lanternObjects.Count}個");
+            BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
+            lanternObjects.Clear();
+
             yield return StartCoroutine(SpawnObjectsFromAbove(
                 phase3ObjectPrefab, phase3SpawnPoints));
         }
@@ -1053,6 +1098,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 point.position.z);
 
             GameObject obj = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+            // フェーズ2の灯籠なら登録
+            if (currentPhase == 0) // 咆哮時はまだフェーズ1なので0
+                RegisterLanternObject(obj);
 
             var rigidbodies = obj.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rigidbodies)
@@ -1168,16 +1217,25 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         foreach (var obj in objects)
         {
             if (obj == null) continue;
-            var rb = obj.GetComponent<Rigidbody>();
-            if (rb != null)
+
+            // ★ 子オブジェクト全部のRigidbodyを取得して飛ばす
+            var rigidbodies = obj.GetComponentsInChildren<Rigidbody>();
+            if (rigidbodies.Length > 0)
             {
-                rb.isKinematic = false;
-                rb.AddForce(blastForce, ForceMode.Impulse);
+                foreach (var rb in rigidbodies)
+                {
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                    rb.AddForce(blastForce, ForceMode.Impulse);
+                    Debug.Log($"[Boss_SB] 灯籠飛ばし: {rb.gameObject.name}");
+                }
             }
             else
             {
+                Debug.LogWarning($"[Boss_SB] Rigidbodyなし: {obj.name}");
                 obj.SetActive(false);
             }
+
             StartCoroutine(DestroyAfterDelay(obj, destroyDelay));
         }
     }
@@ -1206,40 +1264,35 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void ApplyKnockbackToPlayer()
     {
-        if (isPlayerKnockedBack) return;
-        if (playerController == null) return;
+        if (playerMove == null) return;
 
-        float knockbackDistance = attackPowers[currentPhase] * 0.5f;
-        Vector3 knockDir = (player.position - transform.position).normalized;
-        knockDir.y = 0f;
+        float knockbackPower = attackPowers[currentPhase] * 0.5f;
 
-        knockbackVelocity = knockDir * knockbackDistance * 10f
-                          + Vector3.up * knockbackUpForce;
-        knockbackTimer = 0f;
-        isPlayerKnockedBack = true;
+        Vector3 knockDir;
 
-        if (playerMove != null)
+        // HipDrop中は真上から落ちるのでプレイヤーの向きの逆に飛ばす
+        if (state == BossState.HipDrop)
         {
-            playerMove.SetExternalGravityEnabled(false);
-            playerMove.ClearVerticalVelocity();
+            knockDir = -player.forward;
+            knockDir.y = 0f;
+            if (knockDir.sqrMagnitude < 0.01f)
+                knockDir = Vector3.back;
+            knockDir.Normalize();
         }
-    }
-
-    private void UpdatePlayerKnockback()
-    {
-        if (!isPlayerKnockedBack) return;
-        if (playerController == null) return;
-
-        knockbackVelocity.y += Physics.gravity.y * Time.deltaTime;
-        playerController.Move(knockbackVelocity * Time.deltaTime);
-        knockbackTimer += Time.deltaTime;
-
-        if (knockbackTimer >= knockbackDuration)
+        else
         {
-            isPlayerKnockedBack = false;
-            if (playerMove != null)
-                playerMove.SetExternalGravityEnabled(true);
+            knockDir = player.position - transform.position;
+            knockDir.y = 0f;
+            knockDir.Normalize();
         }
+
+        Vector3 knockbackVelocity = knockDir * knockbackPower * 10f
+                                  + Vector3.up * knockbackUpForce;
+
+        playerMove.ApplyKnockback(knockbackVelocity, knockbackDuration);
+
+        if (playerStats != null)
+            playerStats.Damage(1);
     }
 
     // ====================================================================

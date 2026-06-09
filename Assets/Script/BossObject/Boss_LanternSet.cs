@@ -25,6 +25,10 @@ public class Boss_LanternSet : MonoBehaviour
     [SerializeField] private Transform lanternB;
     [SerializeField] private Transform lanternC;
 
+    [Header("── 内面判定拡張 ──")]
+    [Tooltip("三角形の判定を広げる量（大きいほど内面判定が広くなる）")]
+    [SerializeField] private float innerExpand = 2f;
+
     [Header("── ボス参照 ──")]
     [SerializeField] private Boss_SB boss;
 
@@ -34,6 +38,18 @@ public class Boss_LanternSet : MonoBehaviour
     //  外部から呼ぶ関数
     // ====================================================================
 
+    private void Start()
+    {
+        // シーン上のBoss_SBを自動取得
+        if (boss == null)
+            boss = FindObjectOfType<Boss_SB>();
+
+        if (boss == null)
+            Debug.LogError("[Boss_LanternSet] Boss_SBが見つかりません！");
+        else
+            Debug.Log($"[Boss_LanternSet] ボス取得: {boss.gameObject.name}");
+    }
+
     /// <summary>
     /// ボスが灯籠に当たったときに呼ぶ
     /// Boss_Lanternから呼ばれる
@@ -42,12 +58,14 @@ public class Boss_LanternSet : MonoBehaviour
     {
         if (boss == null) return;
 
+        bool isInner = IsInnerSide(bossPosition);
+        Vector3 newDirection = CalculateBounceDirection(bossPosition, bossDirection, isInner);
+
+        // 方向計算後に記録（計算中に除外されないように）
         Transform nearest = GetNearestLantern(bossPosition);
         bouncedLanterns.Add(nearest);
         Debug.Log($"[Boss_LanternSet] バウンド灯籠記録: {nearest?.name} 記録数:{bouncedLanterns.Count}");
 
-        bool isInner = IsInnerSide(bossPosition);
-        Vector3 newDirection = CalculateBounceDirection(bossPosition, bossDirection, isInner);
         boss.NotifyLanternBounce(isInner, newDirection);
     }
 
@@ -68,12 +86,17 @@ public class Boss_LanternSet : MonoBehaviour
         Vector3 b = lanternB.position;
         Vector3 c = lanternC.position;
 
-        // Y座標を無視して水平面で判定
-        a.y = 0f;
-        b.y = 0f;
-        c.y = 0f;
+        a.y = 0f; b.y = 0f; c.y = 0f;
         Vector3 pos = bossPosition;
         pos.y = 0f;
+
+        // 三角形の中心を求める
+        Vector3 center = (a + b + c) / 3f;
+
+        // 各頂点を中心から外側に広げる
+        a = center + (a - center).normalized * ((a - center).magnitude + innerExpand);
+        b = center + (b - center).normalized * ((b - center).magnitude + innerExpand);
+        c = center + (c - center).normalized * ((c - center).magnitude + innerExpand);
 
         return IsPointInTriangle(pos, a, b, c);
     }
@@ -132,7 +155,7 @@ public class Boss_LanternSet : MonoBehaviour
         foreach (var lantern in others)
         {
             if (lantern == null) continue;
-            // 当たったことのある灯籠を全部除外
+            // 当たった灯籠（nearest含む）を全部除外
             if (bouncedLanterns.Contains(lantern)) continue;
 
             float dist = Vector3.Distance(bossPosition, lantern.position);
@@ -143,9 +166,11 @@ public class Boss_LanternSet : MonoBehaviour
             }
         }
 
-        // 全部除外された場合は一番近い灯籠へ
+        // 全部除外された場合はbouncedLangternsをリセットして再探索
         if (target == null)
         {
+            Debug.Log("[Boss_LanternSet] 全灯籠バウンド済み。履歴リセット");
+            bouncedLanterns.Clear();
             foreach (var lantern in others)
             {
                 if (lantern == null) continue;
@@ -213,21 +238,41 @@ public class Boss_LanternSet : MonoBehaviour
         Debug.Log("[Boss_LanternSet] バウンド履歴リセット");
     }
 
+    /// <summary>灯籠登録をリセットする（フェーズ移行時に呼ぶ）</summary>
+    public void ResetLanterns()
+    {
+        lanternA = null;
+        lanternB = null;
+        lanternC = null;
+        bouncedLanterns.Clear();
+        Debug.Log("[Boss_LanternSet] 灯籠リセット");
+    }
+
     // ====================================================================
     //  Gizmos（エディタ上で三角形を可視化）
     // ====================================================================
-
     private void OnDrawGizmos()
     {
         if (lanternA == null || lanternB == null || lanternC == null) return;
 
+        Vector3 a = lanternA.position;
+        Vector3 b = lanternB.position;
+        Vector3 c = lanternC.position;
+        a.y = 0f; b.y = 0f; c.y = 0f;
+
+        // Expandを反映
+        Vector3 center = (a + b + c) / 3f;
+        a = center + (a - center).normalized * ((a - center).magnitude + innerExpand);
+        b = center + (b - center).normalized * ((b - center).magnitude + innerExpand);
+        c = center + (c - center).normalized * ((c - center).magnitude + innerExpand);
+
         // 三角形の辺を表示
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(lanternA.position, lanternB.position);
-        Gizmos.DrawLine(lanternB.position, lanternC.position);
-        Gizmos.DrawLine(lanternC.position, lanternA.position);
+        Gizmos.DrawLine(a, b);
+        Gizmos.DrawLine(b, c);
+        Gizmos.DrawLine(c, a);
 
-        // 各灯籠を球で表示
+        // 各灯籠を球で表示（元の位置）
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(lanternA.position, 0.5f);
         Gizmos.DrawWireSphere(lanternB.position, 0.5f);

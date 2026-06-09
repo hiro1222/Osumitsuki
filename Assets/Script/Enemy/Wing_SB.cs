@@ -1,4 +1,5 @@
 using UnityEngine;
+using static PlayerStateMachine;
 
 /// <summary>
 /// 敵対Enemy「飛行型墨袋（Wing_SB）」
@@ -93,6 +94,10 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     [Header("PaintStatus参照")]
     [SerializeField] private PlayerPaintStatus paintStatus;
 
+    private PlayerStats playerStats;
+    [SerializeField] private int damageAmount = 1;
+
+
     // ====================================================================
     //  内部状態
     // ====================================================================
@@ -118,9 +123,7 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
     // ノックバック
     private CharacterController playerController;
-    private Vector3 knockbackVelocity;
-    private float knockbackTimer;
-    private bool isPlayerKnockedBack;
+
 
     // コライダー制御
     private Collider enemyCollider;
@@ -176,6 +179,11 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
                 playerMove = player.GetComponentInChildren<PlayerMove>();
             if (playerMove == null)
                 playerMove = player.GetComponentInParent<PlayerMove>();
+            playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInChildren<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInParent<PlayerStats>();
         }
     }
 
@@ -187,8 +195,6 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     {
         if (player == null) return;
         if (isAlly) return;
-
-        UpdatePlayerKnockback();
 
         if (isBouncing)
         {
@@ -454,20 +460,19 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
     private void ApplyKnockbackToPlayer()
     {
-        if (isPlayerKnockedBack) return;
-        if (playerController == null) return;
+        if (playerMove == null) return;
 
         float knockbackDistance = attackPower * 0.5f;
 
-        // ヒップドロップ中は真上からなのでプレイヤーの向きと逆方向に飛ばす
+        // ヒップドロップ中は真上からなのでプレイヤーの向きの逆に飛ばす
         Vector3 knockDir;
         if (state == EnemyState.HipDrop || state == EnemyState.Stop)
         {
-            // プレイヤーが向いている方向の逆に飛ばす
             knockDir = -player.forward;
             knockDir.y = 0f;
             if (knockDir.sqrMagnitude < 0.01f)
-                knockDir = Vector3.back; // フォールバック
+                knockDir = Vector3.back;
+            knockDir.Normalize();
         }
         else
         {
@@ -475,37 +480,13 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
             knockDir.y = 0f;
         }
 
-        knockbackVelocity = knockDir.normalized * knockbackDistance * 10f
-                          + Vector3.up * knockbackUpForce;
-        knockbackTimer = 0f;
-        isPlayerKnockedBack = true;
+        Vector3 knockbackVelocity = knockDir * knockbackDistance * 10f
+                                  + Vector3.up * knockbackUpForce;
 
-        if (playerMove != null)
-        {
-            playerMove.SetExternalGravityEnabled(false);
-            playerMove.ClearVerticalVelocity();
-        }
+        playerMove.ApplyKnockback(knockbackVelocity, knockbackDuration);
 
-        Debug.Log($"[Wing_SB] ノックバック発動！knockDir={knockDir} velocity={knockbackVelocity}");
-    }
-
-    private void UpdatePlayerKnockback()
-    {
-        if (!isPlayerKnockedBack) return;
-        if (playerController == null) return;
-
-        knockbackVelocity.y += Physics.gravity.y * Time.deltaTime;
-        playerController.Move(knockbackVelocity * Time.deltaTime);
-        knockbackTimer += Time.deltaTime;
-
-        if (knockbackTimer >= knockbackDuration)
-        {
-            isPlayerKnockedBack = false;
-
-            // 重力をONに戻す
-            if (playerMove != null)
-                playerMove.SetExternalGravityEnabled(true);
-        }
+        if (playerStats != null)
+            playerStats.Damage(damageAmount);
     }
 
     // ====================================================================

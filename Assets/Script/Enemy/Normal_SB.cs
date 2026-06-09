@@ -75,6 +75,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     [Header("PaintStatus参照")]
     [SerializeField] private PlayerPaintStatus paintStatus;
 
+    private PlayerStats playerStats;
+    [SerializeField] private int damageAmount = 1;
+
 
     private Rigidbody rb;
 
@@ -93,6 +96,7 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
 
     // ノックバック
     private CharacterController playerController;
+    private PlayerMove playerMove;
     private Vector3 knockbackVelocity;
     private float knockbackTimer;
     private bool isPlayerKnockedBack;
@@ -143,6 +147,18 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
             if (playerController == null)
                 playerController = player.GetComponentInParent<CharacterController>();
 
+            playerMove = player.GetComponent<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInChildren<PlayerMove>();
+            if (playerMove == null)
+                playerMove = player.GetComponentInParent<PlayerMove>();
+
+            playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInChildren<PlayerStats>();
+            if (playerStats == null)
+                playerStats = player.GetComponentInParent<PlayerStats>();
+
         }
 
 
@@ -160,9 +176,6 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         if (isAlly) return;
 
         FollowGround();
-
-        // プレイヤーのノックバック処理
-        UpdatePlayerKnockback();
 
         if (isBouncing)
         {
@@ -291,34 +304,19 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
 
     private void ApplyKnockbackToPlayer()
     {
-        if (isPlayerKnockedBack) return;
-        if (playerController == null) return;
+        if (playerMove == null) return;
 
-        float knockbackDistance = attackPower * 0.5f;
+        Vector3 knockDir = player.position - transform.position;
+        knockDir.y = 0f;
+        knockDir.Normalize();
 
-        // 横方向（プレイヤーから離れる方向）
-        Vector3 knockDir = (player.position - transform.position).normalized;
-        knockDir.y = 0f; // 横方向だけ取り出す
+        Vector3 knockbackVelocity = knockDir * attackPower * 10f
+                                  + Vector3.up * knockbackUpForce;
 
-        // 横方向 + 上方向を別々に足す
-        Vector3 knockbackForce = knockDir * knockbackDistance * 10f
-                               + Vector3.up * knockbackUpForce;
+        playerMove.ApplyKnockback(knockbackVelocity, knockbackDuration);
 
-        knockbackVelocity = knockbackForce;
-        knockbackTimer = 0f;
-        isPlayerKnockedBack = true;
-    }
-
-    private void UpdatePlayerKnockback()
-    {
-        if (!isPlayerKnockedBack) return;
-        if (playerController == null) return;
-
-        playerController.Move(knockbackVelocity * Time.deltaTime);
-        knockbackTimer += Time.deltaTime;
-
-        if (knockbackTimer >= knockbackDuration)
-            isPlayerKnockedBack = false;
+        if (playerStats != null)
+            playerStats.Damage(damageAmount);
     }
 
     // ====================================================================
