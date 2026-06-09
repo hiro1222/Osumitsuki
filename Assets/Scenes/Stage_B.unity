@@ -166,6 +166,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -406,6 +410,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -533,6 +541,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -734,6 +746,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -861,6 +877,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -988,6 +1008,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1115,6 +1139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1273,6 +1301,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1400,6 +1432,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1527,6 +1563,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1654,6 +1694,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1869,6 +1913,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1996,6 +2044,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2159,6 +2211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2385,6 +2441,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2512,6 +2572,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2717,6 +2781,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2844,6 +2912,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3029,6 +3101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3211,6 +3287,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3338,6 +3418,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3470,6 +3554,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3597,6 +3685,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3724,6 +3816,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3851,6 +3947,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -3978,6 +4078,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4105,6 +4209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4232,6 +4340,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4359,6 +4471,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4486,6 +4602,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4613,6 +4733,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4740,6 +4864,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -4975,6 +5103,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -5176,6 +5308,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -5340,6 +5476,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -5521,7 +5661,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 100
-  InkRatio: 70
   myMaterial: {fileID: 0}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -5537,6 +5676,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -5826,6 +5969,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6066,6 +6213,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6193,6 +6344,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6320,6 +6475,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6529,6 +6688,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6730,6 +6893,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6857,6 +7024,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -6984,6 +7155,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7111,6 +7286,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7346,6 +7525,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7473,6 +7656,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7600,6 +7787,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7727,6 +7918,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7854,6 +8049,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -7981,6 +8180,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -8113,6 +8316,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -8240,6 +8447,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -8367,6 +8578,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -8494,6 +8709,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -8749,7 +8968,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 100
-  InkRatio: 70
   myMaterial: {fileID: 0}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -8765,6 +8983,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9021,6 +9243,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9148,6 +9374,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9275,6 +9505,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9402,6 +9636,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9529,6 +9767,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9730,6 +9972,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -9894,6 +10140,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10099,6 +10349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10226,6 +10480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10353,6 +10611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10654,6 +10916,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10781,6 +11047,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -10908,6 +11178,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11093,6 +11367,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11167,6 +11445,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11402,6 +11684,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11529,6 +11815,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11656,6 +11946,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -11907,6 +12201,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12142,6 +12440,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12269,6 +12571,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12396,6 +12702,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12523,6 +12833,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12758,6 +13072,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -12959,6 +13277,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -13086,6 +13408,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -13213,6 +13539,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -13340,6 +13670,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -13643,6 +13977,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -13770,6 +14108,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14003,6 +14345,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14130,6 +14476,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14257,6 +14607,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14384,6 +14738,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14511,6 +14869,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14770,6 +15132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -14971,6 +15337,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15068,6 +15438,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15142,6 +15516,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15451,6 +15829,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15694,6 +16076,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15821,6 +16207,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -15948,6 +16338,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16108,6 +16502,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16235,6 +16633,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16362,6 +16764,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16489,6 +16895,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16626,6 +17036,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -16753,6 +17167,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17142,6 +17560,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17216,6 +17638,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17343,6 +17769,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17475,6 +17905,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17602,6 +18036,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -17837,6 +18275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18138,6 +18580,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18328,6 +18774,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18455,6 +18905,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18582,6 +19036,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18762,6 +19220,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18841,6 +19303,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -18968,6 +19434,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -19048,6 +19518,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 642723647}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &646898152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 646898153}
+  m_Layer: 0
+  m_Name: CannonSpawnPoint3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &646898153
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 646898152}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 10.199997, y: -1.4635735, z: 27.300018}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1471446899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &648208190
 GameObject:
   m_ObjectHideFlags: 0
@@ -19203,6 +19704,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -19446,6 +19951,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -19573,6 +20082,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -19700,6 +20213,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -19915,6 +20432,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20000,6 +20521,37 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1b1c6c4c3a2bb394e908a77b1018da85, type: 3}
   m_PrefabInstance: {fileID: 2020026089}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &674618091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 674618092}
+  m_Layer: 0
+  m_Name: AreaPointB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &674618092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674618091}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 40.899994, y: 7.4364243, z: 36.80002}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 758980771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &675663024
 GameObject:
   m_ObjectHideFlags: 0
@@ -20047,6 +20599,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20290,6 +20846,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20422,6 +20982,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20549,6 +21113,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20676,6 +21244,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -20891,6 +21463,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21018,6 +21594,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21150,6 +21730,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21277,6 +21861,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21486,6 +22074,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21618,6 +22210,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21819,6 +22415,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -21946,6 +22546,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -22225,6 +22829,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -22352,6 +22960,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -22663,6 +23275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -22790,6 +23406,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -22917,6 +23537,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23152,6 +23776,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23249,6 +23877,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23328,6 +23960,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23455,6 +24091,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23582,6 +24222,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23709,6 +24353,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23836,6 +24484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -23916,6 +24568,45 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 758101126}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &758980770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 758980771}
+  m_Layer: 0
+  m_Name: Boss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &758980771
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758980770}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 79.8, y: 57.663574, z: 389.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1748447924}
+  - {fileID: 1074669673}
+  - {fileID: 674618092}
+  - {fileID: 842206332}
+  - {fileID: 1471446899}
+  - {fileID: 1684431197}
+  - {fileID: 1629382972}
+  - {fileID: 780763502}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &761404258
 GameObject:
   m_ObjectHideFlags: 0
@@ -23963,6 +24654,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -24346,6 +25041,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -24547,6 +25246,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -24627,6 +25330,104 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776544017}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &779264111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 779264112}
+  m_Layer: 0
+  m_Name: CannonSpawnPoint1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &779264112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779264111}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4.800003, y: -1.4635735, z: 0.6000061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1471446899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &780763500
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 758980771}
+    m_Modifications:
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 17.800018
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_Name
+      value: WOOD_BOX (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+--- !u!1 &780763501 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 780763500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &780763502 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 780763500}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &787571244
 GameObject:
   m_ObjectHideFlags: 0
@@ -24674,6 +25475,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -24837,6 +25642,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -24964,6 +25773,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25091,6 +25904,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25218,6 +26035,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25345,6 +26166,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25573,6 +26398,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25808,6 +26637,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -25972,7 +26805,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 100
-  InkRatio: 70
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
   allyEnemyTarget:
   - {fileID: 200145910}
@@ -25982,6 +26814,7 @@ MonoBehaviour:
   - {fileID: 1286184836}
   turnSpd: 60
   moveSpd: 10
+  Y_lock: 1
 --- !u!1001 &836028300
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26145,6 +26978,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -26272,6 +27109,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -26487,6 +27328,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -26567,6 +27412,54 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841837523}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &842206330
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 842206332}
+  - component: {fileID: 842206331}
+  m_Layer: 0
+  m_Name: BossAreaManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &842206331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842206330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d53936a0c66d945b41139fe1080749, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointA: {fileID: 1074669673}
+  pointB: {fileID: 674618092}
+  boss: {fileID: 1748447925}
+  player: {fileID: 1009407963}
+--- !u!4 &842206332
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842206330}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.799995, y: 6.636429, z: 11}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 758980771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &844249786
 GameObject:
   m_ObjectHideFlags: 0
@@ -26614,6 +27507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -26928,6 +27825,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -27178,7 +28079,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 100
-  InkRatio: 70
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
   allyEnemyTarget:
   - {fileID: 1571212206}
@@ -27188,6 +28088,7 @@ MonoBehaviour:
   - {fileID: 1015892136}
   turnSpd: 60
   moveSpd: 10
+  Y_lock: 1
 --- !u!1 &891463450
 GameObject:
   m_ObjectHideFlags: 0
@@ -27396,6 +28297,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -27501,6 +28406,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -27702,6 +28611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -27829,6 +28742,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -27996,6 +28913,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28115,6 +29036,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28241,6 +29166,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28368,6 +29297,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28495,6 +29428,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28614,6 +29551,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -28944,6 +29885,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -29071,6 +30016,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -29335,6 +30284,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 341718442375843625, guid: b5823f0ade024d94f80b126be4028ac0, type: 3}
   m_PrefabInstance: {fileID: 953579563}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &956033178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 956033179}
+  m_Layer: 0
+  m_Name: CannonSpawnPoint2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &956033179
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 956033178}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 25.199997, y: -1.4635735, z: 0.6000061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1471446899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &957508300
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29511,6 +30491,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -29638,6 +30622,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -29843,6 +30831,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -29970,6 +30962,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30097,6 +31093,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30224,6 +31224,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30351,6 +31355,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30478,6 +31486,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30605,6 +31617,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30732,6 +31748,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30859,6 +31879,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -30986,6 +32010,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31113,6 +32141,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31240,6 +32272,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31367,6 +32403,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31494,6 +32534,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31621,6 +32665,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -31952,6 +33000,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32167,6 +33219,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32294,6 +33350,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32421,6 +33481,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32548,6 +33612,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32724,6 +33792,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -32959,6 +34031,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33086,6 +34162,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33213,6 +34293,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33340,6 +34424,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33467,6 +34555,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33702,6 +34794,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -33945,6 +35041,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -34072,6 +35172,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -34287,6 +35391,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -34522,6 +35630,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -34649,6 +35761,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -34884,6 +36000,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35011,6 +36131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35138,6 +36262,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35265,6 +36393,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35392,6 +36524,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35784,6 +36920,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -35864,6 +37004,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072001056}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1074669672
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1074669673}
+  m_Layer: 10
+  m_Name: AreaPointA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1074669673
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074669672}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -18.900002, y: -1.9635735, z: -12.859985}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 758980771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1076491917
 GameObject:
   m_ObjectHideFlags: 0
@@ -35911,6 +37082,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36043,6 +37218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36170,6 +37349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36297,6 +37480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36424,6 +37611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36521,6 +37712,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36595,6 +37790,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36722,6 +37921,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -36978,6 +38181,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37105,6 +38312,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37306,6 +38517,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37433,6 +38648,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37634,6 +38853,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37761,6 +38984,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -37888,6 +39115,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -38073,6 +39304,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -38229,6 +39464,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -38992,6 +40231,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39114,6 +40357,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39241,6 +40488,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39403,6 +40654,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39530,6 +40785,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39657,6 +40916,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39784,6 +41047,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -39911,6 +41178,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40112,6 +41383,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40239,6 +41514,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40366,6 +41645,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40463,6 +41746,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40537,6 +41824,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -40843,6 +42134,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41028,6 +42323,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41176,6 +42475,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41303,6 +42606,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41430,6 +42737,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41557,6 +42868,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41689,6 +43004,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41816,6 +43135,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -41943,6 +43266,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42180,6 +43507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42307,6 +43638,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42434,6 +43769,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42669,6 +44008,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42796,6 +44139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -42915,6 +44262,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43109,6 +44460,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43236,6 +44591,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43471,6 +44830,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43598,6 +44961,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43756,6 +45123,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -43883,6 +45254,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44010,6 +45385,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44211,6 +45590,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44338,6 +45721,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44465,6 +45852,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44592,6 +45983,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44719,6 +46114,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44838,6 +46237,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -44890,6 +46293,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -45122,6 +46529,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -45431,6 +46842,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -45528,6 +46943,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -45602,6 +47021,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -45803,6 +47226,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46160,6 +47587,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46339,6 +47770,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46487,6 +47922,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46614,6 +48053,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46741,6 +48184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46868,6 +48315,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -46995,6 +48446,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -47415,6 +48870,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -47568,6 +49027,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -47695,6 +49158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -47856,6 +49323,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -47983,6 +49454,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48110,6 +49585,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48311,6 +49790,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48438,6 +49921,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48565,6 +50052,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48645,6 +50136,41 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1469871415}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1471446898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1471446899}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1471446899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471446898}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2130820537}
+  - {fileID: 779264112}
+  - {fileID: 956033179}
+  - {fileID: 646898153}
+  m_Father: {fileID: 758980771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1474706137
 GameObject:
   m_ObjectHideFlags: 0
@@ -48692,6 +50218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48819,6 +50349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -48946,6 +50480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49073,6 +50611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49279,6 +50821,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49406,6 +50952,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49533,6 +51083,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49660,6 +51214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49787,6 +51345,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -49914,6 +51476,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50094,6 +51660,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50168,6 +51738,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50329,6 +51903,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50456,6 +52034,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50583,6 +52165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -50914,6 +52500,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51072,6 +52662,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51230,6 +52824,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51431,6 +53029,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51558,6 +53160,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51685,6 +53291,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -51886,6 +53496,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52063,6 +53677,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52264,6 +53882,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52391,6 +54013,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52518,6 +54144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52615,6 +54245,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52689,6 +54323,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -52843,6 +54481,73 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 341718442375843625, guid: b5823f0ade024d94f80b126be4028ac0, type: 3}
   m_PrefabInstance: {fileID: 1626666615}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1629382970
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 758980771}
+    m_Modifications:
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.2968216
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.081421
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_Name
+      value: WOOD_BOX (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+--- !u!1 &1629382971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 1629382970}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1629382972 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 1629382970}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1631413041
 GameObject:
   m_ObjectHideFlags: 0
@@ -52890,6 +54595,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53017,6 +54726,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53144,6 +54857,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53271,6 +54988,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53398,6 +55119,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53525,6 +55250,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53780,7 +55509,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 100
-  InkRatio: 70
   myMaterial: {fileID: 0}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -53796,6 +55524,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -53870,6 +55602,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -54604,6 +56340,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -54684,6 +56424,73 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681179516}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1684431195
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 758980771}
+    m_Modifications:
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.293434
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 19.177673
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+      propertyPath: m_Name
+      value: WOOD_BOX
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+--- !u!1 &1684431196 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7848351613872162606, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 1684431195}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1684431197 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
+  m_PrefabInstance: {fileID: 1684431195}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1684882011
 GameObject:
   m_ObjectHideFlags: 0
@@ -54731,6 +56538,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -54858,6 +56669,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55043,6 +56858,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55117,6 +56936,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55244,6 +57067,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55371,6 +57198,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55498,6 +57329,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55625,6 +57460,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55763,6 +57602,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -55890,6 +57733,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56099,6 +57946,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56226,6 +58077,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56406,6 +58261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56480,6 +58339,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56607,6 +58470,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56734,6 +58601,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -56888,6 +58759,151 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 341718442375843625, guid: b5823f0ade024d94f80b126be4028ac0, type: 3}
   m_PrefabInstance: {fileID: 1740077998}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1748447923
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 758980771}
+    m_Modifications:
+    - target: {fileID: 4494471539982894623, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_Name
+      value: Boss_test
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.341293
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.5135803
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 23.196655
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1009407963}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: areaPointA
+      value: 
+      objectReference: {fileID: 1074669673}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: areaPointB
+      value: 
+      objectReference: {fileID: 674618092}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: fieldCenter
+      value: 
+      objectReference: {fileID: 842206332}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: crateObjects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'roarRanges.Array.data[0]'
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'crateObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1684431196}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'crateObjects.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1629382971}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'crateObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 780763501}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: phase3SpawnPoints.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: lanternSpawnPoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'phase3SpawnPoints.Array.data[0]'
+      value: 
+      objectReference: {fileID: 779264112}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'phase3SpawnPoints.Array.data[1]'
+      value: 
+      objectReference: {fileID: 956033179}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'phase3SpawnPoints.Array.data[2]'
+      value: 
+      objectReference: {fileID: 646898153}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'requiredInkCounts.Array.data[0]'
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'requiredInkCounts.Array.data[1]'
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'requiredInkCounts.Array.data[2]'
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+      propertyPath: 'lanternSpawnPoints.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2130820537}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: afa9f93355e916844b197ab660277557, type: 3}
+--- !u!4 &1748447924 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7308886097325692033, guid: afa9f93355e916844b197ab660277557, type: 3}
+  m_PrefabInstance: {fileID: 1748447923}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1748447925 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8622780655138214074, guid: afa9f93355e916844b197ab660277557, type: 3}
+  m_PrefabInstance: {fileID: 1748447923}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11003cc0235e43747adc9dafc49eef9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1750028417
 GameObject:
   m_ObjectHideFlags: 0
@@ -56935,6 +58951,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57183,6 +59203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57310,6 +59334,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57437,6 +59465,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57564,6 +59596,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57691,6 +59727,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -57818,6 +59858,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58020,6 +60064,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58146,6 +60194,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58273,6 +60325,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58548,6 +60604,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58749,6 +60809,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -58950,6 +61014,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59047,6 +61115,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59121,6 +61193,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59248,6 +61324,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59445,6 +61525,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59572,6 +61656,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59699,6 +61787,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59826,6 +61918,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -59953,6 +62049,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60080,6 +62180,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60207,6 +62311,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60334,6 +62442,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60461,6 +62573,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60663,6 +62779,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60715,6 +62835,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60869,6 +62993,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -60996,6 +63124,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61115,6 +63247,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61167,6 +63303,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61368,6 +63508,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61548,6 +63692,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61679,6 +63827,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61806,6 +63958,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -61933,6 +64089,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62187,6 +64347,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62261,6 +64425,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62388,6 +64556,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62515,6 +64687,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62642,6 +64818,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62739,6 +64919,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -62891,6 +65075,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63018,6 +65206,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63145,6 +65337,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63272,6 +65468,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63581,6 +65781,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63708,6 +65912,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63835,6 +66043,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -63962,6 +66174,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64089,6 +66305,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64216,6 +66436,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64396,6 +66620,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64470,6 +66698,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64650,6 +66882,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64851,6 +67087,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -64925,6 +67165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -65022,6 +67266,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -65171,7 +67419,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 20
-  InkRatio: 70
   myMaterial: {fileID: 2100000, guid: 3d61dcfe8097c9c4a9a01751844beda7, type: 2}
   allyEnemyTarget:
   - {fileID: 1382874713}
@@ -65181,6 +67428,7 @@ MonoBehaviour:
   - {fileID: 31898351}
   turnSpd: 60
   moveSpd: 10
+  Y_lock: 1
 --- !u!1001 &2035912869
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65418,6 +67666,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -65669,6 +67921,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -65796,6 +68052,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66058,6 +68318,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66185,6 +68449,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66510,6 +68778,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66659,6 +68931,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66711,6 +68987,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66838,6 +69118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -66965,6 +69249,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67092,6 +69380,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67219,6 +69511,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67399,6 +69695,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67473,6 +69773,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67600,6 +69904,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67727,6 +70035,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67824,6 +70136,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -67898,6 +70214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -68095,6 +70415,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82c53c992b2c8e940b35aa71f20f093e, type: 3}
+--- !u!1 &2130820536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2130820537}
+  m_Layer: 0
+  m_Name: LanternSpawnPoint1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2130820537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130820536}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.299995, y: -1.0935745, z: 12.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1471446899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2133737031
 GameObject:
   m_ObjectHideFlags: 0
@@ -68156,6 +70507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -68283,6 +70638,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -68357,6 +70716,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -68583,3 +70946,4 @@ SceneRoots:
   - {fileID: 1267659493}
   - {fileID: 849162032}
   - {fileID: 2125008840}
+  - {fileID: 758980771}
