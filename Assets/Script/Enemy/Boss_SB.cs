@@ -103,6 +103,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("タックルの最大移動距離（m）")]
     [SerializeField] private float tackleMaxDistance = 20f;
 
+    [Header("── チャージ ──")]
+    [Tooltip("チャージ時間（秒）")]
+    [SerializeField] private float chargeDuration = 1f;
+    [Tooltip("チャージ中のホーミング速度（0=追わない）")]
+    [SerializeField] private float chargeHomingSpeed = 5f;
+
     [Header("── ゴロゴロ（フェーズ2）──")]
     [Tooltip("ゴロゴロの速度")]
     [SerializeField] private float rollSpeed = 8f;
@@ -120,6 +126,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float rollEndJumpHeight = 3f;
     [Tooltip("ゴロゴロ終了時のジャンプ時間（秒）")]
     [SerializeField] private float rollEndJumpDuration = 0.5f;
+
+    [Header("── ゴロゴロ予備動作 ──")]
+    [Tooltip("後ろに傾く角度（度）")]
+    [SerializeField] private float rollWindupTiltAngle = 20f;
+    [Tooltip("傾く時間（秒）")]
+    [SerializeField] private float rollWindupTiltDuration = 0.3f;
+    [Tooltip("戻る時間（秒）")]
+    [SerializeField] private float rollWindupReturnDuration = 0.15f;
 
     [Header("── 灯籠セット（フェーズ2）──")]
     [SerializeField] private Boss_LanternSet lanternSet;
@@ -148,10 +162,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float attackDelayMin = 3f;
     [Tooltip("追従開始から攻撃までの待機時間（最大・秒）")]
     [SerializeField] private float attackDelayMax = 8f;
-
-    [Header("── チャージ ──")]
-    [Tooltip("チャージ時間（秒）")]
-    [SerializeField] private float chargeDuration = 1f;
 
     [Header("── 停止（攻撃後） ──")]
     [Tooltip("攻撃後の停止時間（秒）")]
@@ -527,6 +537,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 toPlayer = player.position - transform.position;
         toPlayer.y = 0f;
 
+        LookAt(toPlayer);
+
         attackTimer += Time.deltaTime;
         if (attackTimer >= attackDelay)
         {
@@ -563,8 +575,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             move.y = -9.8f * Time.deltaTime;
             bossController.Move(move);
         }
-
-        LookAt(toPlayer);
     }
 
     // ====================================================================
@@ -587,6 +597,22 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void UpdateCharge()
     {
         chargeTimer += Time.deltaTime;
+
+        // チャージ中にプレイヤーの方向を追う
+        if (chargeHomingSpeed > 0f)
+        {
+            Vector3 toPlayer = (player.position - transform.position).normalized;
+            toPlayer.y = 0f;
+            chargeTargetDir = Vector3.RotateTowards(
+                chargeTargetDir,
+                toPlayer,
+                chargeHomingSpeed * Mathf.Deg2Rad * Time.deltaTime,
+                0f).normalized;
+
+            if (attackIndicator != null)
+                attackIndicator.UpdateDirection(transform.position, chargeTargetDir);
+        }
+
         LookAt(chargeTargetDir);
 
         if (chargeTimer >= chargeDuration)
@@ -647,6 +673,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
         Debug.Log("[Boss_SB] ゴロゴロ開始！");
+        StartCoroutine(RollWindupCoroutine());
     }
 
     private void UpdateRoll()
@@ -789,6 +816,42 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         EnterChase();
     }
 
+    private IEnumerator RollWindupCoroutine()
+    {
+        // 移動を一時停止
+        BossState prevState = state;
+        state = BossState.Stop;
+
+        Quaternion startRot = transform.rotation;
+
+        // 後ろに傾く
+        Quaternion tiltRot = startRot * Quaternion.Euler(rollWindupTiltAngle, 0f, 0f);
+        float elapsed = 0f;
+
+        while (elapsed < rollWindupTiltDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / rollWindupTiltDuration;
+            transform.rotation = Quaternion.Slerp(startRot, tiltRot, t);
+            yield return null;
+        }
+
+        // 元に戻りながらゴロゴロ開始
+        elapsed = 0f;
+        while (elapsed < rollWindupReturnDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / rollWindupReturnDuration;
+            transform.rotation = Quaternion.Slerp(tiltRot, startRot, t);
+            yield return null;
+        }
+
+        transform.rotation = startRot;
+
+        // ゴロゴロ開始
+        state = BossState.Roll;
+    }
+
     /// <summary>動的生成された灯籠を登録する（LanternSetSetupから呼ぶ）</summary>
     public void RegisterLanternObject(GameObject lantern)
     {
@@ -807,6 +870,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         hipDropChargeTimer = 0f;
         hipDropCurrentCount = 0;
         isHitCannon = false;
+
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                transform.position.x, 0f, transform.position.z));
+
         Debug.Log("[Boss_SB] ヒップドロップ開始！");
         StartCoroutine(HipDropSequence());
     }
@@ -844,9 +912,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private IEnumerator HipDropChargeCoroutine()
     {
         state = BossState.HipDropCharge;
-
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
+
+        // ★ ジャンプ開始と同時にサークル表示
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                transform.position.x, 0f, transform.position.z));
 
         // ジャンプ（上昇）
         float jumpTime = 0.3f;
@@ -856,6 +928,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             elapsed += Time.deltaTime;
             float t = elapsed / jumpTime;
             transform.position = Vector3.Lerp(startPos, apexPos, t);
+
+            // ジャンプ中も追従
+            if (hipDropIndicator != null)
+                hipDropIndicator.Show(new Vector3(
+                    transform.position.x, 0f, transform.position.z));
+
             yield return null;
         }
 
@@ -879,10 +957,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             lookDir.y = 0f;
             LookAt(lookDir);
 
-            // チャージ中はプレイヤーの位置にサークルを追従
-            if (hipDropIndicator != null && hipDropChargeTimer < hipDropChargeDuration * 0.5f)
+            // ボスの真下に追従
+            if (hipDropIndicator != null)
                 hipDropIndicator.Show(new Vector3(
-                    player.position.x, 0f, player.position.z));
+                    transform.position.x, 0f, transform.position.z));
 
             yield return null;
         }
@@ -890,7 +968,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         // 降下先を確定
         hipDropTargetPos = transform.position;
 
- 
+        // 確定後も固定
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                hipDropTargetPos.x, 0f, hipDropTargetPos.z));
 
         if (attackIndicator != null)
             attackIndicator.Hide();

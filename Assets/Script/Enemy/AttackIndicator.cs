@@ -23,6 +23,11 @@ public class AttackIndicator : MonoBehaviour
     [Tooltip("線が伸びる速度（m/秒）0以下なら即座に最大長さ）")]
     [SerializeField] private float extendSpeed = 15f;
 
+    [Header("── 2つ目の範囲（最大値・別色）──")]
+    [SerializeField] private LineRenderer outerLineRenderer;
+    [Tooltip("2つ目の線の太さ")]
+    [SerializeField] private float outerLineWidth = 5f;
+
     [Header("── 矢印タイプ ──")]
     [SerializeField] private GameObject arrowObject;
 
@@ -178,6 +183,21 @@ public class AttackIndicator : MonoBehaviour
             arrowObject.transform.position = origin;
             arrowObject.transform.rotation = Quaternion.LookRotation(direction);
         }
+
+        // 2つ目を最初からマックスで表示
+        if (outerLineRenderer != null)
+        {
+            outerLineRenderer.enabled = true;
+            outerLineRenderer.startWidth = outerLineRenderer.endWidth = outerLineWidth;
+
+            Vector3 outerStart = origin;
+            Vector3 outerEnd = origin + direction * lineLength;
+            outerStart.y = origin.y;
+            outerEnd.y = origin.y;
+
+            outerLineRenderer.SetPosition(0, outerStart);
+            outerLineRenderer.SetPosition(1, outerEnd);
+        }
     }
 
     /// <summary>非表示にする</summary>
@@ -202,5 +222,33 @@ public class AttackIndicator : MonoBehaviour
 
         if (arrowObject != null)
             arrowObject.SetActive(false);
+
+        if (outerLineRenderer != null)
+            outerLineRenderer.enabled = false;
     }
+
+    /// <summary>方向と位置を更新する（チャージ中のホーミングで呼ぶ）</summary>
+    public void UpdateDirection(Vector3 origin, Vector3 direction)
+    {
+        if (!isShowing) return;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.01f) return;
+        direction.Normalize();
+        direction = Quaternion.Euler(0f, rotationOffset, 0f) * direction;
+        currentDirection = direction;
+        currentOrigin = origin; // 位置も更新
+        currentOrigin.y += heightOffset;
+
+        if (outerLineRenderer != null)
+        {
+            Vector3 outerStart = currentOrigin;
+            Vector3 outerEnd = currentOrigin + currentDirection * lineLength;
+            outerStart.y = currentOrigin.y;
+            outerEnd.y = currentOrigin.y;
+
+            outerLineRenderer.SetPosition(0, outerStart);
+            outerLineRenderer.SetPosition(1, outerEnd);
+        }
+    }
+
 }
