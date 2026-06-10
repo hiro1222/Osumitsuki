@@ -60,19 +60,12 @@ public class PaintableSurface : MonoBehaviour
     private bool[] cellValid;
     private float maxCellDistance;
 
-    // 描画用
-    private Texture2D densityTexture;
-    private Texture2D colorTexture;
-    private MaterialPropertyBlock propBlock;
-    private Renderer meshRenderer;
+    // 描画（テクスチャ生成・アップロードは InkSurfaceRenderer に委譲）
+    private InkSurfaceRenderer inkRenderer;
     private bool visualDirty;
 
-    // コリジョン用（チャンクごとに別MeshCollider）
-    private GameObject collisionChild;        // 親（空）
-    private MeshCollider[] chunkColliders;    // チャンクごとのMeshCollider
-    private Mesh[] chunkMeshes;               // チャンクごとのMesh
-    private int chunksX, chunksY;
-    private bool[] chunkDirty;
+    // コリジョン（チャンク管理は InkCollisionChunks に委譲）
+    private InkCollisionChunks chunks;
 
     // ── 旧互換用（DEPRECATED: 将来削除予定）──
     // 新しいコードでは OnPainted イベントを購読してください
@@ -107,8 +100,6 @@ public class PaintableSurface : MonoBehaviour
 
     private void Awake()
     {
-        meshRenderer = GetComponent<Renderer>();
-
         // 解像度を決定（自動 or 固定）
         int finalResolution = autoGridResolution
             ? CalculateAutoResolution()
@@ -145,16 +136,7 @@ public class PaintableSurface : MonoBehaviour
 
         BuildUVToWorldTable();
 
-        // チャンク初期化
-        chunksX = Mathf.CeilToInt((float)gridW / chunkSize);
-        chunksY = Mathf.CeilToInt((float)gridH / chunkSize);
-        chunkDirty = new bool[chunksX * chunksY];
-
-        // インクコリジョン用の親オブジェクト（空）
-        collisionChild = new GameObject($"{gameObject.name}_InkCollision");
-        collisionChild.transform.SetParent(transform, false);
-
-        // レイヤー: Player↔PlayerVSObject = ON
+        // チャンク初期化（コリジョン生成は InkCollisionChunks に委譲）
         int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
         if (inkLayer < 0)
         {
@@ -162,44 +144,14 @@ public class PaintableSurface : MonoBehaviour
                              "Edit > Project Settings > Tags and Layers で追加してください。");
             inkLayer = gameObject.layer;
         }
-        collisionChild.layer = inkLayer;
+        chunks = new InkCollisionChunks();
+        chunks.Init(transform, gameObject.name, inkLayer,
+                    gridW, gridH, chunkSize, meshThickness, walkThreshold, maxCellDistance,
+                    cellValid, density, cellPositions, paintedNormals, cellNormals);
 
-        // チャンクごとにMeshCollider子オブジェクトを作成
-        int chunkCount = chunksX * chunksY;
-        chunkColliders = new MeshCollider[chunkCount];
-        chunkMeshes = new Mesh[chunkCount];
-
-        for (int i = 0; i < chunkCount; i++)
-        {
-            var chunkObj = new GameObject($"InkChunk_{i}");
-            chunkObj.transform.SetParent(collisionChild.transform, false);
-            chunkObj.layer = inkLayer;
-
-            var chunkMc = chunkObj.AddComponent<MeshCollider>();
-            chunkColliders[i] = chunkMc;
-
-            // 32bitインデックス対応（念のため、チャンク内で65535を超えても安全）
-            chunkMeshes[i] = new Mesh
-            {
-                name = $"InkCol_{gameObject.name}_chunk{i}",
-                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
-            };
-        }
-
-        // 描画用テクスチャ
-        densityTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
-        {
-            filterMode = FilterMode.Bilinear,
-            wrapMode = TextureWrapMode.Clamp
-        };
-
-        colorTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
-        {
-            filterMode = FilterMode.Point,
-            wrapMode = TextureWrapMode.Clamp
-        };
-
-        propBlock = new MaterialPropertyBlock();
+        // 描画（テクスチャ生成は InkSurfaceRenderer に委譲）
+        inkRenderer = new InkSurfaceRenderer();
+        inkRenderer.Init(GetComponent<Renderer>(), gridW, gridH);
         visualDirty = false;
 
         // ── 旧互換: Obj_Osumitsuki への直接通知用 ──
@@ -211,14 +163,8 @@ public class PaintableSurface : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (densityTexture != null) Destroy(densityTexture);
-        if (colorTexture != null) Destroy(colorTexture);
-        if (chunkMeshes != null)
-        {
-            for (int i = 0; i < chunkMeshes.Length; i++)
-                if (chunkMeshes[i] != null) Destroy(chunkMeshes[i]);
-        }
-        if (collisionChild != null) Destroy(collisionChild);
+        inkRenderer?.Dispose();
+        chunks?.Dispose();
     }
 
     // ====================================================================
@@ -227,120 +173,11 @@ public class PaintableSurface : MonoBehaviour
 
     private void BuildUVToWorldTable()
     {
-        cellPositions = new Vector3[gridW * gridH];
-        cellNormals = new Vector3[gridW * gridH];
-        cellValid = new bool[gridW * gridH];
-
         var mf = GetComponent<MeshFilter>();
-        if (mf == null || mf.sharedMesh == null) return;
-
-        Mesh mesh = mf.sharedMesh;
-        Vector3[] verts = mesh.vertices;
-        Vector3[] norms = mesh.normals;
-        Vector2[] uvs = mesh.uv;
-        int[] tris = mesh.triangles;
-
-        if (uvs == null || uvs.Length == 0)
-        {
-            Debug.LogError($"[PaintableSurface] {gameObject.name}: メッシュにUVがありません");
-            return;
-        }
-
-        // 各三角形をUV空間にラスタライズ
-        for (int i = 0; i < tris.Length; i += 3)
-        {
-            int i0 = tris[i], i1 = tris[i + 1], i2 = tris[i + 2];
-
-            Vector2 uv0 = uvs[i0], uv1 = uvs[i1], uv2 = uvs[i2];
-            Vector3 p0 = verts[i0], p1 = verts[i1], p2 = verts[i2];
-            Vector3 n0 = norms[i0], n1 = norms[i1], n2 = norms[i2];
-
-            float minU = Mathf.Min(uv0.x, uv1.x, uv2.x);
-            float maxU = Mathf.Max(uv0.x, uv1.x, uv2.x);
-            float minV = Mathf.Min(uv0.y, uv1.y, uv2.y);
-            float maxV = Mathf.Max(uv0.y, uv1.y, uv2.y);
-
-            int startX = Mathf.Max(0, Mathf.FloorToInt(minU * gridW));
-            int endX = Mathf.Min(gridW - 1, Mathf.CeilToInt(maxU * gridW));
-            int startY = Mathf.Max(0, Mathf.FloorToInt(minV * gridH));
-            int endY = Mathf.Min(gridH - 1, Mathf.CeilToInt(maxV * gridH));
-
-            for (int gy = startY; gy <= endY; gy++)
-            {
-                for (int gx = startX; gx <= endX; gx++)
-                {
-                    float cu = (gx + 0.5f) / gridW;
-                    float cv = (gy + 0.5f) / gridH;
-
-                    if (BarycentricInTriangle(new Vector2(cu, cv), uv0, uv1, uv2,
-                            out float w0, out float w1, out float w2))
-                    {
-                        int idx = gy * gridW + gx;
-                        cellPositions[idx] = p0 * w0 + p1 * w1 + p2 * w2;
-                        cellNormals[idx] = (n0 * w0 + n1 * w1 + n2 * w2).normalized;
-                        cellValid[idx] = true;
-                    }
-                }
-            }
-        }
-
-        // 隣接セル間の平均3D距離を計算（UV島境界の判定閾値）
-        float totalDist = 0f;
-        int distCount = 0;
-        for (int gy = 0; gy < gridH; gy++)
-        {
-            for (int gx = 0; gx < gridW; gx++)
-            {
-                int idx = gy * gridW + gx;
-                if (!cellValid[idx]) continue;
-
-                if (gx + 1 < gridW && cellValid[idx + 1])
-                {
-                    totalDist += (cellPositions[idx + 1] - cellPositions[idx]).magnitude;
-                    distCount++;
-                }
-                if (gy + 1 < gridH && cellValid[idx + gridW])
-                {
-                    totalDist += (cellPositions[idx + gridW] - cellPositions[idx]).magnitude;
-                    distCount++;
-                }
-            }
-        }
-        float avgDist = distCount > 0 ? totalDist / distCount : 0.1f;
-        maxCellDistance = avgDist * 3f;
-
-#if UNITY_EDITOR
-        int validCount = 0;
-        for (int i = 0; i < cellValid.Length; i++)
-            if (cellValid[i]) validCount++;
-        Debug.Log($"[PaintableSurface] {gameObject.name}: UV table built. " +
-                  $"{validCount}/{gridW * gridH} cells mapped. avgDist={avgDist:F4} maxDist={maxCellDistance:F4}");
-#endif
-    }
-
-    private bool BarycentricInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c,
-                                        out float w0, out float w1, out float w2)
-    {
-        Vector2 v0 = b - a, v1 = c - a, v2 = p - a;
-        float d00 = Vector2.Dot(v0, v0);
-        float d01 = Vector2.Dot(v0, v1);
-        float d11 = Vector2.Dot(v1, v1);
-        float d20 = Vector2.Dot(v2, v0);
-        float d21 = Vector2.Dot(v2, v1);
-
-        float denom = d00 * d11 - d01 * d01;
-        if (Mathf.Abs(denom) < 1e-8f)
-        {
-            w0 = w1 = w2 = 0;
-            return false;
-        }
-
-        float invDenom = 1f / denom;
-        w1 = (d11 * d20 - d01 * d21) * invDenom;
-        w2 = (d00 * d21 - d01 * d20) * invDenom;
-        w0 = 1f - w1 - w2;
-
-        return w0 >= -0.001f && w1 >= -0.001f && w2 >= -0.001f;
+        Mesh mesh = (mf != null) ? mf.sharedMesh : null;
+        UvWorldTableBuilder.Build(mesh, gridW, gridH, gameObject.name,
+                                  out cellPositions, out cellNormals,
+                                  out cellValid, out maxCellDistance);
     }
 
     // ====================================================================
@@ -365,8 +202,7 @@ public class PaintableSurface : MonoBehaviour
         Vector2 uv = hit.textureCoord;
         float uvRadius = WorldRadiusToUV(radius);
 
-        Vector3 s = transform.lossyScale;
-        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float avgScale = AvgScale();
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
         float localRadiusSq = localRadius * localRadius;
 
@@ -413,14 +249,31 @@ public class PaintableSurface : MonoBehaviour
                                float localRadiusSq,
                                byte inkDensity, byte inkColorId)
     {
+        ApplyBrush(uv, uvRadius, hitLocal, hitNormalLocal, localRadiusSq,
+                   inkDensity, inkColorId, erase: false);
+    }
+
+    /// <summary>
+    /// ブラシ範囲のセルを走査し、塗り(erase=false) or 消し(erase=true)を適用する共通処理。
+    /// - 走査条件は両者共通（UV円形 + 有効セル + 3D距離）
+    /// - 塗り: density加算(255飽和) + color上書き + OnPainted発火
+    /// - 消し: density/color/normal を 0 に戻す
+    /// ※ デリゲートを使わずbool分岐にしているのは、毎フレーム呼ばれるためGCゴミを出さないため
+    /// </summary>
+    private void ApplyBrush(Vector2 uv, float uvRadius,
+                            Vector3 hitLocal, Vector3 hitNormalLocal,
+                            float localRadiusSq,
+                            byte inkDensity, byte inkColorId, bool erase)
+    {
         int cu = Mathf.FloorToInt(uv.x * gridW);
         int cv = Mathf.FloorToInt(uv.y * gridH);
         int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
 
-        bool useHitNormal = hitNormalLocal.sqrMagnitude > 0.01f;
+        bool useHitNormal = !erase && hitNormalLocal.sqrMagnitude > 0.01f;
 
-        int painted = 0;       // 実際に変化したセル数（メッシュ再構築判定用）
-        int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む）
+        int changed = 0;       // 実際に変化したセル数（メッシュ再構築判定用）
+        int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む。OnPainted用）
+
         for (int dv = -cellRadius; dv <= cellRadius; dv++)
         {
             for (int du = -cellRadius; du <= cellRadius; du++)
@@ -439,29 +292,41 @@ public class PaintableSurface : MonoBehaviour
                 float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
                 if (dist3DSq > localRadiusSq) continue;
 
-                hitCells++;
-
-                int newDensity = density[idx] + inkDensity;
-                if (newDensity > 255) newDensity = 255;
-
-                if (newDensity != density[idx] || inkColorId != colorId[idx])
+                if (erase)
                 {
-                    density[idx] = (byte)newDensity;
-                    colorId[idx] = inkColorId;
-                    paintedNormals[idx] = useHitNormal ? hitNormalLocal : cellNormals[idx];
+                    if (density[idx] == 0) continue;
+                    density[idx] = 0;
+                    colorId[idx] = 0;
+                    paintedNormals[idx] = Vector3.zero;
                     MarkChunkDirty(gx, gy);
-                    painted++;
+                    changed++;
+                }
+                else
+                {
+                    hitCells++;
+
+                    int newDensity = density[idx] + inkDensity;
+                    if (newDensity > 255) newDensity = 255;
+
+                    if (newDensity != density[idx] || inkColorId != colorId[idx])
+                    {
+                        density[idx] = (byte)newDensity;
+                        colorId[idx] = inkColorId;
+                        paintedNormals[idx] = useHitNormal ? hitNormalLocal : cellNormals[idx];
+                        MarkChunkDirty(gx, gy);
+                        changed++;
+                    }
                 }
             }
         }
 
-        if (painted > 0)
+        if (changed > 0)
         {
             RebuildDirtyChunks();
             visualDirty = true;
         }
 
-        if (hitCells > 0)
+        if (!erase && hitCells > 0)
         {
             OnPainted?.Invoke(hitCells, inkDensity);
         }
@@ -478,6 +343,13 @@ public class PaintableSurface : MonoBehaviour
         if (avgWorldSize < 0.001f) return 0.1f;
 
         return worldRadius / avgWorldSize;
+    }
+
+    /// <summary>lossyScaleの3軸平均（ローカル半径・厚みの換算に使用）</summary>
+    private float AvgScale()
+    {
+        Vector3 s = transform.lossyScale;
+        return (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
     }
 
     // ====================================================================
@@ -497,8 +369,7 @@ public class PaintableSurface : MonoBehaviour
         Vector2 uv = hit.textureCoord;
         float uvRadius = WorldRadiusToUV(radius);
 
-        Vector3 s = transform.lossyScale;
-        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float avgScale = AvgScale();
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
         float localRadiusSq = localRadius * localRadius;
 
@@ -513,8 +384,7 @@ public class PaintableSurface : MonoBehaviour
     {
         Vector3 localCenter = transform.InverseTransformPoint(worldCenter);
 
-        Vector3 s = transform.lossyScale;
-        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
+        float avgScale = AvgScale();
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
         float localRadiusSq = localRadius * localRadius;
 
@@ -547,43 +417,8 @@ public class PaintableSurface : MonoBehaviour
     private void EraseInternal(Vector2 uv, float uvRadius,
                                Vector3 hitLocal, float localRadiusSq)
     {
-        int cu = Mathf.FloorToInt(uv.x * gridW);
-        int cv = Mathf.FloorToInt(uv.y * gridH);
-        int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
-
-        int erased = 0;
-        for (int dv = -cellRadius; dv <= cellRadius; dv++)
-        {
-            for (int du = -cellRadius; du <= cellRadius; du++)
-            {
-                int gx = cu + du;
-                int gy = cv + dv;
-                if (gx < 0 || gx >= gridW || gy < 0 || gy >= gridH) continue;
-
-                float distU = (float)du / gridW;
-                float distV = (float)dv / gridH;
-                if (Mathf.Sqrt(distU * distU + distV * distV) > uvRadius) continue;
-
-                int idx = gy * gridW + gx;
-                if (!cellValid[idx]) continue;
-                if (density[idx] == 0) continue;
-
-                float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
-                if (dist3DSq > localRadiusSq) continue;
-
-                density[idx] = 0;
-                colorId[idx] = 0;
-                paintedNormals[idx] = Vector3.zero;
-                MarkChunkDirty(gx, gy);
-                erased++;
-            }
-        }
-
-        if (erased > 0)
-        {
-            RebuildDirtyChunks();
-            visualDirty = true;
-        }
+        ApplyBrush(uv, uvRadius, hitLocal, Vector3.zero, localRadiusSq,
+                   0, 0, erase: true);
     }
 
     // ====================================================================
@@ -642,20 +477,8 @@ public class PaintableSurface : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!visualDirty || meshRenderer == null) return;
-
-        densityTexture.SetPixelData(density, 0);
-        densityTexture.Apply(false);
-
-        colorTexture.SetPixelData(colorId, 0);
-        colorTexture.Apply(false);
-
-        meshRenderer.GetPropertyBlock(propBlock);
-        propBlock.SetTexture("_InkTex", densityTexture);
-        propBlock.SetTexture("_InkColorTex", colorTexture);
-        propBlock.SetTexture("_InkPalette", InkPalette.GetPaletteTexture());
-        meshRenderer.SetPropertyBlock(propBlock);
-
+        if (!visualDirty) return;
+        inkRenderer?.Upload(density, colorId);
         visualDirty = false;
     }
 
@@ -663,175 +486,12 @@ public class PaintableSurface : MonoBehaviour
     //  コリジョンメッシュ生成
     // ====================================================================
 
-    private void MarkChunkDirty(int gx, int gy)
-    {
-        int cx = gx / chunkSize;
-        int cy = gy / chunkSize;
-        if (cx >= 0 && cx < chunksX && cy >= 0 && cy < chunksY)
-            chunkDirty[cy * chunksX + cx] = true;
-    }
+    private void MarkChunkDirty(int gx, int gy) => chunks?.MarkDirty(gx, gy);
 
-    /// <summary>
-    /// dirtyなチャンクだけ、それぞれのMeshColliderを再生成する。
-    /// チャンク単位なので1メッシュの頂点数が抑えられ、65535制限を回避できる。
-    /// </summary>
-    private void RebuildDirtyChunks()
-    {
-        // 厚みをローカル空間に変換（lossyScaleで補正）
-        // これをしないと、Scaleが大きいオブジェクトでコリジョンが巨大に突き出す
-        Vector3 s = transform.lossyScale;
-        float avgScale = (Mathf.Abs(s.x) + Mathf.Abs(s.y) + Mathf.Abs(s.z)) / 3f;
-        float halfThick = (meshThickness * 0.5f) / Mathf.Max(avgScale, 0.0001f);
-        float maxDistSq = maxCellDistance * maxCellDistance;
-
-        for (int cy = 0; cy < chunksY; cy++)
-        {
-            for (int cx = 0; cx < chunksX; cx++)
-            {
-                int chunkIdx = cy * chunksX + cx;
-                if (!chunkDirty[chunkIdx]) continue;
-
-                RebuildChunk(cx, cy, chunkIdx, halfThick, maxDistSq);
-                chunkDirty[chunkIdx] = false;
-            }
-        }
-    }
-
-    /// <summary>1チャンク分のコリジョンメッシュを生成</summary>
-    private void RebuildChunk(int cx, int cy, int chunkIdx, float halfThick, float maxDistSq)
-    {
-        var verts = new List<Vector3>();
-        var tris = new List<int>();
-
-        // このチャンクが担当するセル範囲
-        int startX = cx * chunkSize;
-        int startY = cy * chunkSize;
-        int endX = Mathf.Min(startX + chunkSize, gridW - 1);
-        int endY = Mathf.Min(startY + chunkSize, gridH - 1);
-
-        for (int gy = startY; gy < endY; gy++)
-        {
-            for (int gx = startX; gx < endX; gx++)
-            {
-                int i00 = gy * gridW + gx;
-                int i10 = i00 + 1;
-                int i01 = i00 + gridW;
-                int i11 = i01 + 1;
-
-                bool v00 = cellValid[i00] && density[i00] >= walkThreshold;
-                bool v10 = cellValid[i10] && density[i10] >= walkThreshold;
-                bool v01 = cellValid[i01] && density[i01] >= walkThreshold;
-                bool v11 = cellValid[i11] && density[i11] >= walkThreshold;
-
-                if (!(v00 && v10 && v01 && v11)) continue;
-
-                bool tooFar = false;
-                tooFar |= (cellPositions[i10] - cellPositions[i00]).sqrMagnitude > maxDistSq;
-                tooFar |= (cellPositions[i11] - cellPositions[i01]).sqrMagnitude > maxDistSq;
-                tooFar |= (cellPositions[i01] - cellPositions[i00]).sqrMagnitude > maxDistSq;
-                tooFar |= (cellPositions[i11] - cellPositions[i10]).sqrMagnitude > maxDistSq;
-                tooFar |= (cellPositions[i11] - cellPositions[i00]).sqrMagnitude > maxDistSq * 2f;
-                tooFar |= (cellPositions[i01] - cellPositions[i10]).sqrMagnitude > maxDistSq * 2f;
-                if (tooFar) continue;
-
-                Vector3 avgNorm = (paintedNormals[i00] + paintedNormals[i10] +
-                                   paintedNormals[i01] + paintedNormals[i11]).normalized;
-                if (avgNorm.sqrMagnitude < 0.01f)
-                {
-                    avgNorm = (cellNormals[i00] + cellNormals[i10] +
-                               cellNormals[i01] + cellNormals[i11]).normalized;
-                }
-                Vector3 offset = avgNorm * halfThick;
-
-                BuildQuadCell(verts, tris,
-                    cellPositions[i00], cellPositions[i10],
-                    cellPositions[i11], cellPositions[i01],
-                    offset);
-            }
-        }
-
-        Mesh mesh = chunkMeshes[chunkIdx];
-        mesh.Clear();
-        if (verts.Count > 0)
-        {
-            mesh.SetVertices(verts);
-            mesh.SetTriangles(tris, 0);
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-        }
-
-        var mc = chunkColliders[chunkIdx];
-        mc.sharedMesh = null;
-        mc.sharedMesh = (verts.Count > 0) ? mesh : null;
-    }
+    private void RebuildDirtyChunks() => chunks?.RebuildDirty(AvgScale());
 
     /// <summary>当たったコライダーが自分のインクチャンクのどれかか判定</summary>
-    private bool IsInkChunkCollider(Collider col)
-    {
-        if (chunkColliders == null || col == null) return false;
-        for (int i = 0; i < chunkColliders.Length; i++)
-        {
-            if (chunkColliders[i] == col) return true;
-        }
-        return false;
-    }
-
-    /// <summary>4頂点のquadを生成（表+裏+側面）</summary>
-    private void BuildQuadCell(System.Collections.Generic.List<Vector3> verts,
-                                 System.Collections.Generic.List<int> tris,
-                                 Vector3 p00, Vector3 p10, Vector3 p11, Vector3 p01,
-                                 Vector3 offset)
-    {
-        int bi = verts.Count;
-
-        // 内側
-        verts.Add(p00); verts.Add(p10); verts.Add(p11); verts.Add(p01);
-        // 外側
-        verts.Add(p00 + offset); verts.Add(p10 + offset);
-        verts.Add(p11 + offset); verts.Add(p01 + offset);
-
-        // 表面（外）
-        tris.Add(bi + 4); tris.Add(bi + 5); tris.Add(bi + 6);
-        tris.Add(bi + 4); tris.Add(bi + 6); tris.Add(bi + 7);
-        // 内面
-        tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
-        tris.Add(bi); tris.Add(bi + 3); tris.Add(bi + 2);
-        // 側面
-        tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 5);
-        tris.Add(bi); tris.Add(bi + 5); tris.Add(bi + 4);
-        tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 6);
-        tris.Add(bi + 1); tris.Add(bi + 6); tris.Add(bi + 5);
-        tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 7);
-        tris.Add(bi + 2); tris.Add(bi + 7); tris.Add(bi + 6);
-        tris.Add(bi + 3); tris.Add(bi); tris.Add(bi + 4);
-        tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 7);
-    }
-
-    /// <summary>3頂点の三角形を生成（表+裏+側面）</summary>
-    private void BuildTriangleCell(System.Collections.Generic.List<Vector3> verts,
-                                     System.Collections.Generic.List<int> tris,
-                                     Vector3 p0, Vector3 p1, Vector3 p2,
-                                     Vector3 offset)
-    {
-        int bi = verts.Count;
-
-        // 内側
-        verts.Add(p0); verts.Add(p1); verts.Add(p2);
-        // 外側
-        verts.Add(p0 + offset); verts.Add(p1 + offset); verts.Add(p2 + offset);
-
-        // 表面（外）
-        tris.Add(bi + 3); tris.Add(bi + 4); tris.Add(bi + 5);
-        // 内面（巻き順逆）
-        tris.Add(bi); tris.Add(bi + 2); tris.Add(bi + 1);
-        // 側面（3辺）
-        tris.Add(bi); tris.Add(bi + 1); tris.Add(bi + 4);
-        tris.Add(bi); tris.Add(bi + 4); tris.Add(bi + 3);
-        tris.Add(bi + 1); tris.Add(bi + 2); tris.Add(bi + 5);
-        tris.Add(bi + 1); tris.Add(bi + 5); tris.Add(bi + 4);
-        tris.Add(bi + 2); tris.Add(bi); tris.Add(bi + 3);
-        tris.Add(bi + 2); tris.Add(bi + 3); tris.Add(bi + 5);
-    }
+    private bool IsInkChunkCollider(Collider col) => chunks != null && chunks.IsInkChunkCollider(col);
 
     // ====================================================================
     //  解像度の自動計算
@@ -844,42 +504,9 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     private int CalculateAutoResolution()
     {
-        var mf = GetComponent<MeshFilter>();
-        if (mf == null || mf.sharedMesh == null)
-        {
-            Debug.LogWarning($"[PaintableSurface] {gameObject.name}: MeshFilterなし、デフォルト解像度を使用");
-            return Mathf.Clamp(gridResolution, minGridResolution, maxGridResolution);
-        }
-
-        // メッシュのワールド空間でのサイズ（lossyScale適用）
-        Bounds b = mf.sharedMesh.bounds;
-        Vector3 worldSize = Vector3.Scale(b.size, transform.lossyScale);
-        float maxDimension = Mathf.Max(Mathf.Abs(worldSize.x),
-                                        Mathf.Abs(worldSize.y),
-                                        Mathf.Abs(worldSize.z));
-
-        if (maxDimension < 0.001f || targetCellSize < 0.001f)
-        {
-            return Mathf.Clamp(gridResolution, minGridResolution, maxGridResolution);
-        }
-
-        // 目標セルサイズから必要な解像度を逆算
-        int desired = Mathf.CeilToInt(maxDimension / targetCellSize);
-
-        // 2の累乗に切り上げ（テクスチャ的に効率的）
-        int powerOfTwo = Mathf.NextPowerOfTwo(desired);
-
-        // 範囲クランプ
-        int clamped = Mathf.Clamp(powerOfTwo, minGridResolution, maxGridResolution);
-
-#if UNITY_EDITOR
-        Debug.Log($"[PaintableSurface] {gameObject.name}: " +
-                  $"size={maxDimension:F2}m, target={targetCellSize}m → " +
-                  $"desired={desired} → resolution={clamped} " +
-                  $"(1セル={maxDimension / clamped * 100:F1}cm)");
-#endif
-
-        return clamped;
+        return UvWorldTableBuilder.CalculateResolution(
+            GetComponent<MeshFilter>(), transform, targetCellSize,
+            minGridResolution, maxGridResolution, gridResolution, gameObject.name);
     }
 
     // ====================================================================
@@ -887,23 +514,13 @@ public class PaintableSurface : MonoBehaviour
     // ====================================================================
 
     /// <summary>インクコリジョンを有効化（全チャンク）</summary>
-    public void EnableInkCollider()
-    {
-        if (chunkColliders == null) return;
-        for (int i = 0; i < chunkColliders.Length; i++)
-            if (chunkColliders[i] != null) chunkColliders[i].enabled = true;
-    }
+    public void EnableInkCollider() => chunks?.EnableAll();
 
     /// <summary>
     /// インクコリジョンを無効化（全チャンク）
     /// 塗りデータ自体は残るが、プレイヤーは塗った場所を通り抜けるようになる
     /// </summary>
-    public void DisableInkCollider()
-    {
-        if (chunkColliders == null) return;
-        for (int i = 0; i < chunkColliders.Length; i++)
-            if (chunkColliders[i] != null) chunkColliders[i].enabled = false;
-    }
+    public void DisableInkCollider() => chunks?.DisableAll();
 
     // ====================================================================
     //  全消去
@@ -916,8 +533,7 @@ public class PaintableSurface : MonoBehaviour
         System.Array.Clear(colorId, 0, colorId.Length);
         for (int i = 0; i < paintedNormals.Length; i++)
             paintedNormals[i] = Vector3.zero;
-        for (int i = 0; i < chunkDirty.Length; i++)
-            chunkDirty[i] = true;
+        chunks.MarkAllDirty();
         RebuildDirtyChunks();
         visualDirty = true;
     }
