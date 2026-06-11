@@ -36,6 +36,9 @@ public class CannonMuzzle : MonoBehaviour
     [Tooltip("着地後の回転速度（度/秒）")]
     [SerializeField] private float landingRotateSpeed = 720f;
 
+    [Header("── カメラ ──")]
+    [SerializeField] private ThirdPersonOrbitCamera cameraController;
+
 
     private Collider muzzleCollider;
     private bool hasLaunched = false;
@@ -44,6 +47,9 @@ public class CannonMuzzle : MonoBehaviour
     {
         if (boss == null)
             boss = FindObjectOfType<Boss_SB>();
+
+        if (cameraController == null)
+            cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
 
         if (groundTransform == null)
         {
@@ -101,6 +107,11 @@ public class CannonMuzzle : MonoBehaviour
 
         boss.SetLaunching(true);
         boss.transform.position = transform.position;
+
+        boss.HideHipDropIndicator();
+
+        if (cameraController != null)
+            cameraController.SetLookTarget(boss.transform);
 
         Vector3 cannonForward = transform.forward;
         cannonForward.y = 0f;
@@ -189,6 +200,9 @@ public class CannonMuzzle : MonoBehaviour
         boss.transform.rotation = finalRot;
         boss.SetLaunching(false);
         hasLaunched = false;
+
+        if (cameraController != null)
+            cameraController.SetLookTarget(null);
     }
 
     private IEnumerator LandingRollCoroutine(CharacterController bossCC, Vector3 rollDir, Vector3 rotAxis)

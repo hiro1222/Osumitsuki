@@ -72,13 +72,14 @@ MonoBehaviour:
   launchForce: 20
   launchForwardForce: 10
   groundTransform: {fileID: 0}
-  groundOffset: 0
+  groundOffset: 0.1
   extraGravity: 10
   alignTime: 1
   rotateSpeed: 360
   landingRollSpeed: 10
   landingRollDuration: 0.5
   landingRotateSpeed: 720
+  cameraController: {fileID: 0}
 --- !u!1 &2076740350206334543
 GameObject:
   m_ObjectHideFlags: 0

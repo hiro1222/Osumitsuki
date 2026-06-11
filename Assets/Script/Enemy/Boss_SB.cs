@@ -1146,6 +1146,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
     }
 
+    /// <summary>ヒップドロップインジケーターを非表示にする（CannonMuzzleから呼ぶ）</summary>
+    public void HideHipDropIndicator()
+    {
+        if (hipDropIndicator != null)
+            hipDropIndicator.Hide();
+    }
+
     /// <summary>UpdateHipDropChargeはコルーチンで処理するため空</summary>
     private void UpdateHipDropCharge() { }
 
