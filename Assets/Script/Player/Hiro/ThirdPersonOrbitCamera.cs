@@ -3,7 +3,13 @@ using UnityEngine;
 public class ThirdPersonOrbitCamera : MonoBehaviour
 {
     [Header("Target")]
-    [SerializeField] private Transform target;
+    [SerializeField] private Transform target; // 位置・距離・回転軸の基準。基本Player
+
+    [Header("Look Target")]
+    [SerializeField] private Transform lookTarget; // 向きだけ追従する対象
+    [SerializeField] private bool useLookTarget = false;
+    [SerializeField] private float targetLookHeight = 1.0f;
+    [SerializeField] private float otherLookHeight = 1.0f;
 
     [Header("Distance")]
     [SerializeField] private float distance = 4.0f;
@@ -74,9 +80,13 @@ public class ThirdPersonOrbitCamera : MonoBehaviour
 
     private void UpdatePosition()
     {
+        distance = Mathf.Clamp(distance, minDistance, maxDistance);
+
         Quaternion rot = Quaternion.Euler(pitch, yaw, 0.0f);
 
-        Vector3 targetPos = target.position + Vector3.up * 1.0f;
+        // ここは絶対Player基準のまま
+        Vector3 targetPos = target.position + Vector3.up * targetLookHeight;
+
         Vector3 desiredOffset = rot * new Vector3(0.0f, 0.0f, -distance);
         Vector3 desiredPos = targetPos + desiredOffset;
 
@@ -101,8 +111,33 @@ public class ThirdPersonOrbitCamera : MonoBehaviour
             }
         }
 
+        // 向きだけ別ターゲットにできる
+        Vector3 lookPos = GetLookPosition(targetPos);
+
         transform.position = desiredPos;
-        transform.LookAt(targetPos);
+        transform.LookAt(lookPos);
+    }
+
+    private Vector3 GetLookPosition(Vector3 defaultLookPos)
+    {
+        if (useLookTarget && lookTarget != null)
+        {
+            return lookTarget.position + Vector3.up * otherLookHeight;
+        }
+
+        return defaultLookPos;
+    }
+
+    public void SetLookTarget(Transform newLookTarget)
+    {
+        lookTarget = newLookTarget;
+        useLookTarget = lookTarget != null;
+    }
+
+    public void ClearLookTarget()
+    {
+        lookTarget = null;
+        useLookTarget = false;
     }
 
     private Vector2 ReadLookInput()
