@@ -56,6 +56,7 @@ public class AttackIndicator : MonoBehaviour
     private float currentLength = 0f; // 現在の線の長さ
     private Vector3 currentOrigin;
     private Vector3 currentDirection;
+    private float defaultExtendSpeed;
 
     // ====================================================================
     //  初期化
@@ -63,6 +64,7 @@ public class AttackIndicator : MonoBehaviour
 
     private void Awake()
     {
+        defaultExtendSpeed = extendSpeed;
         HideAll();
     }
 
@@ -97,27 +99,36 @@ public class AttackIndicator : MonoBehaviour
     {
         if (lineRenderer == null) return;
 
-        float maxLength = GetObstacleDistance();
-
+        // ★ 障害物検知なし、常にlineLengthまで伸びる
         if (extendSpeed > 0f)
         {
             currentLength = Mathf.MoveTowards(
-                currentLength, maxLength, extendSpeed * Time.deltaTime);
+                currentLength, lineLength, extendSpeed * Time.deltaTime);
         }
         else
         {
-            currentLength = maxLength;
+            currentLength = lineLength;
         }
 
         Vector3 start = currentOrigin;
         Vector3 end = currentOrigin + currentDirection * currentLength;
-
-        // ↓ 追加：Y座標を固定して地面に平行にする
         start.y = currentOrigin.y;
         end.y = currentOrigin.y;
 
         lineRenderer.SetPosition(0, start);
         lineRenderer.SetPosition(1, end);
+
+        // ★ 2つ目も常にlineLengthまで
+        if (outerLineRenderer != null)
+        {
+            Vector3 outerStart = currentOrigin;
+            Vector3 outerEnd = currentOrigin + currentDirection * lineLength;
+            outerStart.y = currentOrigin.y;
+            outerEnd.y = currentOrigin.y;
+
+            outerLineRenderer.SetPosition(0, outerStart);
+            outerLineRenderer.SetPosition(1, outerEnd);
+        }
     }
 
     /// <summary>障害物までの距離を返す（なければlineLength）</summary>
@@ -154,6 +165,7 @@ public class AttackIndicator : MonoBehaviour
     /// <summary>位置と方向を指定して表示する</summary>
     public void ShowAt(Vector3 origin, Vector3 direction)
     {
+        extendSpeed = defaultExtendSpeed;
         direction.y = 0f;
         if (direction.sqrMagnitude < 0.01f) return;
         direction.Normalize();
@@ -189,14 +201,8 @@ public class AttackIndicator : MonoBehaviour
         {
             outerLineRenderer.enabled = true;
             outerLineRenderer.startWidth = outerLineRenderer.endWidth = outerLineWidth;
-
-            Vector3 outerStart = origin;
-            Vector3 outerEnd = origin + direction * lineLength;
-            outerStart.y = origin.y;
-            outerEnd.y = origin.y;
-
-            outerLineRenderer.SetPosition(0, outerStart);
-            outerLineRenderer.SetPosition(1, outerEnd);
+            outerLineRenderer.SetPosition(0, origin);
+            outerLineRenderer.SetPosition(1, origin); // ★ 最初は0
         }
     }
 
@@ -251,4 +257,23 @@ public class AttackIndicator : MonoBehaviour
         }
     }
 
+    /// <summary>現在の長さで止める（伸びるのを停止）</summary>
+    public void Pause()
+    {
+        if (!isShowing) return;
+
+        // extendSpeedを0にして伸びるのを止める
+        extendSpeed = 0f;
+
+        // outerLineRendererも現在の長さで止める
+        if (outerLineRenderer != null)
+        {
+            Vector3 outerStart = currentOrigin;
+            Vector3 outerEnd = currentOrigin + currentDirection * currentLength;
+            outerStart.y = currentOrigin.y;
+            outerEnd.y = currentOrigin.y;
+            outerLineRenderer.SetPosition(0, outerStart);
+            outerLineRenderer.SetPosition(1, outerEnd);
+        }
+    }
 }

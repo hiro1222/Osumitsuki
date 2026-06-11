@@ -173,6 +173,8 @@ MonoBehaviour:
   lineRenderer: {fileID: 7842638373735958570}
   lineLength: 20
   extendSpeed: 15
+  outerLineRenderer: {fileID: 0}
+  outerLineWidth: 5
   arrowObject: {fileID: 0}
   obstacleLayer:
     serializedVersion: 2
@@ -355,23 +357,26 @@ MonoBehaviour:
   player: {fileID: 0}
   bodyTransform: {fileID: 7869159295525520851}
   rollModelTransform: {fileID: 7869159295525520851}
+  tackleEffect: {fileID: 0}
   hipDropIndicator: {fileID: 5198239704221174574}
   chaseSpeed: 3
   collideDistance: 2.3
   avoidDistance: 2
-  lanternPrefab: {fileID: 6529302960457541936, guid: 9aab572dd97500c4192d1fab41857a7d, type: 3}
+  lanternPrefab: {fileID: 231706064048274952, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
   lanternSpawnPoints:
   - {fileID: 0}
   - {fileID: 0}
   spawnHeight: 20
   spawnInterval: 0.5
   buriedDepth: 0
-  phase3ObjectPrefab: {fileID: 4985339636716715221, guid: 345b48b97b853424d83b9dc54a09af49, type: 3}
+  phase3ObjectPrefab: {fileID: 4237263636414342128, guid: a05c1974bbac32f4b8a2c96b245d2bbc, type: 3}
   phase3SpawnPoints:
   - {fileID: 0}
   - {fileID: 0}
   tackleSpeed: 20
   tackleMaxDistance: 20
+  chargeDuration: 2
+  chargeHomingSpeed: 5
   rollSpeed: 5
   rollDuration: 10
   rollMaxTurnAngle: 10
@@ -380,6 +385,9 @@ MonoBehaviour:
   rollRotateSpeed: 300
   rollEndJumpHeight: 3
   rollEndJumpDuration: 1
+  rollWindupTiltAngle: 20
+  rollWindupTiltDuration: 0.3
+  rollWindupReturnDuration: 0.15
   lanternSet: {fileID: 2227012037696009891, guid: 9aab572dd97500c4192d1fab41857a7d, type: 3}
   hipDropChance: 0.7
   hipDropJumpHeight: 6
@@ -389,9 +397,10 @@ MonoBehaviour:
   hipDropDelayBeforeFall: 0.4
   hipDropCount: 3
   hipDropRecoverTime: 0.3
+  cannonBounceSpeed: 5
+  cannonBounceDuration: 0.5
   attackDelayMin: 3
   attackDelayMax: 8
-  chargeDuration: 2
   stopDuration: 3
   stunDuration: 10
   resetStunTimerOnHit: 1
@@ -471,10 +480,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.8096886
+  m_Radius: 2
   m_Height: 3.6193771
   m_Direction: 1
-  m_Center: {x: -0.010948658, y: 1.6010902, z: 0}
+  m_Center: {x: -0.010948658, y: 1, z: 0}
 --- !u!143 &817023540444580171
 CharacterController:
   m_ObjectHideFlags: 0
