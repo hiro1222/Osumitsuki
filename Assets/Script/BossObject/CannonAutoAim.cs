@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -104,4 +105,32 @@ public class CannonAutoAim : MonoBehaviour
         if (cannon == null) return false;
         return Quaternion.Angle(cannon.localRotation, raisedRotation) < 5f;
     }
+
+    /// <summary>大砲を初期状態に戻す（タックル衝突時に呼ぶ）</summary>
+    public void ResetCannon()
+    {
+        isRaised = false;
+
+        // MuzzleTriggerを無効化
+        if (muzzleTrigger != null)
+            muzzleTrigger.SetActive(false);
+
+        // 砲身をシームレスに元の角度に戻す
+        StartCoroutine(ResetCannonCoroutine());
+    }
+
+    private IEnumerator ResetCannonCoroutine()
+    {
+        while (Quaternion.Angle(cannon.localRotation, loweredRotation) > 0.1f)
+        {
+            cannon.localRotation = Quaternion.RotateTowards(
+                cannon.localRotation,
+                loweredRotation,
+                rotateSpeed * Time.deltaTime);
+            yield return null;
+        }
+        cannon.localRotation = loweredRotation;
+        Debug.Log("[CannonAutoAim] 砲身リセット完了");
+    }
+
 }

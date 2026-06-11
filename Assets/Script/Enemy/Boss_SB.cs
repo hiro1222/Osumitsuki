@@ -66,6 +66,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("ゴロゴロ回転させるモデルのTransform（子オブジェクト）")]
     [SerializeField] private Transform rollModelTransform;
 
+    [Header("── エフェクト ──")]
+    [SerializeField] private GameObject tackleEffect;
+
     [Header("── ヒップドロップ予告 ──")]
     [SerializeField] private HipDropIndicator hipDropIndicator;
 
@@ -155,6 +158,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private int hipDropCount = 3;
     [Tooltip("着地後の硬直時間（秒）")]
     [SerializeField] private float hipDropRecoverTime = 0.3f;
+
+    [Header("── 大砲タックル ──")]
+    [Tooltip("大砲衝突後の後退速度")]
+    [SerializeField] private float cannonBounceSpeed = 5f;
+    [Tooltip("大砲衝突後の後退時間（秒）")]
+    [SerializeField] private float cannonBounceDuration = 0.5f;
 
 
     [Header("── 攻撃タイミング（共通）──")]
@@ -287,6 +296,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // Stop用
     private float stopTimer = 0f;
 
+    private bool pendingHipDrop = false;
+    private BossState prevState = BossState.Idle;
+
     // Stun用
     private float stunTimer = 0f;
     private float lastInkTime = -999f;
@@ -361,6 +373,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         ClampToArea();
         CheckPlayerCollision();
+        UpdateEffects();
 
         switch (state)
         {
@@ -377,6 +390,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Roar: break;
             case BossState.Defeated: break;
         }
+    }
+
+    /// <summary>状態に応じてエフェクトを切り替える</summary>
+    private void UpdateEffects()
+    {
+        if (tackleEffect != null)
+            tackleEffect.SetActive(state == BossState.Tackle);
     }
 
     // ====================================================================
@@ -625,7 +645,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterTackle()
     {
+        prevState = state;
         state = BossState.Tackle;
+
         tackleDirection = chargeTargetDir;
         tackleStartPos = transform.position;
 
@@ -645,7 +667,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (IsOutOfArea())
         {
             ClampToArea();
-            EnterStop();
+            if (currentPhase == 2)
+                EnterHipDropCharge();
+            else
+                EnterStop();
             return;
         }
 
@@ -657,7 +682,124 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
-            EnterStop();
+        {
+            // フェーズ3なら直接ヒップドロップ
+            if (currentPhase == 2)
+                EnterHipDropCharge();
+            else
+                EnterStop();
+        }
+    }
+
+    /// <summary>お墨付き大砲にタックルで当たったときに呼ぶ</summary>
+    public void NotifyHitCannonTackle(CannonAutoAim cannonAutoAim, Obj_Osumitsuki cannonOsumi, Cannon_Osumitsuki cannon)
+    {
+        if (state != BossState.Tackle) return;
+        Debug.Log("[Boss_SB] お墨付き大砲に衝突！");
+
+        // 大砲リセット
+        if (cannonAutoAim != null)
+            cannonAutoAim.ResetCannon();
+
+        // PaintableSurfaceの塗りもリセット
+        var surfaces = cannonOsumi.GetComponentsInChildren<PaintableSurface>();
+        foreach (var surface in surfaces)
+        {
+            if (surface != null)
+                surface.ClearAll();
+        }
+
+        // レイヤーも元に戻す
+        cannonOsumi.gameObject.layer = LayerMask.NameToLayer("SumiVSObject");
+        var children = cannonOsumi.GetComponentsInChildren<Transform>();
+        foreach (var child in children)
+            child.gameObject.layer = LayerMask.NameToLayer("SumiVSObject");
+
+        var cannonSetup = cannonOsumi.GetComponent<CannonSetup>();
+        if (cannonSetup == null)
+            cannonSetup = cannonOsumi.GetComponentInParent<CannonSetup>();
+        if (cannonSetup != null)
+            cannonSetup.ResetMaterials();
+
+        var changeFlgField = typeof(Cannon_Osumitsuki).GetField(
+    "changeFlg",
+    System.Reflection.BindingFlags.NonPublic |
+    System.Reflection.BindingFlags.Instance);
+
+        changeFlgField?.SetValue(cannon, false);
+
+        var endFlgField = typeof(Obj_Osumitsuki).GetField(
+    "endFlg",
+    System.Reflection.BindingFlags.NonPublic |
+    System.Reflection.BindingFlags.Instance);
+        endFlgField?.SetValue(cannonOsumi, false);
+
+        var mng = Mng_Osumitsuki.instance;
+        if (mng != null)
+        {
+            var actionField = typeof(Mng_Osumitsuki).GetField(
+                "action_Objects",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var updateField = typeof(Mng_Osumitsuki).GetField(
+                "update_Objects",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            var actionList = actionField?.GetValue(mng) as List<Obj_Osumitsuki>;
+            var updateList = updateField?.GetValue(mng) as List<Obj_Osumitsuki>;
+
+            actionList?.Remove(cannonOsumi);
+            updateList?.Remove(cannonOsumi);
+        }
+
+        // お墨付き状態をReflectionでリセット
+        if (cannonOsumi != null)
+        {
+            var trgField = typeof(Obj_Osumitsuki).GetField(
+                "osumitsukiTrg",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var flgField = typeof(Obj_Osumitsuki).GetField(
+                "osumitsukiFlg",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var inkField = typeof(Obj_Osumitsuki).GetField(
+                "curInkAmount",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            trgField?.SetValue(cannonOsumi, false);
+            flgField?.SetValue(cannonOsumi, false);
+            inkField?.SetValue(cannonOsumi, 0f);
+        }
+
+        StartCoroutine(CannonBounceCoroutine());
+    }
+
+    private IEnumerator CannonBounceCoroutine()
+    {
+        state = BossState.Stop;
+
+        // 後ろにバウンド（仰向けにならない）
+        Vector3 bounceDir = -tackleDirection;
+        float elapsed = 0f;
+
+        while (elapsed < cannonBounceDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - (elapsed / cannonBounceDuration);
+            float smoothT = t * t;
+
+            Vector3 move = bounceDir * cannonBounceSpeed * smoothT * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+            bossController.Move(move);
+
+            yield return null;
+        }
+
+        // ヒップドロップはしない→Chaseへ
+        EnterChase();
     }
 
     // ====================================================================
@@ -672,7 +814,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
-        Debug.Log("[Boss_SB] ゴロゴロ開始！");
         StartCoroutine(RollWindupCoroutine());
     }
 
@@ -747,7 +888,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private IEnumerator RollEndCoroutine()
     {
         state = BossState.RollEnd;
-        Debug.Log("[Boss_SB] ゴロゴロ終了。ジャンプ→着地");
 
         Vector3 startPos = transform.position;
         Vector3 jumpVelocity = rollDirection * rollSpeed; // 慣性として転がり方向の速度を引き継ぐ
@@ -1035,8 +1175,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterStop()
     {
+        prevState = state;
         state = BossState.Stop;
         stopTimer = 0f;
+
+        if (currentPhase == 2 && prevState == BossState.Tackle)
+            pendingHipDrop = true;
+
         Debug.Log("[Boss_SB] 停止");
     }
 
@@ -1044,7 +1189,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         stopTimer += Time.deltaTime;
         if (stopTimer >= stopDuration)
-            EnterChase();
+        {
+            // ヒップドロップ待機中なら直接ヒップドロップへ
+            if (pendingHipDrop)
+            {
+                pendingHipDrop = false;
+                EnterHipDropCharge();
+            }
+            else
+            {
+                EnterChase();
+            }
+        }
     }
 
     // ====================================================================
@@ -1089,7 +1245,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (state != BossState.Tackle) return;
         Debug.Log("[Boss_SB] 木箱に当たったが塗り量不足。停止のみ");
-        EnterStop();
+        if (currentPhase == 2)
+            EnterHipDropCharge();
+        else
+            EnterStop();
     }
 
     // ====================================================================

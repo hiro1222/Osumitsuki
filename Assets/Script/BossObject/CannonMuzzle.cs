@@ -47,7 +47,7 @@ public class CannonMuzzle : MonoBehaviour
 
         if (groundTransform == null)
         {
-            // ★ レイヤー名で取得
+            // レイヤー名で取得
             int groundLayer = LayerMask.NameToLayer("BossArea"); // レイヤー名を入れる
             var allObjects = FindObjectsOfType<GameObject>();
             foreach (var obj in allObjects)
@@ -61,7 +61,7 @@ public class CannonMuzzle : MonoBehaviour
             }
         }
 
-        // ★ それでもなければbossの位置のY=0を使う
+        // それでもなければbossの位置のY=0を使う
         if (groundTransform == null)
             Debug.LogWarning("[CannonMuzzle] groundTransformが未設定！Y=0を使います");
 
@@ -127,7 +127,7 @@ public class CannonMuzzle : MonoBehaviour
         float startY = transform.position.y;
         float landedY = startY;
 
-        // ★ 打ち上げ直後の誤検知防止（上昇中は判定しない）
+        // 打ち上げ直後の誤検知防止（上昇中は判定しない）
         bool hasReachedPeak = false;
         float peakY = transform.position.y;
 
@@ -145,7 +145,7 @@ public class CannonMuzzle : MonoBehaviour
                 rotateSpeed * Time.deltaTime,
                 Space.World);
 
-            // ★ 地面のY座標以下になったら着地
+            // 地面のY座標以下になったら着地
             if (boss.transform.position.y <= landY)
             {
                 landedY = landY;
@@ -156,7 +156,7 @@ public class CannonMuzzle : MonoBehaviour
             yield return null;
         }
 
-        // ★ Rigidbody削除と同時にCharacterController有効化（遅延なし）
+        // Rigidbody削除と同時にCharacterController有効化（遅延なし）
         if (bossRb != null) Destroy(bossRb);
         if (bossCC != null) bossCC.enabled = true;
 
@@ -167,7 +167,7 @@ public class CannonMuzzle : MonoBehaviour
 
         yield return StartCoroutine(LandingRollCoroutine(bossCC, cannonForward, rotAxis));
 
-        // ★ 同じ回転軸でうつ伏せに
+        // 同じ回転軸でうつ伏せに
         Quaternion finalRot = Quaternion.Euler(90f, boss.transform.eulerAngles.y, 0f);
         float alignElapsed = 0f;
 
@@ -177,7 +177,7 @@ public class CannonMuzzle : MonoBehaviour
             float t = alignElapsed / alignTime;
             float speedRate = 1f - t;
 
-            // ★ 同じ軸で回転しながらうつ伏せに向かう
+            // 同じ軸で回転しながらうつ伏せに向かう
             boss.transform.rotation = Quaternion.RotateTowards(
                 boss.transform.rotation,
                 finalRot,
@@ -202,13 +202,13 @@ public class CannonMuzzle : MonoBehaviour
             float t = elapsed / landingRollDuration;
             float speedRate = 1f - t;
 
-            // ★ 移動（徐々に減速）
+            // 移動（徐々に減速）
             Vector3 move = rollDir * landingRollSpeed * speedRate * Time.deltaTime;
             move.y = -9.8f * Time.deltaTime;
             if (bossCC != null && bossCC.enabled)
                 bossCC.Move(move);
 
-            // ★ 回転（空中と同じ軸・徐々に減速しながらうつ伏せへ）
+            // 回転（空中と同じ軸・徐々に減速しながらうつ伏せへ）
             boss.transform.rotation = Quaternion.RotateTowards(
                 boss.transform.rotation,
                 targetRot,
