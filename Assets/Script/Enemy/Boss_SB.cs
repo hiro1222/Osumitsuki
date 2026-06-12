@@ -674,11 +674,26 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
 
-        Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
-        Vector3 playerPos = player.position;
-        bossPos.y = 0f;
-        playerPos.y = 0f;
-        float dist = Vector3.Distance(bossPos, playerPos);
+        foreach (var crate in crateObjects)
+        {
+            if (crate == null || !crate.activeSelf) continue;
+            float dist = Vector3.Distance(
+                transform.position,
+                crate.transform.position);
+            if (dist < 3.5f)
+            {
+                var woodBox = crate.GetComponentsInChildren<Boss_WoodBox>();
+                if (woodBox != null)
+                {
+                    int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+                    if (crate.layer == inkLayer)
+                        NotifyHitCrate();
+                    else
+                        NotifyHitCrateNoStun();
+                    return;
+                }
+            }
+        }
 
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
