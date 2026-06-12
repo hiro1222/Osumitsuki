@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 802486737345462269}
-  - component: {fileID: 464598060161736245}
   - component: {fileID: 5980614209944050840}
   - component: {fileID: 6923658767250050038}
   m_Layer: 7
@@ -38,20 +37,6 @@ Transform:
   - {fileID: 5467085035453672764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
---- !u!114 &464598060161736245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29504033274225991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfc7478a152351f43a0f0638e03ae2e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoCollectChildren: 1
-  includeSelf: 1
 --- !u!114 &5980614209944050840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +116,6 @@ GameObject:
   - component: {fileID: 4225393148051198997}
   - component: {fileID: 4252785346632842451}
   - component: {fileID: 673624971831611595}
-  - component: {fileID: 8184245824112584116}
   - component: {fileID: 5179406893963970311}
   m_Layer: 7
   m_Name: SM_Large_Door_RIGHT
@@ -230,27 +214,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -9072760374299358417, guid: 04fc0a52f9cf11c41b5325ab7e4dd5fa, type: 3}
---- !u!114 &8184245824112584116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1511358530257899825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!114 &5179406893963970311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +247,6 @@ GameObject:
   - component: {fileID: 5945640289270735492}
   - component: {fileID: 1073350879468573863}
   - component: {fileID: 6267347131633886050}
-  - component: {fileID: 8275930901119888458}
   - component: {fileID: 5830728095624436714}
   m_Layer: 7
   m_Name: SM_Large_Door_Stand
@@ -383,27 +345,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1077050827890824331, guid: 04fc0a52f9cf11c41b5325ab7e4dd5fa, type: 3}
---- !u!114 &8275930901119888458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4900362368516999556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!114 &5830728095624436714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +378,6 @@ GameObject:
   - component: {fileID: 3465267130470171638}
   - component: {fileID: 168066897839593514}
   - component: {fileID: 8209717745590506776}
-  - component: {fileID: 6640150679411493634}
   - component: {fileID: 7143337094236629604}
   m_Layer: 7
   m_Name: SM_Large_Door_LEFT
@@ -536,27 +476,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 859580755292689638, guid: 04fc0a52f9cf11c41b5325ab7e4dd5fa, type: 3}
---- !u!114 &6640150679411493634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6351080396902407062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!114 &7143337094236629604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,7 +509,6 @@ GameObject:
   - component: {fileID: 2713226370230230278}
   - component: {fileID: 7419354468363812288}
   - component: {fileID: 6992940957982939544}
-  - component: {fileID: 3590539609581535011}
   - component: {fileID: 3451925914702803078}
   m_Layer: 7
   m_Name: SM_Large_Door_Roof1
@@ -689,27 +607,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3784343802217296136, guid: 04fc0a52f9cf11c41b5325ab7e4dd5fa, type: 3}
---- !u!114 &3590539609581535011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6519432252461147142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!114 &3451925914702803078
 MonoBehaviour:
   m_ObjectHideFlags: 0
