@@ -328,7 +328,8 @@ public class PaintableSurface : MonoBehaviour
 
         if (!erase && hitCells > 0)
         {
-            OnPainted?.Invoke(hitCells, inkDensity);
+            OnPainted?.Invoke(hitCells, inkDensity);                        // per-surface（後方互換）
+            InkPaintService.RaisePainted(gameObject, hitCells, inkDensity); // Service経由グローバル
         }
     }
 

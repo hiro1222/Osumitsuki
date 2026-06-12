@@ -43,6 +43,25 @@ using System.Collections.Generic;
 public static class InkPaintService
 {
     // ================================================================
+    //  塗りイベント（Service経由で購読・発火）
+    // ================================================================
+
+    /// <summary>
+    /// どのサーフェスでも塗りが発生したら発火するグローバルイベント。
+    /// PaintableSurface を直接参照せずに塗りを購読できる。
+    /// 引数: (塗られたGameObject, ヒットしたセル数, 加算density)
+    ///
+    /// ■ 購読例:
+    ///   InkPaintService.OnPainted += (obj, cells, density) => { ... };
+    ///   // 特定オブジェクトだけ反応したいなら obj で絞る
+    /// </summary>
+    public static event System.Action<GameObject, int, byte> OnPainted;
+
+    /// <summary>PaintableSurface から呼ばれる内部通知（外部からは呼ばない）。</summary>
+    internal static void RaisePainted(GameObject source, int cells, byte density)
+        => OnPainted?.Invoke(source, cells, density);
+
+    // ================================================================
     //  墨を塗る
     // ================================================================
 
