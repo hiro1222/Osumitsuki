@@ -27,6 +27,17 @@ public class CannonMuzzle : MonoBehaviour
     [SerializeField] private float extraGravity = 20f;
     [Tooltip("うつ伏せになるまでの時間（秒）")]
     [SerializeField] private float alignTime = 0.5f;
+    [Tooltip("打ち上げ中の回転速度（度/秒）")]
+    [SerializeField] private float rotateSpeed = 180f;
+    [Tooltip("着地後の転がり速度")]
+    [SerializeField] private float landingRollSpeed = 5f;
+    [Tooltip("着地後の転がり時間（秒）")]
+    [SerializeField] private float landingRollDuration = 0.5f;
+    [Tooltip("着地後の回転速度（度/秒）")]
+    [SerializeField] private float landingRotateSpeed = 720f;
+
+    [Header("── カメラ ──")]
+    [SerializeField] private ThirdPersonOrbitCamera cameraController;
 
 
     private Collider muzzleCollider;
@@ -36,6 +47,29 @@ public class CannonMuzzle : MonoBehaviour
     {
         if (boss == null)
             boss = FindObjectOfType<Boss_SB>();
+
+        if (cameraController == null)
+            cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
+
+        if (groundTransform == null)
+        {
+            // レイヤー名で取得
+            int groundLayer = LayerMask.NameToLayer("BossArea"); // レイヤー名を入れる
+            var allObjects = FindObjectsOfType<GameObject>();
+            foreach (var obj in allObjects)
+            {
+                if (obj.layer == groundLayer)
+                {
+                    groundTransform = obj.transform;
+                    Debug.Log($"[CannonMuzzle] 地面取得: {obj.name}");
+                    break;
+                }
+            }
+        }
+
+        // それでもなければbossの位置のY=0を使う
+        if (groundTransform == null)
+            Debug.LogWarning("[CannonMuzzle] groundTransformが未設定！Y=0を使います");
 
         muzzleCollider = GetComponent<Collider>();
         if (muzzleCollider == null)
@@ -74,11 +108,19 @@ public class CannonMuzzle : MonoBehaviour
         boss.SetLaunching(true);
         boss.transform.position = transform.position;
 
+        boss.HideHipDropIndicator();
+
+        if (cameraController != null)
+            cameraController.SetLookTarget(boss.transform);
+
+        Vector3 cannonForward = transform.forward;
+        cannonForward.y = 0f;
+        cannonForward.Normalize();
+
+        Vector3 rotAxis = Vector3.Cross(Vector3.up, cannonForward).normalized;
+
         yield return new WaitForSeconds(launchDelay);
-
         if (boss == null) yield break;
-
-        Debug.Log("[CannonMuzzle] ボスを打ち上げ！");
 
         var bossRb = boss.gameObject.AddComponent<Rigidbody>();
         bossRb.isKinematic = false;
@@ -86,67 +128,109 @@ public class CannonMuzzle : MonoBehaviour
         bossRb.freezeRotation = true;
 
         Vector3 launchVec = Vector3.up * launchForce
-                          + transform.forward * launchForwardForce;
-        bossRb.AddForce(launchVec, ForceMode.Impulse);
+                          + cannonForward * launchForwardForce;
+        bossRb.linearVelocity = launchVec;
 
         yield return new WaitForSeconds(0.5f);
 
         float timeout = 10f;
         float elapsed = 0f;
+        float startY = transform.position.y;
+        float landedY = startY;
+
+        // 打ち上げ直後の誤検知防止（上昇中は判定しない）
+        bool hasReachedPeak = false;
+        float peakY = transform.position.y;
 
         float landY = groundTransform != null
-            ? groundTransform.position.y + groundOffset
-            : groundOffset;
+    ? groundTransform.position.y
+    : 0f;
 
         while (elapsed < timeout)
         {
             elapsed += Time.deltaTime;
+            bossRb.AddForce(Vector3.down * extraGravity, ForceMode.Acceleration);
 
-            // ★ 下降中は追加重力で落下速度を上げる
-            if (bossRb.linearVelocity.y <= 0f)
-                bossRb.AddForce(Vector3.down * extraGravity, ForceMode.Acceleration);
+            boss.transform.Rotate(
+                rotAxis,
+                rotateSpeed * Time.deltaTime,
+                Space.World);
 
-            if (bossRb.linearVelocity.y <= 0f &&
-                boss.transform.position.y <= landY)
+            // 地面のY座標以下になったら着地
+            if (boss.transform.position.y <= landY)
             {
-                Debug.Log("[CannonMuzzle] ボス着地！");
+                landedY = landY;
+                Debug.Log($"[CannonMuzzle] ボス着地！posY={landedY}");
                 break;
             }
 
             yield return null;
         }
 
+        // Rigidbody削除と同時にCharacterController有効化（遅延なし）
         if (bossRb != null) Destroy(bossRb);
+        if (bossCC != null) bossCC.enabled = true;
 
-        // ★ 着地後にY座標固定
         boss.transform.position = new Vector3(
             boss.transform.position.x,
-            landY,
+            landedY,
             boss.transform.position.z);
 
-        // ★ 着地後にうつ伏せに滑らかに回転
-        Quaternion targetRot = Quaternion.Euler(
-            90f,
-            boss.transform.eulerAngles.y,
-            0f);
+        yield return StartCoroutine(LandingRollCoroutine(bossCC, cannonForward, rotAxis));
 
-        elapsed = 0f;
-        Quaternion startRot = boss.transform.rotation;
+        // 同じ回転軸でうつ伏せに
+        Quaternion finalRot = Quaternion.Euler(90f, boss.transform.eulerAngles.y, 0f);
+        float alignElapsed = 0f;
 
-        while (elapsed < alignTime)
+        while (alignElapsed < alignTime)
+        {
+            alignElapsed += Time.deltaTime;
+            float t = alignElapsed / alignTime;
+            float speedRate = 1f - t;
+
+            // 同じ軸で回転しながらうつ伏せに向かう
+            boss.transform.rotation = Quaternion.RotateTowards(
+                boss.transform.rotation,
+                finalRot,
+                rotateSpeed * speedRate * Time.deltaTime);
+
+            yield return null;
+        }
+
+        boss.transform.rotation = finalRot;
+        boss.SetLaunching(false);
+        hasLaunched = false;
+
+        if (cameraController != null)
+            cameraController.SetLookTarget(null);
+    }
+
+    private IEnumerator LandingRollCoroutine(CharacterController bossCC, Vector3 rollDir, Vector3 rotAxis)
+    {
+        float elapsed = 0f;
+        Quaternion targetRot = Quaternion.Euler(90f, boss.transform.eulerAngles.y, 0f);
+
+        while (elapsed < landingRollDuration)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / alignTime;
-            boss.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
+            float t = elapsed / landingRollDuration;
+            float speedRate = 1f - t;
+
+            // 移動（徐々に減速）
+            Vector3 move = rollDir * landingRollSpeed * speedRate * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+            if (bossCC != null && bossCC.enabled)
+                bossCC.Move(move);
+
+            // 回転（空中と同じ軸・徐々に減速しながらうつ伏せへ）
+            boss.transform.rotation = Quaternion.RotateTowards(
+                boss.transform.rotation,
+                targetRot,
+                rotateSpeed * speedRate * Time.deltaTime);
+
             yield return null;
         }
 
         boss.transform.rotation = targetRot;
-
-        if (bossCC != null) bossCC.enabled = true;
-
-        boss.SetLaunching(false);
-        boss.NotifyHitCannon();
-        hasLaunched = false;
     }
 }

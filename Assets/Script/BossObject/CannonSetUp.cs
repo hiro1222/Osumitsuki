@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,8 +7,18 @@ using UnityEngine;
 /// </summary>
 public class CannonSetup : MonoBehaviour
 {
+    // 元のマテリアルを記録
+    private Dictionary<MeshRenderer, Material> originalMaterials = new Dictionary<MeshRenderer, Material>();
+
+
     private void Start()
     {
+
+        // 元のマテリアルを記録
+        var renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (var r in renderers)
+            originalMaterials[r] = r.material;
+
         var manager = FindObjectOfType<AllyEnemyManager>();
         if (manager == null)
         {
@@ -42,5 +53,14 @@ public class CannonSetup : MonoBehaviour
                 Debug.LogWarning("[CannonSetup] allyEnemyManagerフィールドが見つかりません");
             }
         }
+    }
+
+    /// <summary>マテリアルを元に戻す</summary>
+    public void ResetMaterials()
+    {
+        foreach (var kvp in originalMaterials)
+            if (kvp.Key != null)
+                kvp.Key.material = kvp.Value;
+        Debug.Log("[CannonSetup] マテリアルリセット完了");
     }
 }

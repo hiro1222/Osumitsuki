@@ -66,6 +66,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("ゴロゴロ回転させるモデルのTransform（子オブジェクト）")]
     [SerializeField] private Transform rollModelTransform;
 
+    [Header("── エフェクト ──")]
+    [SerializeField] private GameObject tackleEffect;
+
     [Header("── ヒップドロップ予告 ──")]
     [SerializeField] private HipDropIndicator hipDropIndicator;
 
@@ -103,6 +106,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("タックルの最大移動距離（m）")]
     [SerializeField] private float tackleMaxDistance = 20f;
 
+    [Header("── チャージ ──")]
+    [Tooltip("チャージ時間（秒）")]
+    [SerializeField] private float chargeDuration = 1f;
+    [Tooltip("チャージ中のホーミング速度（0=追わない）")]
+    [SerializeField] private float chargeHomingSpeed = 5f;
+
     [Header("── ゴロゴロ（フェーズ2）──")]
     [Tooltip("ゴロゴロの速度")]
     [SerializeField] private float rollSpeed = 8f;
@@ -120,6 +129,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float rollEndJumpHeight = 3f;
     [Tooltip("ゴロゴロ終了時のジャンプ時間（秒）")]
     [SerializeField] private float rollEndJumpDuration = 0.5f;
+
+    [Header("── ゴロゴロ予備動作 ──")]
+    [Tooltip("後ろに傾く角度（度）")]
+    [SerializeField] private float rollWindupTiltAngle = 20f;
+    [Tooltip("傾く時間（秒）")]
+    [SerializeField] private float rollWindupTiltDuration = 0.3f;
+    [Tooltip("戻る時間（秒）")]
+    [SerializeField] private float rollWindupReturnDuration = 0.15f;
 
     [Header("── 灯籠セット（フェーズ2）──")]
     [SerializeField] private Boss_LanternSet lanternSet;
@@ -142,16 +159,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("着地後の硬直時間（秒）")]
     [SerializeField] private float hipDropRecoverTime = 0.3f;
 
+    [Header("── 大砲タックル ──")]
+    [Tooltip("大砲衝突後の後退速度")]
+    [SerializeField] private float cannonBounceSpeed = 5f;
+    [Tooltip("大砲衝突後の後退時間（秒）")]
+    [SerializeField] private float cannonBounceDuration = 0.5f;
+
 
     [Header("── 攻撃タイミング（共通）──")]
     [Tooltip("追従開始から攻撃までの待機時間（最小・秒）")]
     [SerializeField] private float attackDelayMin = 3f;
     [Tooltip("追従開始から攻撃までの待機時間（最大・秒）")]
     [SerializeField] private float attackDelayMax = 8f;
-
-    [Header("── チャージ ──")]
-    [Tooltip("チャージ時間（秒）")]
-    [SerializeField] private float chargeDuration = 1f;
 
     [Header("── 停止（攻撃後） ──")]
     [Tooltip("攻撃後の停止時間（秒）")]
@@ -277,6 +296,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // Stop用
     private float stopTimer = 0f;
 
+    private bool pendingHipDrop = false;
+    private BossState prevState = BossState.Idle;
+
     // Stun用
     private float stunTimer = 0f;
     private float lastInkTime = -999f;
@@ -351,6 +373,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         ClampToArea();
         CheckPlayerCollision();
+        UpdateEffects();
 
         switch (state)
         {
@@ -367,6 +390,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Roar: break;
             case BossState.Defeated: break;
         }
+    }
+
+    /// <summary>状態に応じてエフェクトを切り替える</summary>
+    private void UpdateEffects()
+    {
+        if (tackleEffect != null)
+            tackleEffect.SetActive(state == BossState.Tackle);
     }
 
     // ====================================================================
@@ -527,6 +557,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 toPlayer = player.position - transform.position;
         toPlayer.y = 0f;
 
+        LookAt(toPlayer);
+
         attackTimer += Time.deltaTime;
         if (attackTimer >= attackDelay)
         {
@@ -563,8 +595,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             move.y = -9.8f * Time.deltaTime;
             bossController.Move(move);
         }
-
-        LookAt(toPlayer);
     }
 
     // ====================================================================
@@ -587,6 +617,22 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void UpdateCharge()
     {
         chargeTimer += Time.deltaTime;
+
+        // チャージ中にプレイヤーの方向を追う
+        if (chargeHomingSpeed > 0f)
+        {
+            Vector3 toPlayer = (player.position - transform.position).normalized;
+            toPlayer.y = 0f;
+            chargeTargetDir = Vector3.RotateTowards(
+                chargeTargetDir,
+                toPlayer,
+                chargeHomingSpeed * Mathf.Deg2Rad * Time.deltaTime,
+                0f).normalized;
+
+            if (attackIndicator != null)
+                attackIndicator.UpdateDirection(transform.position, chargeTargetDir);
+        }
+
         LookAt(chargeTargetDir);
 
         if (chargeTimer >= chargeDuration)
@@ -599,7 +645,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterTackle()
     {
+        prevState = state;
         state = BossState.Tackle;
+
         tackleDirection = chargeTargetDir;
         tackleStartPos = transform.position;
 
@@ -619,19 +667,154 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (IsOutOfArea())
         {
             ClampToArea();
-            EnterStop();
+            if (currentPhase == 2)
+                EnterHipDropCharge();
+            else
+                EnterStop();
             return;
         }
 
-        Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
-        Vector3 playerPos = player.position;
-        bossPos.y = 0f;
-        playerPos.y = 0f;
-        float dist = Vector3.Distance(bossPos, playerPos);
+        foreach (var crate in crateObjects)
+        {
+            if (crate == null || !crate.activeSelf) continue;
+            float dist = Vector3.Distance(
+                transform.position,
+                crate.transform.position);
+            if (dist < 3.5f)
+            {
+                var woodBox = crate.GetComponentsInChildren<Boss_WoodBox>();
+                if (woodBox != null)
+                {
+                    int inkLayer = LayerMask.NameToLayer("PlayerVSObject");
+                    if (crate.layer == inkLayer)
+                        NotifyHitCrate();
+                    else
+                        NotifyHitCrateNoStun();
+                    return;
+                }
+            }
+        }
 
         float travelDist = Vector3.Distance(transform.position, tackleStartPos);
         if (travelDist > tackleMaxDistance)
-            EnterStop();
+        {
+            // フェーズ3なら直接ヒップドロップ
+            if (currentPhase == 2)
+                EnterHipDropCharge();
+            else
+                EnterStop();
+        }
+    }
+
+    /// <summary>お墨付き大砲にタックルで当たったときに呼ぶ</summary>
+    public void NotifyHitCannonTackle(CannonAutoAim cannonAutoAim, Obj_Osumitsuki cannonOsumi, Cannon_Osumitsuki cannon)
+    {
+        if (state != BossState.Tackle) return;
+        Debug.Log("[Boss_SB] お墨付き大砲に衝突！");
+
+        // 大砲リセット
+        if (cannonAutoAim != null)
+            cannonAutoAim.ResetCannon();
+
+        // PaintableSurfaceの塗りもリセット
+        var surfaces = cannonOsumi.GetComponentsInChildren<PaintableSurface>();
+        foreach (var surface in surfaces)
+        {
+            if (surface != null)
+                surface.ClearAll();
+        }
+
+        // レイヤーも元に戻す
+        cannonOsumi.gameObject.layer = LayerMask.NameToLayer("SumiVSObject");
+        var children = cannonOsumi.GetComponentsInChildren<Transform>();
+        foreach (var child in children)
+            child.gameObject.layer = LayerMask.NameToLayer("SumiVSObject");
+
+        var cannonSetup = cannonOsumi.GetComponent<CannonSetup>();
+        if (cannonSetup == null)
+            cannonSetup = cannonOsumi.GetComponentInParent<CannonSetup>();
+        if (cannonSetup != null)
+            cannonSetup.ResetMaterials();
+
+        var changeFlgField = typeof(Cannon_Osumitsuki).GetField(
+    "changeFlg",
+    System.Reflection.BindingFlags.NonPublic |
+    System.Reflection.BindingFlags.Instance);
+
+        changeFlgField?.SetValue(cannon, false);
+
+        var endFlgField = typeof(Obj_Osumitsuki).GetField(
+    "endFlg",
+    System.Reflection.BindingFlags.NonPublic |
+    System.Reflection.BindingFlags.Instance);
+        endFlgField?.SetValue(cannonOsumi, false);
+
+        var mng = Mng_Osumitsuki.instance;
+        if (mng != null)
+        {
+            var actionField = typeof(Mng_Osumitsuki).GetField(
+                "action_Objects",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var updateField = typeof(Mng_Osumitsuki).GetField(
+                "update_Objects",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            var actionList = actionField?.GetValue(mng) as List<Obj_Osumitsuki>;
+            var updateList = updateField?.GetValue(mng) as List<Obj_Osumitsuki>;
+
+            actionList?.Remove(cannonOsumi);
+            updateList?.Remove(cannonOsumi);
+        }
+
+        // お墨付き状態をReflectionでリセット
+        if (cannonOsumi != null)
+        {
+            var trgField = typeof(Obj_Osumitsuki).GetField(
+                "osumitsukiTrg",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var flgField = typeof(Obj_Osumitsuki).GetField(
+                "osumitsukiFlg",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+            var inkField = typeof(Obj_Osumitsuki).GetField(
+                "curInkAmount",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            trgField?.SetValue(cannonOsumi, false);
+            flgField?.SetValue(cannonOsumi, false);
+            inkField?.SetValue(cannonOsumi, 0f);
+        }
+
+        StartCoroutine(CannonBounceCoroutine());
+    }
+
+    private IEnumerator CannonBounceCoroutine()
+    {
+        state = BossState.Stop;
+
+        // 後ろにバウンド（仰向けにならない）
+        Vector3 bounceDir = -tackleDirection;
+        float elapsed = 0f;
+
+        while (elapsed < cannonBounceDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = 1f - (elapsed / cannonBounceDuration);
+            float smoothT = t * t;
+
+            Vector3 move = bounceDir * cannonBounceSpeed * smoothT * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+            bossController.Move(move);
+
+            yield return null;
+        }
+
+        // ヒップドロップはしない→Chaseへ
+        EnterChase();
     }
 
     // ====================================================================
@@ -646,7 +829,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
-        Debug.Log("[Boss_SB] ゴロゴロ開始！");
+        StartCoroutine(RollWindupCoroutine());
     }
 
     private void UpdateRoll()
@@ -720,7 +903,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private IEnumerator RollEndCoroutine()
     {
         state = BossState.RollEnd;
-        Debug.Log("[Boss_SB] ゴロゴロ終了。ジャンプ→着地");
 
         Vector3 startPos = transform.position;
         Vector3 jumpVelocity = rollDirection * rollSpeed; // 慣性として転がり方向の速度を引き継ぐ
@@ -789,6 +971,42 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         EnterChase();
     }
 
+    private IEnumerator RollWindupCoroutine()
+    {
+        // 移動を一時停止
+        BossState prevState = state;
+        state = BossState.Stop;
+
+        Quaternion startRot = transform.rotation;
+
+        // 後ろに傾く
+        Quaternion tiltRot = startRot * Quaternion.Euler(rollWindupTiltAngle, 0f, 0f);
+        float elapsed = 0f;
+
+        while (elapsed < rollWindupTiltDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / rollWindupTiltDuration;
+            transform.rotation = Quaternion.Slerp(startRot, tiltRot, t);
+            yield return null;
+        }
+
+        // 元に戻りながらゴロゴロ開始
+        elapsed = 0f;
+        while (elapsed < rollWindupReturnDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / rollWindupReturnDuration;
+            transform.rotation = Quaternion.Slerp(tiltRot, startRot, t);
+            yield return null;
+        }
+
+        transform.rotation = startRot;
+
+        // ゴロゴロ開始
+        state = BossState.Roll;
+    }
+
     /// <summary>動的生成された灯籠を登録する（LanternSetSetupから呼ぶ）</summary>
     public void RegisterLanternObject(GameObject lantern)
     {
@@ -807,6 +1025,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         hipDropChargeTimer = 0f;
         hipDropCurrentCount = 0;
         isHitCannon = false;
+
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                transform.position.x, 0f, transform.position.z));
+
         Debug.Log("[Boss_SB] ヒップドロップ開始！");
         StartCoroutine(HipDropSequence());
     }
@@ -844,9 +1067,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private IEnumerator HipDropChargeCoroutine()
     {
         state = BossState.HipDropCharge;
-
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
+
+        // ★ ジャンプ開始と同時にサークル表示
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                transform.position.x, 0f, transform.position.z));
 
         // ジャンプ（上昇）
         float jumpTime = 0.3f;
@@ -856,6 +1083,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             elapsed += Time.deltaTime;
             float t = elapsed / jumpTime;
             transform.position = Vector3.Lerp(startPos, apexPos, t);
+
+            // ジャンプ中も追従
+            if (hipDropIndicator != null)
+                hipDropIndicator.Show(new Vector3(
+                    transform.position.x, 0f, transform.position.z));
+
             yield return null;
         }
 
@@ -879,10 +1112,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             lookDir.y = 0f;
             LookAt(lookDir);
 
-            // チャージ中はプレイヤーの位置にサークルを追従
-            if (hipDropIndicator != null && hipDropChargeTimer < hipDropChargeDuration * 0.5f)
+            // ボスの真下に追従
+            if (hipDropIndicator != null)
                 hipDropIndicator.Show(new Vector3(
-                    player.position.x, 0f, player.position.z));
+                    transform.position.x, 0f, transform.position.z));
 
             yield return null;
         }
@@ -890,7 +1123,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         // 降下先を確定
         hipDropTargetPos = transform.position;
 
- 
+        // 確定後も固定
+        if (hipDropIndicator != null)
+            hipDropIndicator.Show(new Vector3(
+                hipDropTargetPos.x, 0f, hipDropTargetPos.z));
 
         if (attackIndicator != null)
             attackIndicator.Hide();
@@ -925,6 +1161,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
     }
 
+    /// <summary>ヒップドロップインジケーターを非表示にする（CannonMuzzleから呼ぶ）</summary>
+    public void HideHipDropIndicator()
+    {
+        if (hipDropIndicator != null)
+            hipDropIndicator.Hide();
+    }
+
     /// <summary>UpdateHipDropChargeはコルーチンで処理するため空</summary>
     private void UpdateHipDropCharge() { }
 
@@ -954,8 +1197,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterStop()
     {
+        prevState = state;
         state = BossState.Stop;
         stopTimer = 0f;
+
+        if (currentPhase == 2 && prevState == BossState.Tackle)
+            pendingHipDrop = true;
+
         Debug.Log("[Boss_SB] 停止");
     }
 
@@ -963,7 +1211,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         stopTimer += Time.deltaTime;
         if (stopTimer >= stopDuration)
-            EnterChase();
+        {
+            // ヒップドロップ待機中なら直接ヒップドロップへ
+            if (pendingHipDrop)
+            {
+                pendingHipDrop = false;
+                EnterHipDropCharge();
+            }
+            else
+            {
+                EnterChase();
+            }
+        }
     }
 
     // ====================================================================
@@ -1008,7 +1267,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (state != BossState.Tackle) return;
         Debug.Log("[Boss_SB] 木箱に当たったが塗り量不足。停止のみ");
-        EnterStop();
+        if (currentPhase == 2)
+            EnterHipDropCharge();
+        else
+            EnterStop();
     }
 
     // ====================================================================
