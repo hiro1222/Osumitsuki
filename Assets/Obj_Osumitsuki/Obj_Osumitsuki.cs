@@ -12,6 +12,8 @@ public class Obj_Osumitsuki : MonoBehaviour
 	//現在のインクの量
 	protected float curInkAmount = 0;
 	[SerializeField] private float maxInkCapa = 100;    //インクの最大量
+	[SerializeField] private float coolPaintTime = 0.5f;     //インクが塗られたときのクールタイム
+	private float lastPaintedTime = 0;                     //最後に塗られた時間
 
 	[Header("お墨付き後のテクスチャ")]
 	[SerializeField] protected Material myMaterial;
@@ -29,7 +31,10 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected bool firstSearchFlg = false;  //検索フラグ
 
     private List<MaskedInkProgress> maskSystems;
-    private List<PaintableSurface> paintsurfaces;
+	private PaintableSurface paintableSurface;
+
+
+	public event System.Action<int, byte> OnAnyPainted;
 
 	//プロパティ
 	public bool OsumiTrg => osumitsukiTrg;
@@ -116,6 +121,14 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 	private void Awake()
 	{
+		paintableSurface = GetComponent<PaintableSurface>();
+		if (paintableSurface == null)
+		{
+			Debug.LogError("Obj_OsumitsukiにPaintableSurfaceがアタッチされていません。");
+		}
+
+		paintableSurface.OnPainted += (cells, density) => PaintedRaper(cells,density);
+
 		if (allyEnemyTarget != null)
 		{
 			helperAllyEnemys = new AllyEnemy[allyEnemyTarget.Length];
@@ -123,17 +136,13 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 
         maskSystems = new List<MaskedInkProgress>();
-        paintsurfaces = new List<PaintableSurface>();
+        //paintsurfaces = new List<PaintableSurface>();
         Transform[] allTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform t in allTransforms)
         {
             var maskS = t.gameObject.GetComponent<MaskedInkProgress>();
             if (maskS != null)
                 maskSystems.Add(maskS);
-
-            var paintS = t.gameObject.GetComponent<PaintableSurface>();
-            if (paintS != null)
-                paintsurfaces.Add(paintS);
         }
     }
 
@@ -158,10 +167,24 @@ public class Obj_Osumitsuki : MonoBehaviour
 		End();
 	}
 
+	private void PaintedRaper(int _cells,int _density)
+	{
+		Debug.Log("///////////alkdjfoa;isjhefjklnaisdf@ooafd");
+		Painted(5f);
+	}
+
+
 	//塗られたときの処理
 	public bool Painted(float _ink)
 	{
+		if (Time.time - lastPaintedTime < coolPaintTime) return osumitsukiTrg;
+		lastPaintedTime = Time.time;
+
+		Debug.Log("AddInkAmount : " + _ink);
 		curInkAmount += _ink;
+		Debug.Log("--------------------------------------------------");
+		Debug.Log(name + "Painted関数呼び出し");
+		Debug.Log("--------------------------------------------------");
 
 		if (maxInkCapa <= curInkAmount && !osumitsukiTrg)
 		{
@@ -184,10 +207,6 @@ public class Obj_Osumitsuki : MonoBehaviour
                 {
                     all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
                 }
-                foreach (PaintableSurface ps in paintsurfaces)
-                {
-                    ps.ClearAll();
-                }
             }
 
 			return osumitsukiTrg;
@@ -195,19 +214,29 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 		if (maskSystems.Count > 0)
 		{
-            foreach (MaskedInkProgress ms in maskSystems)
+			float curRatio = curInkAmount / maxInkCapa;
+
+			foreach (MaskedInkProgress ms in maskSystems)
             {
-                float curRatio = curInkAmount / maxInkCapa;
-                float curStep = ms.CurrentStep + 1;
-                int allStepNum = ms.StepCount + 1;
+                float curBlock = ms.CurrentStep + 1;
+                float allBlockNum = ms.StepCount;
+				float oneBlockAmount = maxInkCapa / allBlockNum;
+				float curBlockTopAmount = oneBlockAmount * curBlock;
 
-                float curStepInkAmount = maxInkCapa / allStepNum * curStep;
+				Debug.Log("allBlockNum : " + allBlockNum);
+				Debug.Log("curRatio : " + curRatio * 100f + "％");
+				Debug.Log("curBlock : " + curBlock);
+				Debug.Log("curInkAmount : curBlockTopAmount =" + curInkAmount + " : " + curBlockTopAmount);
 
-                if (curInkAmount >= curStepInkAmount)
-                    ms.AdvanceBy(1);
+				if (curInkAmount >= curBlockTopAmount)
+                {
+					Debug.Log("次マスクへ");
+					ms.Advance();
+				}
+
+				Debug.Log(" curBlock : " + ms.CurrentStep);
 
             }
-
 		}
 
 		return osumitsukiTrg;

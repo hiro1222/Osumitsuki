@@ -9,7 +9,7 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     [SerializeField] private float rotateSpeed_H;   //横振り速度
     [SerializeField] private float rotateSpeed_V;   //縦ぶり速度
     [SerializeField] private float rotateLimit_V;   //縦ぶり限界値
-    [SerializeField] private float coolTime;        //クールタイム
+    [SerializeField] private float coolShotTime;        //クールタイム
     [SerializeField] private float activeDist;      //起動する距離
 
     [Header("発射されるオブジェクトプレハブ")]
@@ -20,7 +20,6 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     [SerializeField] private Transform cannon;      //筒の部分
     [SerializeField] private Transform playerTrf;   //プレイヤートランスフォーム
 
-    private PaintableSurfaceGroup group;
     private bool changeFlg = false;
 
 
@@ -33,30 +32,12 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     {
         activeDist *= activeDist;
 
-        group = GetComponent<PaintableSurfaceGroup>();
-        if (group != null)
-        {
-            group.OnAnyPainted += HandleAnyPainted;
-        }
-
         //回転を180 ～ -180に変換
         curAngle_H = stage.transform.localEulerAngles.y;
         if (curAngle_H > 180f) curAngle_H -= 360f;
 
         curAngle_V = cannon.transform.localEulerAngles.z;
         if (curAngle_V > 180f) curAngle_V -= 360f;
-    }
-    private void OnDestroy()
-    {
-        if (group != null)
-        {
-            group.OnAnyPainted -= HandleAnyPainted;
-        }
-    }
-
-    private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
-    {
-        Painted(4f);
     }
 
     public override void Action_Osumitsuki()
@@ -103,7 +84,7 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
     //大砲発射
     private void Fire()
     {
-        if (coolTime > Time.time - lastFireTime)
+        if (coolShotTime > Time.time - lastFireTime)
             return;
 
         lastFireTime = Time.time;

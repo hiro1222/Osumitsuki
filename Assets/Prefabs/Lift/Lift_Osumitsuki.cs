@@ -17,7 +17,6 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
     private Vector3 targetPos;      //–Ú•WÀ•W
     private Vector3 initboardPos;   //‘«ê‰ŠúÀ•W
 
-    private PaintableSurfaceGroup group;
     private bool changeFlg = false;
 
 
@@ -30,25 +29,10 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
         if (boardObj == null)
             boardObj = gameObject.transform.GetChild(0).gameObject;
 
-
-        group = GetComponent<PaintableSurfaceGroup>();
-        if (group != null)
-        {
-            group.OnAnyPainted += HandleAnyPainted;
-        }
     }
 
     private void OnDestroy()
     {
-        if (group != null)
-        {
-            group.OnAnyPainted -= HandleAnyPainted;
-        }
-    }
-
-    private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
-    {
-        Painted(4f);
     }
 
     public override void Action_Osumitsuki()

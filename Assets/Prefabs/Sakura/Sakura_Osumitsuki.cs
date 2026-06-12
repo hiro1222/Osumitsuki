@@ -29,7 +29,7 @@ public class Sakura_Osumitsuki : Obj_Osumitsuki
 
     private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
     {
-        Painted(4f);
+        Painted(25f);
     }
 
     public override void Action_Osumitsuki()

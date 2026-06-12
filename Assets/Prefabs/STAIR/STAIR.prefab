@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5205844293333786774}
   - component: {fileID: 2769148899937580433}
   - component: {fileID: 3271283993052802253}
+  - component: {fileID: 4245442724705970}
   - component: {fileID: 6940981869789576794}
   - component: {fileID: 3474285610825185600}
-  - component: {fileID: 4245442724705970}
   m_Layer: 7
   m_Name: STAIR
   m_TagString: Untagged
@@ -31,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 140201724112460671}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -15.839299, y: 2.8340514, z: 2.510387}
-  m_LocalScale: {x: 0.8000001, y: 0.43, z: 0.6}
+  m_LocalPosition: {x: 10, y: 2.8340514, z: -1.45}
+  m_LocalScale: {x: 0.5, y: 0.3, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7585844819403763580}
@@ -114,6 +114,30 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4698440371251102352, guid: d6816120ab59acc438808a913b15fdab, type: 3}
+--- !u!114 &4245442724705970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140201724112460671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxInkCapa: 5
+  coolPaintTime: 0.5
+  myMaterial: {fileID: 2100000, guid: 44293b5fc657c2b44bcdbdff520f4a7b, type: 2}
+  allyEnemyTarget:
+  - {fileID: 7585844819403763580}
+  - {fileID: 2411708859201993203}
+  allyEnemyManager: {fileID: 0}
+  targets:
+  - {fileID: 0}
+  turnSpd: 60
+  moveSpd: 10
+  Y_lock: 1
 --- !u!114 &6940981869789576794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,13 +152,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoGridResolution: 1
   targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
+  minGridResolution: 1
+  maxGridResolution: 1
+  gridResolution: 1
+  walkThreshold: 1
+  chunkSize: 1
+  meshThickness: 1
+  renderResolution: 1
 --- !u!114 &3474285610825185600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,33 +172,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   steps:
-  - mask: {fileID: 2800000, guid: 56c0c5e9b0921414686bf68df8674e44, type: 3}
-    strength: 1
-  - mask: {fileID: 2800000, guid: f0acd0c18dfec4244a2f39c485f6856f, type: 3}
+  - mask: {fileID: 2800000, guid: 57442923c085692478fd8821a438e13a, type: 3}
     strength: 1
   textureResolution: 512
   targetRenderer: {fileID: 0}
---- !u!114 &4245442724705970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 140201724112460671}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxInkCapa: 60
-  myMaterial: {fileID: 2100000, guid: 44293b5fc657c2b44bcdbdff520f4a7b, type: 2}
-  allyEnemyTarget:
-  - {fileID: 7585844819403763580}
-  - {fileID: 2411708859201993203}
-  allyEnemyManager: {fileID: 0}
-  targets: []
-  turnSpd: 60
-  moveSpd: 10
 --- !u!1 &4888263240588604754
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,23 +34,11 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
     [Tooltip("‹ó‚È‚ç‰½‚à‚µ‚È‚¢")]
     [SerializeField] private Material childOsumiMaterial;
 
-    private PaintableSurfaceGroup group;
     private Quaternion leftClosedRot, leftOpenRot;
     private Quaternion rightClosedRot, rightOpenRot;
 
     private void Start()
     {
-        // PaintableSurfaceGroup‚ðŽæ“¾
-        group = GetComponent<PaintableSurfaceGroup>();
-        if (group != null)
-        {
-            group.OnAnyPainted += HandleAnyPainted;
-        }
-        else
-        {
-            Debug.LogWarning($"[DOOR_MoveAcsyon] {name}: PaintableSurfaceGroup‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
-        }
-
         // ƒhƒA‚ÌŠJ•ÂŠp“x‚ð‹L˜^
         if (leftDoor != null)
         {
@@ -62,20 +50,6 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
             rightClosedRot = rightDoor.localRotation;
             rightOpenRot = rightClosedRot * Quaternion.Euler(0, rightOpenAngle, 0);
         }
-    }
-
-    private void OnDestroy()
-    {
-        if (group != null)
-        {
-            group.OnAnyPainted -= HandleAnyPainted;
-        }
-    }
-
-    /// <summary>Žq‚Ì‚Ç‚±‚©‚ª“h‚ç‚ê‚½‚çŒÄ‚Î‚ê‚é</summary>
-    private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
-    {
-        Painted(4f);
     }
 
     /// <summary>

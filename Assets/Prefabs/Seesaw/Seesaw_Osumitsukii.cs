@@ -21,32 +21,12 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 	private float rightWeight;
 
 	private int moveVec = 0;
-
-
 	private bool changeFlg = false;
-	private PaintableSurfaceGroup group;
+
 
 	private void Start()
 	{
 		activeDist *= activeDist;
-		group = GetComponent<PaintableSurfaceGroup>();
-		if (group != null)
-		{
-			group.OnAnyPainted += HandleAnyPainted;
-		}
-	}
-
-	private void OnDestroy()
-	{
-		if (group != null)
-		{
-			group.OnAnyPainted -= HandleAnyPainted;
-		}
-	}
-
-	private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
-	{
-		Painted(4f);
 	}
 
 	public override void Action_Osumitsuki()

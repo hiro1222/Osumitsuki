@@ -227,7 +227,6 @@ GameObject:
   - component: {fileID: 6315885505091273012}
   - component: {fileID: 9215044805028853755}
   - component: {fileID: 5239182130005365633}
-  - component: {fileID: 4074256994794195372}
   - component: {fileID: 3224569807949088465}
   - component: {fileID: 5376640367244769444}
   m_Layer: 7
@@ -307,27 +306,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4074256994794195372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2264786321398550826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!64 &3224569807949088465
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -383,7 +361,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2584522222429601016}
   - component: {fileID: 3395909630165395147}
-  - component: {fileID: 955962009468423822}
+  - component: {fileID: 8137655604018058351}
+  - component: {fileID: 40969545143201374}
   m_Layer: 7
   m_Name: LIFT
   m_TagString: Untagged
@@ -400,7 +379,7 @@ Transform:
   m_GameObject: {fileID: 2924456735436744258}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0.4899485, y: 0.0000014305115, z: 3.2294998}
+  m_LocalPosition: {x: -10.443146, y: 0.0000009536743, z: 2.422783}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -421,7 +400,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc8357d8ef1bd743b7e4532d769a06a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 200
+  maxInkCapa: 5
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: d99e6d0ca95142744a5a7aeafe6dda47, type: 2}
   allyEnemyTarget:
   - {fileID: 436868469339301971}
@@ -431,7 +411,7 @@ MonoBehaviour:
   upLimitObjTrf: {fileID: 60978112033292002}
   activeDist: 1.5
   playerTrf: {fileID: 0}
---- !u!114 &955962009468423822
+--- !u!114 &8137655604018058351
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -440,11 +420,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 2924456735436744258}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfc7478a152351f43a0f0638e03ae2e6, type: 3}
+  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoCollectChildren: 1
-  includeSelf: 1
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 1
+  maxGridResolution: 1
+  gridResolution: 1
+  walkThreshold: 1
+  chunkSize: 1
+  meshThickness: 1
+  renderResolution: 1
+--- !u!64 &40969545143201374
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2924456735436744258}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &3777817994688072018
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,7 +551,6 @@ GameObject:
   - component: {fileID: 1836165946482209049}
   - component: {fileID: 3625037963717003682}
   - component: {fileID: 1230198961125778086}
-  - component: {fileID: 4851694985555668690}
   - component: {fileID: 7724969390183552634}
   - component: {fileID: 1848200298274081417}
   m_Layer: 7
@@ -620,27 +628,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4851694985555668690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4146579460506339721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoGridResolution: 1
-  targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
 --- !u!64 &7724969390183552634
 MeshCollider:
   m_ObjectHideFlags: 0

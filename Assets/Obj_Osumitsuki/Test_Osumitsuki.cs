@@ -16,8 +16,4 @@ public class Test_Osumitsuki : Obj_Osumitsuki
     public override void Update_Osumitsuki()
     {}
 
-    private void FixedUpdate()
-    {
-        Painted(0.1f);
-    }
 }

@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 802486737345462269}
   - component: {fileID: 5980614209944050840}
-  - component: {fileID: 6923658767250050038}
+  - component: {fileID: 5329218284438005885}
+  - component: {fileID: 4601805543579279610}
   m_Layer: 7
   m_Name: Large_door_ver2
   m_TagString: Untagged
@@ -26,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29504033274225991}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
-  m_LocalPosition: {x: -0.15181589, y: 0.00000047683716, z: 10.868558}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0.96455234, z: -0, w: 0.26389194}
+  m_LocalPosition: {x: 14.29, y: 0, z: 14.65}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4403260795505560244}
@@ -36,7 +37,7 @@ Transform:
   - {fileID: 1061532946998544652}
   - {fileID: 5467085035453672764}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -149.398, z: 0}
 --- !u!114 &5980614209944050840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49,7 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f123ddff48de54f828f1166a40a91b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 1000
+  maxInkCapa: 5
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 964fea35ac859ef4c890891eeb020199, type: 2}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -59,51 +61,49 @@ MonoBehaviour:
   rightOpenAngle: -90
   openSpeed: 0.5
   childOsumiMaterial: {fileID: 2100000, guid: 964fea35ac859ef4c890891eeb020199, type: 2}
---- !u!23 &6923658767250050038
-MeshRenderer:
+--- !u!114 &5329218284438005885
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29504033274225991}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 1
+  maxGridResolution: 1
+  gridResolution: 1
+  walkThreshold: 1
+  chunkSize: 1
+  meshThickness: 1
+  renderResolution: 1
+--- !u!64 &4601805543579279610
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29504033274225991}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1511358530257899825
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +508,6 @@ GameObject:
   - component: {fileID: 1061532946998544652}
   - component: {fileID: 2713226370230230278}
   - component: {fileID: 7419354468363812288}
-  - component: {fileID: 6992940957982939544}
   - component: {fileID: 3451925914702803078}
   m_Layer: 7
   m_Name: SM_Large_Door_Roof1
@@ -585,28 +584,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6992940957982939544
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6519432252461147142}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3784343802217296136, guid: 04fc0a52f9cf11c41b5325ab7e4dd5fa, type: 3}
 --- !u!114 &3451925914702803078
 MonoBehaviour:
   m_ObjectHideFlags: 0
