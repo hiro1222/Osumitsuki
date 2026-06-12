@@ -36,12 +36,12 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     //à⁄ìÆèàóù
     private void Move()
     {
-        Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpd * Time.deltaTime);
-
+        Vector3 target = targetPos;
         if (Y_lock)
         {
-            newPos.y = transform.position.y;
+            target.y = transform.position.y;
         }
+        Vector3 newPos = Vector3.MoveTowards(transform.position, target, moveSpd * Time.deltaTime);
 
         transform.position = newPos;
         
