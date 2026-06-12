@@ -140,9 +140,8 @@ public class SimplePlayer : MonoBehaviour
         if (mouse.rightButton.isPressed)
         {
             // 足元にRaycastしてPaintableSurfaceに塗る
-            if (Physics.Raycast(transform.position, Vector3.down,
-                                out RaycastHit footHit, 3f, ~0,
-                                QueryTriggerInteraction.Collide))
+            if (InkPaintService.Raycast(transform.position, Vector3.down,
+                                        out RaycastHit footHit, 3f))
             {
                 InkPaintService.Paint(footHit, paintRadius, paintDensity);
             }

@@ -43,6 +43,25 @@ using System.Collections.Generic;
 public static class InkPaintService
 {
     // ================================================================
+    //  塗りイベント（Service経由で購読・発火）
+    // ================================================================
+
+    /// <summary>
+    /// どのサーフェスでも塗りが発生したら発火するグローバルイベント。
+    /// PaintableSurface を直接参照せずに塗りを購読できる。
+    /// 引数: (塗られたGameObject, ヒットしたセル数, 加算density)
+    ///
+    /// ■ 購読例:
+    ///   InkPaintService.OnPainted += (obj, cells, density) => { ... };
+    ///   // 特定オブジェクトだけ反応したいなら obj で絞る
+    /// </summary>
+    public static event System.Action<GameObject, int, byte> OnPainted;
+
+    /// <summary>PaintableSurface から呼ばれる内部通知（外部からは呼ばない）。</summary>
+    internal static void RaisePainted(GameObject source, int cells, byte density)
+        => OnPainted?.Invoke(source, cells, density);
+
+    // ================================================================
     //  墨を塗る
     // ================================================================
 
@@ -138,6 +157,27 @@ public static class InkPaintService
                        pattern.splatterCount, pattern.splatterRange, pattern.splatterRadius);
     }
 
+    // ================================================================
+    //  飛沫だけ（着弾点は塗らない）
+    // ================================================================
+
+    /// <summary>
+    /// 着弾点を塗らず、周囲に飛沫だけを散らす。
+    /// PaintArea等で着弾点を塗った後に、二重塗りを避けて飛沫だけ足したいときに使う。
+    /// </summary>
+    public static void Splatter(RaycastHit hit, byte density, byte colorId,
+                                int splatterCount, float splatterRange, float splatterRadius)
+    {
+        SpawnSplatters(hit, density, colorId, splatterCount, splatterRange, splatterRadius);
+    }
+
+    /// <summary>SlashPatternの飛沫設定だけで飛沫を散らす（着弾点は塗らない）</summary>
+    public static void Splatter(RaycastHit hit, SlashPattern pattern)
+    {
+        SpawnSplatters(hit, (byte)pattern.inkDensity, pattern.inkColorId,
+                       pattern.splatterCount, pattern.splatterRange, pattern.splatterRadius);
+    }
+
     /// <summary>飛沫を散らす内部処理（着弾面に沿ってランダムな位置に小さく塗る）</summary>
     private static void SpawnSplatters(RaycastHit hit, byte density, byte colorId,
                                         int count, float range, float splatterRadius)
@@ -174,6 +214,14 @@ public static class InkPaintService
                 {
                     splatSurface.Paint(splatterHit, splatterRadius, density, colorId);
                 }
+                //else //if (maskSystem != null)
+                //{
+                //    var obj = splatterHit.collider.gameObject;
+                //    Obj_Osumitsuki osumiObj = obj.GetComponent<Obj_Osumitsuki>();
+                //    osumiObj.Painted(5);
+                //}
+                //マスク進める処理ここに書く
+                
             }
         }
     }
