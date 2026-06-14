@@ -199,6 +199,10 @@ public class CannonMuzzle : MonoBehaviour
 
         boss.transform.rotation = finalRot;
         boss.SetLaunching(false);
+
+        // 着地後にスタンエフェクトを有効化
+        boss.EnableStunEffect();
+
         hasLaunched = false;
 
         if (cameraController != null)

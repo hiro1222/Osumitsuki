@@ -68,6 +68,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     [Header("── エフェクト ──")]
     [SerializeField] private GameObject tackleEffect;
+    [SerializeField] private GameObject stunEffect;
+    [SerializeField] private GameObject roarEffect;
 
     [Header("── ヒップドロップ予告 ──")]
     [SerializeField] private HipDropIndicator hipDropIndicator;
@@ -99,6 +101,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private GameObject phase3ObjectPrefab;
     [Tooltip("フェーズ3オブジェクトの生成位置")]
     [SerializeField] private List<Transform> phase3SpawnPoints = new List<Transform>();
+    [Tooltip("フェーズ3オブジェクトの生成時の角度")]
+    [SerializeField] private Vector3 phase3ObjectRotation = Vector3.zero;
 
     [Header("── タックル（フェーズ1）──")]
     [Tooltip("タックル速度")]
@@ -181,6 +185,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private float stunDuration = 10f;
     [Tooltip("攻撃ヒット時にタイマーをリセットするか")]
     [SerializeField] private bool resetStunTimerOnHit = true;
+    [Tooltip("フェーズ3スタン時のエフェクトZ位置")]
+    [SerializeField] private float stunEffectPhase3Z = -1f;
 
     [Header("── ステータス ──")]
     [Tooltip("攻撃力（フェーズ1:5 フェーズ2:6）")]
@@ -393,10 +399,47 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     /// <summary>状態に応じてエフェクトを切り替える</summary>
+    private bool tackleEffectPlaying = false;
+
     private void UpdateEffects()
     {
+        // タックルエフェクト
         if (tackleEffect != null)
             tackleEffect.SetActive(state == BossState.Tackle);
+        // スタンエフェクト
+        if (stunEffect != null)
+        {
+            // フェーズ3のスタンはCannonMuzzleから手動で有効化
+            if (currentPhase == 2)
+                ; // 何もしない
+            else
+                stunEffect.SetActive(state == BossState.Stun);
+        }
+    }
+
+    private IEnumerator DisableEffectWhenDone(GameObject effect)
+    {
+        if (effect == null) yield break;
+
+        var ps = effect.GetComponentsInChildren<ParticleSystem>();
+
+        bool anyAlive = true;
+        while (anyAlive)
+        {
+            anyAlive = false;
+            foreach (var p in ps)
+            {
+                if (p != null && p.IsAlive())
+                {
+                    anyAlive = true;
+                    break;
+                }
+            }
+            yield return null;
+        }
+
+        if (effect != null)
+            effect.SetActive(false);
     }
 
     // ====================================================================
@@ -1255,6 +1298,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (stunTimer >= stunDuration)
         {
             Debug.Log("[Boss_SB] スタン解除。塗り引き継ぎ");
+
+            if (stunEffect != null)
+                stunEffect.SetActive(false);
+
             EnterChase();
         }
     }
@@ -1273,6 +1320,30 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             EnterStop();
     }
 
+    /// <summary>スタンエフェクトを有効化する（CannonMuzzleから呼ぶ）</summary>
+    public void EnableStunEffect()
+    {
+        if (stunEffect != null)
+        {
+            if (currentPhase == 2)
+            {
+                stunEffect.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
+                // Zだけ変える
+                stunEffect.transform.localPosition = new Vector3(
+                    stunEffect.transform.localPosition.x,
+                    stunEffect.transform.localPosition.y,
+                    stunEffectPhase3Z);
+            }
+            else
+            {
+                stunEffect.transform.localRotation = Quaternion.identity;
+                stunEffect.transform.localPosition = Vector3.zero;
+            }
+
+            stunEffect.SetActive(true);
+        }
+    }
+
     // ====================================================================
     //  Roar（咆哮）
     // ====================================================================
@@ -1281,7 +1352,26 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         state = BossState.Roar;
         Debug.Log($"[Boss_SB] 咆哮！フェーズ{currentPhase + 1}");
+
         StartCoroutine(RoarCoroutine());
+    }
+
+    private IEnumerator PlayRoarEffect()
+    {
+        Debug.Log($"[Boss_SB] PlayRoarEffect開始 phase={currentPhase}");
+        roarEffect.SetActive(true);
+        yield return null;
+
+        Debug.Log($"[Boss_SB] roarEffect activeInHierarchy={roarEffect.activeInHierarchy}");
+
+        var ps = roarEffect.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var p in ps)
+        {
+            p.Clear();
+            p.Play(true);
+            Debug.Log($"[Boss_SB] Play: {p.gameObject.name} isPlaying={p.isPlaying}");
+        }
+        StartCoroutine(DisableEffectWhenDone(roarEffect));
     }
 
     private IEnumerator RoarCoroutine()
@@ -1290,6 +1380,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (fieldCenter != null)
             yield return StartCoroutine(JumpToCenter());
+
+        if (roarEffect != null)
+            StartCoroutine(PlayRoarEffect());
 
         yield return new WaitForSeconds(0.5f);
 
@@ -1319,7 +1412,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             if (lanternSet != null)
                 lanternSet.ResetLanterns();
 
-            // ★ 登録済みの灯籠を飛ばす
+            // 登録済みの灯籠を飛ばす
             Debug.Log($"[Boss_SB] 灯籠を飛ばす: {lanternObjects.Count}個");
             BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
             lanternObjects.Clear();
@@ -1359,7 +1452,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 point.position.y + spawnHeight,
                 point.position.z);
 
-            GameObject obj = Instantiate(prefab, spawnPos, Quaternion.identity);
+            GameObject obj = Instantiate(
+                        prefab,
+                        spawnPos,
+                        currentPhase == 1
+                        ? Quaternion.Euler(phase3ObjectRotation) // フェーズ3オブジェクトは指定角度
+                        : Quaternion.identity);
 
             // フェーズ2の灯籠なら登録
             if (currentPhase == 0) // 咆哮時はまだフェーズ1なので0

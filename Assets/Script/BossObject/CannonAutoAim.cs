@@ -16,7 +16,7 @@ using UnityEngine;
 /// 【注意】
 /// Cannon_Osumitsuki は触らずに、このスクリプトで角度だけ制御する。
 /// </summary>
-[RequireComponent(typeof(Obj_Osumitsuki))]
+[RequireComponent(typeof(Cannon_Osumitsuki))]
 public class CannonAutoAim : MonoBehaviour
 {
     [Header("── 回転対象 ──")]
@@ -71,7 +71,6 @@ public class CannonAutoAim : MonoBehaviour
     {
         if (osumitsuki == null || cannon == null) return;
 
-        // 一度真上を向いたら回転処理をしない
         if (!isRaised)
         {
             bool shouldRaise =
@@ -91,6 +90,19 @@ public class CannonAutoAim : MonoBehaviour
                 osumitsuki.End();
                 if (muzzleTrigger != null)
                     muzzleTrigger.SetActive(true);
+
+                // Cannon_Osumitsuki の cannon 参照を切って回転を止める
+                var cannonScript = GetComponent<Cannon_Osumitsuki>();
+                if (cannonScript != null)
+                {
+                    var cannonField = typeof(Cannon_Osumitsuki).GetField(
+                        "cannon",
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Instance);
+                    if (cannonField != null)
+                        cannonField.SetValue(cannonScript, null);
+                }
+
                 Debug.Log("[CannonAutoAim] 砲身真上。味方解放");
             }
         }
