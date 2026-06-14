@@ -30,7 +30,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected bool endFlg = false;			//終了フラグ
 	protected bool firstSearchFlg = false;  //検索フラグ
 
-    private List<MaskedInkProgress> maskSystems;
+    protected List<MaskedInkProgress> maskSystems;
 	private PaintableSurface paintableSurface;
 
 
@@ -119,7 +119,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 
 
-	private void Awake()
+	protected virtual void Awake()
 	{
 		paintableSurface = GetComponent<PaintableSurface>();
 		if (paintableSurface == null)
@@ -127,7 +127,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 			Debug.LogError("Obj_OsumitsukiにPaintableSurfaceがアタッチされていません。");
 		}
 
-		paintableSurface.OnPainted += (cells, density) => PaintedRaper(cells,density);
+		//paintableSurface.OnPainted += (cells, density) => PaintedRaper(cells,density);
 
 		if (allyEnemyTarget != null)
 		{
@@ -136,7 +136,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 
         maskSystems = new List<MaskedInkProgress>();
-        //paintsurfaces = new List<PaintableSurface>();
         Transform[] allTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform t in allTransforms)
         {
@@ -223,18 +222,18 @@ public class Obj_Osumitsuki : MonoBehaviour
 				float oneBlockAmount = maxInkCapa / allBlockNum;
 				float curBlockTopAmount = oneBlockAmount * curBlock;
 
-				Debug.Log("allBlockNum : " + allBlockNum);
+				Debug.Log("maskNum" + maskSystems.Count);
 				Debug.Log("curRatio : " + curRatio * 100f + "％");
-				Debug.Log("curBlock : " + curBlock);
+				Debug.Log("allBlockNum : " + allBlockNum);
+				Debug.Log("oneBlcokAmount : " + oneBlockAmount);
+				Debug.Log("curBlockIndex : " + curBlock);
 				Debug.Log("curInkAmount : curBlockTopAmount =" + curInkAmount + " : " + curBlockTopAmount);
 
 				if (curInkAmount >= curBlockTopAmount)
                 {
-					Debug.Log("次マスクへ");
+					Debug.Log(name + " : 次マスクへ");
 					ms.Advance();
 				}
-
-				Debug.Log(" curBlock : " + ms.CurrentStep);
 
             }
 		}
