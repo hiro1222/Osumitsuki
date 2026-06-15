@@ -163,6 +163,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("着地後の硬直時間（秒）")]
     [SerializeField] private float hipDropRecoverTime = 0.3f;
 
+    [Header("── 地面 ──")]
+    [SerializeField] private Transform groundTransform;
+
     [Header("── 大砲タックル ──")]
     [Tooltip("大砲衝突後の後退速度")]
     [SerializeField] private float cannonBounceSpeed = 5f;
@@ -1113,10 +1116,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
 
-        // ★ ジャンプ開始と同時にサークル表示
+        float groundY = groundTransform != null ? groundTransform.position.y : 0f;
+
+        // ジャンプ開始と同時にサークル表示
         if (hipDropIndicator != null)
             hipDropIndicator.Show(new Vector3(
-                transform.position.x, 0f, transform.position.z));
+                transform.position.x, groundY, transform.position.z));
 
         // ジャンプ（上昇）
         float jumpTime = 0.3f;
@@ -1130,7 +1135,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             // ジャンプ中も追従
             if (hipDropIndicator != null)
                 hipDropIndicator.Show(new Vector3(
-                    transform.position.x, 0f, transform.position.z));
+                    transform.position.x, groundY, transform.position.z));
 
             yield return null;
         }
@@ -1158,7 +1163,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             // ボスの真下に追従
             if (hipDropIndicator != null)
                 hipDropIndicator.Show(new Vector3(
-                    transform.position.x, 0f, transform.position.z));
+                    transform.position.x, groundY, transform.position.z));
 
             yield return null;
         }
@@ -1169,7 +1174,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         // 確定後も固定
         if (hipDropIndicator != null)
             hipDropIndicator.Show(new Vector3(
-                hipDropTargetPos.x, 0f, hipDropTargetPos.z));
+                hipDropTargetPos.x, groundY, hipDropTargetPos.z));
 
         if (attackIndicator != null)
             attackIndicator.Hide();
