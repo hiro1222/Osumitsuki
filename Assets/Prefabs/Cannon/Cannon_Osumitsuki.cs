@@ -121,7 +121,8 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
 
     private void FixedUpdate()
     {
-        if (!osumitsukiTrg)
+		Debug.Log("Cannon MaskSystem NUM : " + maskSystems.Count);
+		if (!osumitsukiTrg)
             return;
 
         if (osumitsukiFlg)
