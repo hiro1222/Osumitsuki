@@ -243,6 +243,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("傾く時間（秒）")]
     [SerializeField] private float tiltDuration = 0.3f;
 
+    [Header("── 撃破演出 ──")]
+    [SerializeField] private GameObject defeatEffect;
+    [Tooltip("撃破時のスタン時間（秒）")]
+    [SerializeField] private float defeatStunDuration = 5f;
+    [Tooltip("倒れてからスタンエフェクトが出るまでの時間（秒）")]
+    [SerializeField] private float defeatStunEffectDelay = 3f;
+
     [Header("── ボスエリア ──")]
     [Tooltip("ボスエリアのPointA")]
     [SerializeField] private Transform areaPointA;
@@ -406,15 +413,20 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void UpdateEffects()
     {
+        // ★ 撃破演出中は何もしない
+        if (state == BossState.Defeated) return;
+
         // タックルエフェクト
         if (tackleEffect != null)
             tackleEffect.SetActive(state == BossState.Tackle);
         // スタンエフェクト
         if (stunEffect != null)
         {
-            // フェーズ3のスタンはCannonMuzzleから手動で有効化
-            if (currentPhase == 2)
-                ; // 何もしない
+            if (currentPhase >= 2)
+            {
+                if (state != BossState.Stun && state != BossState.Defeated)
+                    stunEffect.SetActive(false);
+            }
             else
                 stunEffect.SetActive(state == BossState.Stun);
         }
@@ -1330,16 +1342,23 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (stunEffect != null)
         {
-            if (currentPhase == 2)
+            if (currentPhase == 2) // ==2のみフェーズ3の向き
             {
                 stunEffect.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
-                // Zだけ変える
                 stunEffect.transform.localPosition = new Vector3(
                     stunEffect.transform.localPosition.x,
                     stunEffect.transform.localPosition.y,
                     stunEffectPhase3Z);
             }
-            else
+            else if (currentPhase == 3) // ==2のみフェーズ3の向き
+            {
+                stunEffect.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                stunEffect.transform.localPosition = new Vector3(
+                    stunEffect.transform.localPosition.x,
+                    stunEffect.transform.localPosition.y,
+                    stunEffectPhase3Z + 2.0f);
+            }
+            else // ★ フェーズ1・2・撃破時は通常の向き
             {
                 stunEffect.transform.localRotation = Quaternion.identity;
                 stunEffect.transform.localPosition = Vector3.zero;
@@ -1440,6 +1459,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             Debug.Log($"[Boss_SB] フェーズ{currentPhase + 1}へ移行");
             EnterChase();
         }
+
+        if (currentPhase >= 3)
+            EnterDefeated();
     }
 
     /// <summary>オブジェクトを上から順番に落とすコルーチン</summary>
@@ -1620,7 +1642,34 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         state = BossState.Defeated;
         Debug.Log("[Boss_SB] ボス撃破！");
-        Destroy(gameObject, 1f);
+        StartCoroutine(DefeatedCoroutine());
+    }
+
+    private IEnumerator DefeatedCoroutine()
+    {
+        Debug.Log("[Boss_SB] 撃破演出開始");
+
+        // うつ伏せになりきってから
+        yield return StartCoroutine(StunTiltCoroutine());
+        Debug.Log("[Boss_SB] うつ伏せ完了");
+
+        // うつ伏せ完了後にスタンエフェクト表示
+        yield return new WaitForSeconds(defeatStunEffectDelay);
+        EnableStunEffect();
+
+        // お墨付き完了エフェクト
+        if (defeatEffect != null)
+        {
+            defeatEffect.SetActive(true);
+            var ps = defeatEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (var p in ps) p.Play();
+            StartCoroutine(DisableEffectWhenDone(defeatEffect));
+        }
+
+        yield return new WaitForSeconds(defeatStunDuration);
+
+        Debug.Log("[Boss_SB] 撃破！");
+        Destroy(gameObject);
     }
 
     // ====================================================================
