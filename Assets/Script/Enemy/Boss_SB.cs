@@ -144,6 +144,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     [Header("── 灯籠セット（フェーズ2）──")]
     [SerializeField] private Boss_LanternSet lanternSet;
+    [Tooltip("スタンに必要な灯籠バウンド回数")]
+    [SerializeField] private int requiredBounceCount = 3;
 
     [Header("── ヒップドロップ（フェーズ3）──")]
     [Tooltip("HipDropを選ぶ確率（0〜1）残りがTackle")]
@@ -543,7 +545,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             bounceCount++;
             Debug.Log($"[Boss_SB] 灯籠内面バウンド！フラグ成立: {bounceCount}/3");
 
-            if (bounceCount >= 3)
+            if (bounceCount >= requiredBounceCount)
             {
                 // 3回でスタン
                 Debug.Log("[Boss_SB] 3回バウンド！スタン開始");
@@ -1669,7 +1671,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         yield return new WaitForSeconds(defeatStunDuration);
 
         Debug.Log("[Boss_SB] 撃破！");
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     // ====================================================================
