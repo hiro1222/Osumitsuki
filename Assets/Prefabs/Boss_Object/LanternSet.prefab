@@ -355,6 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 1
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -677,6 +678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 1
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}
@@ -1435,6 +1437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInkCapa: 1
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
   allyEnemyTarget: []
   allyEnemyManager: {fileID: 0}

@@ -68,6 +68,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     [Tooltip("衝突判定する地面のY座標（ここまで下がっても衝突扱い）")]
     [SerializeField] private float groundY = 0f;
 
+    [Header("── ヒットエフェクト ──")]
+    [SerializeField] private HitEffectPlayer hitEffectPlayer;
+
     [Header("停止（衝突後・地上待機）")]
     [Tooltip("衝突後の地上待機時間（秒）")]
     [SerializeField] private float stopDuration = 2f;
@@ -135,6 +138,12 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
     private void Start()
     {
+
+        if (hitEffectPlayer == null)
+            hitEffectPlayer = GetComponent<HitEffectPlayer>();
+
+        Debug.Log($"[Wing_SB] hitEffectPlayer={hitEffectPlayer}");
+
         isAlly = false;
         isBouncing = false;
         inkHitCount = 0;
@@ -461,6 +470,12 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     private void ApplyKnockbackToPlayer()
     {
         if (playerMove == null) return;
+
+        Debug.Log($"[Wing_SB] ApplyKnockback hitEffectPlayer={hitEffectPlayer}");
+
+        // ヒットエフェクト
+        if (hitEffectPlayer != null)
+            hitEffectPlayer.PlayHitEffect();
 
         float knockbackDistance = attackPower * 0.5f;
 

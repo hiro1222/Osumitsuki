@@ -58,6 +58,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     [Tooltip("距離判定の基準にするモデルのTransform（子オブジェクト）")]
     [SerializeField] private Transform bodyTransform;
 
+    [Header("── ヒットエフェクト ──")]
+    [SerializeField] private HitEffectPlayer hitEffectPlayer;
+
     [Header("ステータス")]
     [Tooltip("攻撃力（ノックバック距離 = 攻撃力 × 0.5m）")]
     [SerializeField] private float attackPower = 1f;
@@ -111,6 +114,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
 
     private void Start()
     {
+        if (hitEffectPlayer == null)
+            hitEffectPlayer = GetComponent<HitEffectPlayer>();
+
         isAlly = false;
         isBouncing = false;
         inkHitCount = 0;
@@ -132,6 +138,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
                 playerController = go.GetComponent<CharacterController>();
                 if (playerController == null)
                     playerController = go.GetComponentInChildren<CharacterController>();
+                playerMove = go.GetComponent<PlayerMove>();
+                if (playerMove == null)
+                    playerMove = go.GetComponentInChildren<PlayerMove>();
                 if (playerController == null)
                     playerController = go.GetComponentInParent<CharacterController>();
 
@@ -305,6 +314,10 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     private void ApplyKnockbackToPlayer()
     {
         if (playerMove == null) return;
+
+        // ヒットエフェクト
+        if (hitEffectPlayer != null)
+            hitEffectPlayer.PlayHitEffect();
 
         Vector3 knockDir = player.position - transform.position;
         knockDir.y = 0f;
