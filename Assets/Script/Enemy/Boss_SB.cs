@@ -71,6 +71,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private GameObject stunEffect;
     [SerializeField] private GameObject roarEffect;
 
+    [Header("── ヒットエフェクト ──")]
+    [SerializeField] private HitEffectPlayer hitEffectPlayer;
+
     [Header("── ヒップドロップ予告 ──")]
     [SerializeField] private HipDropIndicator hipDropIndicator;
 
@@ -493,6 +496,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         inkHitCount++;
+        var maskProgress = GetComponentsInChildren<MaskedInkProgress>();
+        Debug.Log($"[Boss_SB] MaskedInkProgress数={maskProgress.Length}");
+        foreach (var mask in maskProgress)
+        {
+            mask.Advance();
+            Debug.Log($"[Boss_SB] Advance後 step={mask.CurrentStep}/{mask.StepCount}");
+        }
         Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {required} フェーズ{currentPhase + 1}");
 
         if (resetStunTimerOnHit)
@@ -1419,6 +1429,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             try { InkPaintService.ClearAll(surface); } catch { }
         }
 
+        // マスクをリセット
+        var maskProgress = GetComponentsInChildren<MaskedInkProgress>();
+        foreach (var mask in maskProgress)
+            mask.ResetProgress();
+
         // フィールドを円形にリセット
         float roarRange = roarRanges[currentPhase];
         ResetFieldInRange(roarRange * 0.5f);
@@ -1681,6 +1696,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void ApplyKnockbackToPlayer()
     {
         if (playerMove == null) return;
+
+        Debug.Log($"[Boss_SB] ApplyKnockback hitEffectPlayer={hitEffectPlayer}");
+
+        if (hitEffectPlayer != null)
+            hitEffectPlayer.PlayHitEffect();
 
         float knockbackPower = attackPowers[currentPhase] * 0.5f;
 
