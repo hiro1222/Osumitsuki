@@ -581,7 +581,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             state == BossState.Roar ||
             state == BossState.RollEnd ||
             state == BossState.HipDropCharge ||
-            state == BossState.Defeated) return;
+            state == BossState.Defeated ||
+            isLaunching) return;
 
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
         Vector3 playerPos = player.position;

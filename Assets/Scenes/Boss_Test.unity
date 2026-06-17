@@ -7175,7 +7175,7 @@ PrefabInstance:
       objectReference: {fileID: 1672851444}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: 'requiredInkCounts.Array.data[0]'
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: 'lanternSpawnPoints.Array.data[0]'
