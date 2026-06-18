@@ -69,7 +69,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── エフェクト ──")]
     [SerializeField] private GameObject tackleEffect;
     [SerializeField] private GameObject stunEffect;
+    [SerializeField] private GameObject stunHitEffect;
     [SerializeField] private GameObject roarEffect;
+    [SerializeField] private GameObject rollEffect;
 
     [Header("── ヒットエフェクト ──")]
     [SerializeField] private HitEffectPlayer hitEffectPlayer;
@@ -418,7 +420,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void UpdateEffects()
     {
-        // ★ 撃破演出中は何もしない
+        // 撃破演出中は何もしない
         if (state == BossState.Defeated) return;
 
         // タックルエフェクト
@@ -435,6 +437,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             else
                 stunEffect.SetActive(state == BossState.Stun);
         }
+
+        // ゴロゴロエフェクト
+        if (rollEffect != null)
+            rollEffect.SetActive(state == BossState.Roll);
     }
 
     private IEnumerator DisableEffectWhenDone(GameObject effect)
@@ -496,6 +502,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         inkHitCount++;
+
+        // 被弾エフェクト再生
+        if (stunHitEffect != null)
+        {
+            stunHitEffect.SetActive(true);
+            var ps = stunHitEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (var p in ps) { p.Clear(); p.Play(); }
+            StartCoroutine(DisableEffectWhenDone(stunHitEffect));
+        }
+
         var maskProgress = GetComponentsInChildren<MaskedInkProgress>();
         Debug.Log($"[Boss_SB] MaskedInkProgress数={maskProgress.Length}");
         foreach (var mask in maskProgress)

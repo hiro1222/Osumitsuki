@@ -7175,7 +7175,7 @@ PrefabInstance:
       objectReference: {fileID: 1672851444}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: 'requiredInkCounts.Array.data[0]'
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: 'lanternSpawnPoints.Array.data[0]'
@@ -7185,6 +7185,22 @@ PrefabInstance:
       propertyPath: 'lanternSpawnPoints.Array.data[1]'
       value: 
       objectReference: {fileID: 1672851444}
+    - target: {fileID: 1885239094845546750, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1885239094845546750, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1885239094845546750, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1885239094845546750, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.13
+      objectReference: {fileID: 0}
     - target: {fileID: 2319067035518385571, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.37
@@ -7225,9 +7241,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6811672142947494981, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7151421469883420320, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: m_Name
       value: Boss_test
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755716898189992328, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

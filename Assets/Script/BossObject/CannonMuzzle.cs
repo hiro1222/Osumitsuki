@@ -10,6 +10,7 @@ public class CannonMuzzle : MonoBehaviour
     [SerializeField] private Boss_SB boss;
     [SerializeField] private CannonAutoAim cannonAutoAim;
 
+
     [Header("── 打ち上げ ──")]
     [Tooltip("ボスが詰まってから打ち上げるまでの秒数")]
     [SerializeField] private float launchDelay = 1.5f;
@@ -17,6 +18,9 @@ public class CannonMuzzle : MonoBehaviour
     [SerializeField] private float launchForce = 20f;
     [Tooltip("打ち上げ時の前方向の力")]
     [SerializeField] private float launchForwardForce = 5f;
+
+    [Header("── 打ち上げエフェクト ──")]
+    [SerializeField] private GameObject launchEffect;
 
     [Header("── 着地 ──")]
     [Tooltip("地面のTransform（この位置のY座標を着地点にする）")]
@@ -131,6 +135,14 @@ public class CannonMuzzle : MonoBehaviour
                           + cannonForward * launchForwardForce;
         bossRb.linearVelocity = launchVec;
 
+        if (launchEffect != null)
+        {
+            launchEffect.SetActive(true);
+            var ps = launchEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (var p in ps) { p.Clear(); p.Play(); }
+        }
+
+
         yield return new WaitForSeconds(0.5f);
 
         float timeout = 10f;
@@ -145,7 +157,6 @@ public class CannonMuzzle : MonoBehaviour
         float landY = groundTransform != null
     ? groundTransform.position.y
     : 0f;
-
         while (elapsed < timeout)
         {
             elapsed += Time.deltaTime;
