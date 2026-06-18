@@ -153,6 +153,7 @@ GameObject:
   - component: {fileID: 2992744009462321930}
   - component: {fileID: 9068820183902231567}
   - component: {fileID: 8279636179987617320}
+  - component: {fileID: 5420828030626568020}
   m_Layer: 0
   m_Name: Boss_test
   m_TagString: Untagged
@@ -375,6 +376,28 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!64 &5420828030626568020
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151421469883420320}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &8007920638943130838
 GameObject:
   m_ObjectHideFlags: 0
