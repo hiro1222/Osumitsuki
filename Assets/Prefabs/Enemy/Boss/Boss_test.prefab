@@ -305,6 +305,8 @@ MonoBehaviour:
   defeatStunEffectDelay: 3
   areaPointA: {fileID: 0}
   areaPointB: {fileID: 0}
+  cannonMuzzleTransform: {fileID: 5095800692939311002, guid: 1fa62e767a995d441b7baf063f582729, type: 3}
+  cannonSafeRadius: 2
   attackIndicator: {fileID: 7935275333974623246}
   groundFollowSpeed: 10
 --- !u!114 &2992744009462321930

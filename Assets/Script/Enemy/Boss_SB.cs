@@ -263,6 +263,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("ボスエリアのPointB")]
     [SerializeField] private Transform areaPointB;
 
+    [Header("── 大砲位置 ──")]
+    [SerializeField] private Transform cannonMuzzleTransform;
+    [SerializeField] private float cannonSafeRadius = 2f;
+
     [Header("── 攻撃予告 ──")]
     [SerializeField] private AttackIndicator attackIndicator;
 
@@ -374,6 +378,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 playerStats = player.GetComponentInChildren<PlayerStats>();
             if (playerStats == null)
                 playerStats = player.GetComponentInParent<PlayerStats>();
+        }
+
+        if (cannonMuzzleTransform == null)
+        {
+            var muzzle = FindObjectOfType<CannonMuzzle>();
+            if (muzzle != null)
+                cannonMuzzleTransform = muzzle.transform;
         }
 
         bossController = GetComponent<CharacterController>();
@@ -598,7 +609,20 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             state == BossState.RollEnd ||
             state == BossState.HipDropCharge ||
             state == BossState.Defeated ||
-            isLaunching) return;
+            isLaunching ||
+            isHitCannon) return;
+
+        if (state == BossState.HipDrop && cannonMuzzleTransform != null)
+        {
+            float distToCannon = Vector3.Distance(
+                new Vector3(transform.position.x, 0, transform.position.z),
+                new Vector3(cannonMuzzleTransform.position.x, 0, cannonMuzzleTransform.position.z));
+            if (distToCannon <= cannonSafeRadius)
+            {
+                Debug.Log($"[Boss_SB] 大砲近くなので判定スキップ dist={distToCannon}");
+                return;
+            }
+        }
 
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
         Vector3 playerPos = player.position;
@@ -609,7 +633,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (dist <= collideDistance)
         {
+            if (isHitCannon || isLaunching) return;
+
+            Debug.Log($"[Boss_SB] 衝突発生！bodyTransform.posY={bodyTransform?.position.y} transform.posY={transform.position.y} dist={dist}");
             ApplyKnockbackToPlayer();
+
 
             if (state == BossState.Tackle)
                 EnterStop();
@@ -1126,10 +1154,23 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         for (int i = 0; i < hipDropCount; i++)
         {
+
+            if (isHitCannon)
+            {
+                EnterStun();
+                yield break;
+            }
+
             hipDropCurrentCount = i;
 
             // ジャンプ＋チャージ（ホーミング）
             yield return StartCoroutine(HipDropChargeCoroutine());
+
+            if (isHitCannon)
+            {
+                EnterStun();
+                yield break;
+            }
 
             // 降下
             yield return StartCoroutine(HipDropFallCoroutine());
@@ -1154,6 +1195,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private IEnumerator HipDropChargeCoroutine()
     {
         state = BossState.HipDropCharge;
+        Debug.Log($"[Boss_SB] HipDropCharge開始 isHitCannon={isHitCannon}");
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
 
@@ -1230,10 +1272,21 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         while (true)
         {
-            // 先にチェック
-            if (!bossController.enabled) yield break;
-            if (isLaunching) yield break;
-            if (isHitCannon) yield break;
+            if (!bossController.enabled)
+            {
+                Debug.Log($"[Boss_SB] HipDropFall終了(controller無効) posY={transform.position.y}");
+                yield break;
+            }
+            if (isLaunching)
+            {
+                Debug.Log($"[Boss_SB] HipDropFall終了(isLaunching) posY={transform.position.y}");
+                yield break;
+            }
+            if (isHitCannon)
+            {
+                Debug.Log($"[Boss_SB] HipDropFall終了(isHitCannon) posY={transform.position.y}");
+                yield break;
+            }
 
             Vector3 move = Vector3.down * hipDropFallSpeed * Time.deltaTime;
             bossController.Move(move);
@@ -1270,8 +1323,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (currentPhase != 2) return;
         if (state != BossState.HipDrop) return;
-        Debug.Log("[Boss_SB] 砲口に当たった！");
+        Debug.Log($"[Boss_SB] 砲口に当たった！ bodyTransform.posY={bodyTransform?.position.y} transform.posY={transform.position.y}");
         isHitCannon = true;
+
+        if (bossController != null)
+            bossController.enabled = false;
     }
 
     /// <summary>打ち上げ中フラグのセット（CannonMuzzleから呼ぶ）</summary>
@@ -1470,20 +1526,20 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             if (lanternSet != null)
                 lanternSet.ResetLanterns();
 
-            // 登録済みの灯籠を飛ばす
             Debug.Log($"[Boss_SB] 灯籠を飛ばす: {lanternObjects.Count}個");
             BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
             lanternObjects.Clear();
 
             yield return StartCoroutine(SpawnObjectsFromAbove(
                 phase3ObjectPrefab, phase3SpawnPoints));
+
         }
 
         Debug.Log($"[Boss_SB] 咆哮完了。フェーズ{currentPhase + 1}");
-
         yield return new WaitForSeconds(0.5f);
 
         currentPhase++;
+
 
         if (currentPhase >= 3)
             EnterDefeated();
@@ -1517,12 +1573,20 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                         prefab,
                         spawnPos,
                         currentPhase == 1
-                        ? Quaternion.Euler(phase3ObjectRotation) // フェーズ3オブジェクトは指定角度
+                        ? Quaternion.Euler(phase3ObjectRotation)
                         : Quaternion.identity);
 
             // フェーズ2の灯籠なら登録
-            if (currentPhase == 0) // 咆哮時はまだフェーズ1なので0
+            if (currentPhase == 0)
                 RegisterLanternObject(obj);
+
+            // ★ 大砲ならCannonMuzzleを取得して保存
+            var muzzle = obj.GetComponentInChildren<CannonMuzzle>(true);
+            if (muzzle != null)
+            {
+                cannonMuzzleTransform = muzzle.transform;
+                Debug.Log($"[Boss_SB] CannonMuzzle取得成功: {muzzle.transform.position}");
+            }
 
             var rigidbodies = obj.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rigidbodies)
@@ -1532,7 +1596,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             }
 
-            // 着地後にRigidbodyをKinematicに戻す（埋まった位置で固定）
             StartCoroutine(FreezeAfterLanding(obj, point.position));
 
             yield return new WaitForSeconds(spawnInterval);
@@ -1831,17 +1894,23 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         float elapsed = 0f;
 
-        // 状態に応じた後退方向
         Vector3 recoilDir;
         if (state == BossState.Roll)
             recoilDir = -rollDirection;
         else if (state == BossState.HipDrop)
-            recoilDir = -transform.forward; // ヒップドロップは後ろに倒れる
+            recoilDir = -transform.forward;
         else
             recoilDir = -tackleDirection;
 
         while (elapsed < recoilDuration)
         {
+            // コントローラーが無効ならMoveしない
+            if (bossController == null || !bossController.enabled)
+            {
+                yield return null;
+                continue;
+            }
+
             elapsed += Time.deltaTime;
             float t = 1f - (elapsed / recoilDuration);
             float smoothT = t * t;

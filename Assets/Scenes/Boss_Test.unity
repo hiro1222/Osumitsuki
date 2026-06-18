@@ -1627,6 +1627,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 334686882}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &335713965
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 231706064048274952, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_Name
+      value: LanternSet
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 24.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7871028850615798487, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: df2d8406341bbb94abbd14b6e733de9e, type: 3}
 --- !u!1 &365767459
 GameObject:
   m_ObjectHideFlags: 0
@@ -3941,7 +3998,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.1
+      value: 24.9
       objectReference: {fileID: 0}
     - target: {fileID: 7014312007048808390, guid: bf50e73c771e4c3458f3655d835016e5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7139,7 +7196,7 @@ PrefabInstance:
       objectReference: {fileID: 7758249602895162026, guid: 497b128cbcd6e7a408ef3222a5f2186f, type: 3}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: debugStartPhase
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: groundTransform
@@ -7150,8 +7207,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7135208032818038733}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
-      propertyPath: requiredBounceCount
+      propertyPath: cannonSafeRadius
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: requiredBounceCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: cannonMuzzleTransform
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: defeatStunEffectDelay
@@ -7165,6 +7230,10 @@ PrefabInstance:
       propertyPath: 'crateObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 1461692471}
+    - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
+      propertyPath: phase3SpawnPoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1467428996332123368, guid: 221fc91571076324987b21ece24de230, type: 3}
       propertyPath: 'phase3SpawnPoints.Array.data[0]'
       value: 
@@ -7342,3 +7411,4 @@ SceneRoots:
   - {fileID: 2021222774}
   - {fileID: 968800256}
   - {fileID: 1708533497}
+  - {fileID: 335713965}

@@ -88,17 +88,25 @@ public class CannonMuzzle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[CannonMuzzle] Trigger検知: other={other.name} boss={boss} hasLaunched={hasLaunched}");
+
         if (boss == null) return;
         if (hasLaunched) return;
+
+        Debug.Log($"[CannonMuzzle] phase={boss.GetCurrentPhase()} isHipDropping={boss.GetIsHipDropping()}");
 
         if (boss.GetCurrentPhase() != 2) return;
         if (!boss.GetIsHipDropping()) return;
 
-        // 砲身が上を向いていないときは判定しない
-        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp()) return;
+        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp())
+        {
+            Debug.Log("[CannonMuzzle] 砲身がまだ上を向いていない");
+            return;
+        }
+
+        Debug.Log($"[CannonMuzzle] OnTriggerEnter発火 Time={Time.time}");
 
         hasLaunched = true;
-        Debug.Log("[CannonMuzzle] ボスが砲口に当たった！");
         boss.NotifyHitCannon();
 
         StartCoroutine(LaunchCoroutine());
@@ -143,7 +151,7 @@ public class CannonMuzzle : MonoBehaviour
         }
 
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(launchDelay);
 
         float timeout = 10f;
         float elapsed = 0f;
