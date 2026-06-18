@@ -42,6 +42,8 @@ public class CannonMuzzle : MonoBehaviour
 
     [Header("── カメラ ──")]
     [SerializeField] private ThirdPersonOrbitCamera cameraController;
+    [Header("── プレイヤー制御 ──")]
+    [SerializeField] private PlayerMove playerMove;
 
 
     private Collider muzzleCollider;
@@ -49,8 +51,27 @@ public class CannonMuzzle : MonoBehaviour
 
     private void Start()
     {
+
         if (boss == null)
             boss = FindObjectOfType<Boss_SB>();
+
+        if (cameraController == null)
+            cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
+
+        // ★ playerMoveを自動取得
+        if (playerMove == null)
+        {
+            int playerLayer = LayerMask.NameToLayer("Player");
+            var allObjects = FindObjectsOfType<PlayerMove>();
+            foreach (var pm in allObjects)
+            {
+                if (pm.gameObject.layer == playerLayer)
+                {
+                    playerMove = pm;
+                    break;
+                }
+            }
+        }
 
         if (cameraController == null)
             cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
@@ -84,6 +105,13 @@ public class CannonMuzzle : MonoBehaviour
 
         if (muzzleCollider != null && !muzzleCollider.isTrigger)
             Debug.LogWarning($"[CannonMuzzle] {gameObject.name}: Is Trigger を ON にしてください");
+
+        if (playerMove == null)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null)
+                playerMove = go.GetComponent<PlayerMove>();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -114,6 +142,13 @@ public class CannonMuzzle : MonoBehaviour
 
     private IEnumerator LaunchCoroutine()
     {
+        if (playerMove == null)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null)
+                playerMove = go.GetComponent<PlayerMove>();
+        }
+
         var bossCC = boss.GetComponent<CharacterController>();
         if (bossCC != null) bossCC.enabled = false;
 
@@ -121,6 +156,10 @@ public class CannonMuzzle : MonoBehaviour
         boss.transform.position = transform.position;
 
         boss.HideHipDropIndicator();
+
+        if (playerMove != null)
+            playerMove.SetExternalPositionLock(true, playerMove.transform.position, false);
+
 
         if (cameraController != null)
             cameraController.SetLookTarget(boss.transform);
@@ -218,6 +257,9 @@ public class CannonMuzzle : MonoBehaviour
 
         boss.transform.rotation = finalRot;
         boss.SetLaunching(false);
+
+        if (playerMove != null)
+            playerMove.SetExternalPositionLock(false, Vector3.zero, false);
 
         // 着地後にスタンエフェクトを有効化
         boss.EnableStunEffect();
