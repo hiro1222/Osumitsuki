@@ -56,6 +56,11 @@ public class AllyEnemy : MonoBehaviour
     [SerializeField] private float bounceHeight = 1.5f;
     [SerializeField] private float bounceDuration = 0.5f;
 
+    [Header("── 仲間化エフェクト ──")]
+    [SerializeField] private GameObject allyEffect;
+    [Tooltip("エフェクトの位置オフセット")]
+    [SerializeField] private Vector3 allyEffectOffset = Vector3.zero;
+
     [Header("見た目")]
     [SerializeField] private Color allyColor = Color.cyan;
 
@@ -100,6 +105,8 @@ public class AllyEnemy : MonoBehaviour
         }
 
         StartBounce();
+
+        PlayAllyEffect();
     }
 
     // ====================================================================
@@ -303,5 +310,54 @@ public class AllyEnemy : MonoBehaviour
 
         }
 
+    }
+
+    /// <summary>仲間になった瞬間のエフェクトを再生する</summary>
+    private void PlayAllyEffect()
+    {
+        if (allyEffect == null) return;
+
+        allyEffect.transform.localPosition = allyEffectOffset;
+        allyEffect.SetActive(true);
+        StartCoroutine(PlayAllyEffectCoroutine());
+    }
+
+    private System.Collections.IEnumerator PlayAllyEffectCoroutine()
+    {
+        yield return null;
+
+        var ps = allyEffect.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var p in ps)
+        {
+            p.Clear();
+            p.Play(true);
+        }
+
+        StartCoroutine(DisableEffectWhenDone(allyEffect));
+    }
+
+    private System.Collections.IEnumerator DisableEffectWhenDone(GameObject effect)
+    {
+        if (effect == null) yield break;
+
+        var ps = effect.GetComponentsInChildren<ParticleSystem>();
+
+        bool anyAlive = true;
+        while (anyAlive)
+        {
+            anyAlive = false;
+            foreach (var p in ps)
+            {
+                if (p != null && p.IsAlive())
+                {
+                    anyAlive = true;
+                    break;
+                }
+            }
+            yield return null;
+        }
+
+        if (effect != null)
+            effect.SetActive(false);
     }
 }
