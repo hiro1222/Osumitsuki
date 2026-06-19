@@ -61,6 +61,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     [Header("── ヒットエフェクト ──")]
     [SerializeField] private HitEffectPlayer hitEffectPlayer;
 
+    [Header("── オーラエフェクト ──")]
+    [SerializeField] private AuraEffectPlayer auraEffectPlayer;
+
     [Header("ステータス")]
     [Tooltip("攻撃力（ノックバック距離 = 攻撃力 × 0.5m）")]
     [SerializeField] private float attackPower = 1f;
@@ -116,6 +119,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     {
         if (hitEffectPlayer == null)
             hitEffectPlayer = GetComponent<HitEffectPlayer>();
+
+        if (auraEffectPlayer == null)
+            auraEffectPlayer = GetComponent<AuraEffectPlayer>();
 
         isAlly = false;
         isBouncing = false;
@@ -228,6 +234,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         {
             StartBounce();
             state = EnemyState.Chase;
+            if (auraEffectPlayer != null)
+                auraEffectPlayer.PlayAura();
+
             return;
         }
 
@@ -339,6 +348,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     {
         if (isAlly) return;
         isAlly = true;
+
+        if (auraEffectPlayer != null)
+            auraEffectPlayer.StopAura();
 
         // お墨付き時に塗り範囲を1段階上げる
         if (paintStatus == null)
