@@ -180,7 +180,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 	private void PaintedRaper(int _cells,int _density)
 	{
-		Debug.Log("///////////alkdjfoa;isjhefjklnaisdf@ooafd");
 		Painted(5f);
 	}
 
@@ -219,7 +218,6 @@ public class Obj_Osumitsuki : MonoBehaviour
                     all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
                 }
             }
-			Debug.Log("la;knv;uajnesp;ivna;ilkvn;ailKNl/iaknedF?LIckÇdÇcÇÜ");
 			StopAuraEffect();
 			SpawnFlashEffect();
 
@@ -380,12 +378,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 			flashEffect = instance.GetComponent<ParticleSystem>();
 		}
-	}
-
-	private void StopParticle(ParticleSystem ritPS)
-	{
-		ritPS.Stop();
-		Debug.Log("Ç†Ç†Ç†Ç†Ç†Ç†Ç†Ç†Ç†Ç†Ç¢ÅGÇ∂Ç·Ç®ÅGÇ¢ÇìÇàÇÑÇ»ÇÑÇÒÇ”Ç°ÇüÇãÇäÇìÇçÇÜÇ°Ç©ÇäÇÑÇÜ");
 	}
 
 	/**

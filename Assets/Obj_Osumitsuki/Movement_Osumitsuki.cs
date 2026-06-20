@@ -18,9 +18,11 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     private int curTargetIndex = 0;     //現在ターゲットの
     private bool state = false;         //オブジェクトの状態 (true：回転 | false：移動)
 
+	private BoxCollider restrictedArea;
 
-    //初期化時１回だけ、派生クラスのStart()で呼び出し予定
-    protected void SetupBaseData()
+
+	//初期化時１回だけ、派生クラスのStart()で呼び出し予定
+	protected void SetupBaseData()
     {
         if (targets.Count <= 0)
         {
@@ -31,7 +33,19 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
         curTargetIndex = 0;
         targetPos = targets[curTargetIndex].transform.position;
         state = true;
-    }
+
+		Transform[] children = GetComponentsInChildren<Transform>();
+
+		foreach (Transform child in children)
+		{
+			if (child.name == "RestrictedArea")
+			{
+				restrictedArea = child.gameObject.GetComponent<BoxCollider>();
+                restrictedArea.enabled = false;
+                Debug.Log("立ち入り禁止エリアを非アクティブに");
+			}
+		}
+	}
 
     //移動処理
     private void Move()
@@ -96,11 +110,14 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     //回転と移動切り替え
     protected void Update_RotateMove()
     {
-
-        //ターゲットがいなければ終了
-        if (curTargetIndex == -1)
+        restrictedArea.enabled = true;
+		Debug.Log("立ち入り禁止エリアをアクティブに");
+		//ターゲットがいなければ終了
+		if (curTargetIndex == -1)
         {
-            End();
+            restrictedArea.enabled = false;
+			Debug.Log("立ち入り禁止エリアを非アクティブに");
+			End();
             return;
         }
 
