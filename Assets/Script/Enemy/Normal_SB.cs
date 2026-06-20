@@ -129,6 +129,9 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         state = EnemyState.Free;
         currentPatrolTarget = patrolPointA;
 
+        if (auraEffectPlayer != null)
+            auraEffectPlayer.PlayAura();
+
         // ワールド座標を最初に記憶しておく（子オブジェクトでも回転の影響を受けない）
         if (patrolPointA != null) patrolPosA = patrolPointA.position;
         if (patrolPointB != null) patrolPosB = patrolPointB.position;
@@ -234,8 +237,6 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         {
             StartBounce();
             state = EnemyState.Chase;
-            if (auraEffectPlayer != null)
-                auraEffectPlayer.PlayAura();
 
             return;
         }

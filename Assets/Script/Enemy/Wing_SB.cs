@@ -156,6 +156,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         state = EnemyState.Free;
         currentPatrolTarget = patrolPointA;
 
+        if (auraEffectPlayer != null)
+            auraEffectPlayer.PlayAura();
+
         // パトロール座標をワールド座標で記憶
         if (patrolPointA != null) patrolPosA = patrolPointA.position;
         if (patrolPointB != null) patrolPosB = patrolPointB.position;
@@ -263,9 +266,6 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         if (distXZ <= engageDistance)
         {
             state = EnemyState.Chase;
-
-            if (auraEffectPlayer != null)
-                auraEffectPlayer.PlayAura();
 
             return;
         }
