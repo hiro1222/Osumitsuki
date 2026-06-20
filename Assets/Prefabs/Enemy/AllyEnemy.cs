@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// 友好Enemy
@@ -333,14 +334,23 @@ public class AllyEnemy : MonoBehaviour
             p.Play(true);
         }
 
-        StartCoroutine(DisableEffectWhenDone(allyEffect));
+        StartCoroutine(PlayAndDestroyEffect(allyEffect));
     }
 
-    private System.Collections.IEnumerator DisableEffectWhenDone(GameObject effect)
+    /// <summary>1回限りのエフェクトを再生して、終わったら完全に削除する</summary>
+    private IEnumerator PlayAndDestroyEffect(GameObject effect)
     {
         if (effect == null) yield break;
 
-        var ps = effect.GetComponentsInChildren<ParticleSystem>();
+        effect.SetActive(true);
+        yield return null;
+
+        var ps = effect.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var p in ps)
+        {
+            p.Clear();
+            p.Play(true);
+        }
 
         bool anyAlive = true;
         while (anyAlive)
@@ -358,6 +368,6 @@ public class AllyEnemy : MonoBehaviour
         }
 
         if (effect != null)
-            effect.SetActive(false);
+            Destroy(effect); // ★ 完全に削除
     }
 }

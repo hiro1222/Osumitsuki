@@ -116,12 +116,36 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3203059553119362014}
     m_Modifications:
+    - target: {fileID: 45850479723293786, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1419280840395794730, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1896183730447551511, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2146507399452350368, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2719613786060484054, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
       propertyPath: m_Name
       value: Kira-n
       objectReference: {fileID: 0}
     - target: {fileID: 2719613786060484054, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3125088171600174786, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275152698021713245, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3863519558155864576, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
@@ -162,6 +186,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3863519558155864576, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4923141270553554679, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032152952892338055, guid: 4758dedb6e792a7448fcc3f63e0de8e4, type: 3}
+      propertyPath: looping
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
