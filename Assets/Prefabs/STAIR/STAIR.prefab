@@ -133,6 +133,12 @@ MonoBehaviour:
   - {fileID: 7585844819403763580}
   - {fileID: 2411708859201993203}
   allyEnemyManager: {fileID: 0}
+  prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
+  prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 1, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   targets:
   - {fileID: 0}
   turnSpd: 60
