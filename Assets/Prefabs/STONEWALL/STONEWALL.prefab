@@ -63,7 +63,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6d909148704465248be5a5ffdf84b269, type: 2}
+      objectReference: {fileID: 2100000, guid: 48a5e07484923fd4396c9f6d65ec33b7, type: 2}
     - target: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
       propertyPath: m_Name
       value: STONEWALL
@@ -74,10 +74,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 5357538009279425175}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 8207244852725669926}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5357538009279425175}
+      addedObject: {fileID: 2986868576122126666}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5122479879841521755}
@@ -87,21 +90,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
   m_PrefabInstance: {fileID: 231018807370344642}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8207244852725669926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150062432819041683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7f47f5e0af6f934c90f04b09e5db2ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxInkCapa: 100
-  InkRatio: 70
-  myMaterial: {fileID: 2100000, guid: 5ea163f7d6623de42b35523289cefbc2, type: 2}
 --- !u!64 &5357538009279425175
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -124,6 +112,42 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3647256449662950327, guid: f78ab3e48691bd749983f7de5a343c10, type: 3}
+--- !u!114 &8207244852725669926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150062432819041683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f47f5e0af6f934c90f04b09e5db2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxInkCapa: 8
+  coolPaintTime: 0.5
+  myMaterial: {fileID: 2100000, guid: 5ea163f7d6623de42b35523289cefbc2, type: 2}
+  allyEnemyTarget: []
+  allyEnemyManager: {fileID: 0}
+--- !u!114 &2986868576122126666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150062432819041683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f482d04781efed54eaebf89f1115118f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  steps:
+  - mask: {fileID: 2800000, guid: 037bb8a5d7a3b7149ba5314b8fa379b2, type: 3}
+    strength: 1
+  - mask: {fileID: 2800000, guid: 10e9e4453076dc744a888c4ff694e771, type: 3}
+    strength: 1
+  textureResolution: 512
+  targetRenderer: {fileID: 0}
 --- !u!114 &5122479879841521755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,8 +160,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
-  meshThickness: 0.15
-  renderResolution: 256
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 1
+  maxGridResolution: 1
+  gridResolution: 1
+  walkThreshold: 1
+  chunkSize: 1
+  meshThickness: 1
+  renderResolution: 1
