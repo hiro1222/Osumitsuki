@@ -3,8 +3,7 @@ using UnityEngine;
 public class Stairs_Osumitsuki : Movement_Osumitsuki
 {
 
-
-    private void Start()
+	private void Start()
     {
         SetupBaseData();
     }
