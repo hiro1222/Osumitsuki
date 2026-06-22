@@ -44,9 +44,13 @@ public class PaintableSurface : MonoBehaviour
     [Tooltip("コリジョンメッシュの厚み")]
     [SerializeField] private float meshThickness = 0.15f;
 
-    [Header("Rendering")]
-    [Tooltip("描画用テクスチャの解像度")]
-    [SerializeField] private int renderResolution = 256;
+    [Header("Rendering (GPU高解像度ビジュアル)")]
+    [Tooltip("墨の見た目テクスチャ(GPU RenderTexture)の解像度。コリジョン/歩行のgrid解像度とは独立。上げてもCPUコスト・メモリは増えない。")]
+    [SerializeField] private int visualResolution = 1024;
+    [Tooltip("墨が上下反転して見える場合にONにする（GPU描画のY反転補正）。DX11では通常ON。")]
+    [SerializeField] private bool flipInkVertical = true;
+    [Tooltip("墨が左右反転して見える場合にONにする（GPU描画のX反転補正）")]
+    [SerializeField] private bool flipInkHorizontal = false;
 
     // ── 内部データ ──
     private byte[] density;
@@ -149,9 +153,16 @@ public class PaintableSurface : MonoBehaviour
                     gridW, gridH, chunkSize, meshThickness, walkThreshold, maxCellDistance,
                     cellValid, density, cellPositions, paintedNormals, cellNormals);
 
-        // 描画（テクスチャ生成は InkSurfaceRenderer に委譲）
+        // 描画（GPU高解像度RT + ブラシスプラットは InkSurfaceRenderer に委譲）
         inkRenderer = new InkSurfaceRenderer();
-        inkRenderer.Init(GetComponent<Renderer>(), gridW, gridH);
+        Shader brushShader = Shader.Find("Hidden/InkBrushSplat");
+        if (brushShader == null)
+        {
+            Debug.LogWarning("[PaintableSurface] 'Hidden/InkBrushSplat' が見つかりません。" +
+                             "Graphics > Always Included Shaders に追加してください（ビルドで墨が出なくなります）。");
+        }
+        inkRenderer.Init(GetComponent<Renderer>(), gridW, gridH,
+                         visualResolution, brushShader, flipInkHorizontal, flipInkVertical);
         visualDirty = false;
 
         // ── 旧互換: Obj_Osumitsuki への直接通知用 ──
@@ -323,8 +334,12 @@ public class PaintableSurface : MonoBehaviour
         if (changed > 0)
         {
             RebuildDirtyChunks();
-            visualDirty = true;
+            visualDirty = true;   // colorId(低解像度)のアップロード用
         }
+
+        // ── F: 見た目は高解像度GPU RTへ直接スプラット（density配列とは独立系統）──
+        if (erase) inkRenderer?.SplatErase(uv, uvRadius);
+        else       inkRenderer?.SplatAdd(uv, uvRadius, inkDensity);
 
         if (!erase && hitCells > 0)
         {
@@ -339,11 +354,18 @@ public class PaintableSurface : MonoBehaviour
         if (mf == null || mf.sharedMesh == null) return 0.1f;
 
         Bounds b = mf.sharedMesh.bounds;
-        Vector3 worldSize = Vector3.Scale(b.size, transform.lossyScale);
-        float avgWorldSize = (worldSize.x + worldSize.y + worldSize.z) / 3f;
-        if (avgWorldSize < 0.001f) return 0.1f;
+        Vector3 ws = Vector3.Scale(b.size, transform.lossyScale);
+        float ax = Mathf.Abs(ws.x), ay = Mathf.Abs(ws.y), az = Mathf.Abs(ws.z);
 
-        return worldRadius / avgWorldSize;
+        // UVが実際に張る面の寸法で割る。
+        // 3軸平均だと平面は厚み(最小軸≈0)が平均を引き下げ、uvRadiusが過大になる。
+        // → GPU描画(3D距離クリップ無し)が当たり判定(3Dでクリップ済み)より大きく出る原因。
+        // 最小軸を除いた「大きい2軸の平均」を使うと平面/箱で実寸に一致する。
+        float min = Mathf.Min(ax, Mathf.Min(ay, az));
+        float refSize = (ax + ay + az - min) * 0.5f;
+        if (refSize < 0.001f) return 0.1f;
+
+        return worldRadius / refSize;
     }
 
     /// <summary>lossyScaleの3軸平均（ローカル半径・厚みの換算に使用）</summary>
@@ -390,6 +412,8 @@ public class PaintableSurface : MonoBehaviour
         float localRadiusSq = localRadius * localRadius;
 
         int erased = 0;
+        float bestDistSq = float.MaxValue;
+        int bestIdx = -1;
         for (int i = 0; i < cellValid.Length; i++)
         {
             if (!cellValid[i]) continue;
@@ -406,12 +430,19 @@ public class PaintableSurface : MonoBehaviour
             int gy = i / gridW;
             MarkChunkDirty(gx, gy);
             erased++;
+            if (dist3DSq < bestDistSq) { bestDistSq = dist3DSq; bestIdx = i; }   // 見た目消しのUV中心用
         }
 
         if (erased > 0)
         {
             RebuildDirtyChunks();
             visualDirty = true;
+
+            // ── F: GPU見た目も消す（消した範囲の中心UVに1回スプラット消し）──
+            int bgx = bestIdx % gridW;
+            int bgy = bestIdx / gridW;
+            Vector2 uvCenter = new Vector2((bgx + 0.5f) / gridW, (bgy + 0.5f) / gridH);
+            inkRenderer?.SplatErase(uvCenter, WorldRadiusToUV(radius));
         }
     }
 
@@ -479,7 +510,8 @@ public class PaintableSurface : MonoBehaviour
     private void LateUpdate()
     {
         if (!visualDirty) return;
-        inkRenderer?.Upload(density, colorId);
+        // density(見た目)はスプラットでRTに反映済み。ここでは色ID(低解像度)だけ送る。
+        inkRenderer?.UploadColor(colorId);
         visualDirty = false;
     }
 
@@ -536,6 +568,7 @@ public class PaintableSurface : MonoBehaviour
             paintedNormals[i] = Vector3.zero;
         chunks.MarkAllDirty();
         RebuildDirtyChunks();
+        inkRenderer?.ClearVisual();   // F: GPU見た目も全消去
         visualDirty = true;
     }
 

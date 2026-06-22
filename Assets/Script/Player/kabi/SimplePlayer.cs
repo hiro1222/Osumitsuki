@@ -80,6 +80,9 @@ public class SimplePlayer : MonoBehaviour
 
     private void Update()
     {
+        // ポーズ中はプレイヤー入力を止める（移動・塗り・斬撃すべて）
+        if (PauseMenu.IsPaused) return;
+
         var keyboard = Keyboard.current;
         var mouse = Mouse.current;
         if (keyboard == null || mouse == null) return;
