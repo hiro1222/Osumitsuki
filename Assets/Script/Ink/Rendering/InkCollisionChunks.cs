@@ -19,6 +19,7 @@ internal class InkCollisionChunks
     private Mesh[] chunkMeshes;               // チャンクごとのMesh
     private int chunksX, chunksY;
     private bool[] chunkDirty;
+    private bool collidersEnabled = true;   // Enable/DisableAllの状態（遅延生成チャンクへ引き継ぐ）
     private readonly List<Vector3> _chunkVerts = new List<Vector3>();
     private readonly List<int> _chunkTris = new List<int>();
 
@@ -27,6 +28,8 @@ internal class InkCollisionChunks
     private float meshThickness;
     private byte walkThreshold;
     private float maxCellDistance;
+    private string ownerName;   // 遅延チャンク生成用
+    private int inkLayer;       // 遅延チャンク生成用
     private bool[] cellValid;
     private byte[] density;
     private Vector3[] cellPositions;
@@ -46,6 +49,8 @@ internal class InkCollisionChunks
         this.cellValid = cellValid; this.density = density;
         this.cellPositions = cellPositions; this.paintedNormals = paintedNormals;
         this.cellNormals = cellNormals;
+        this.ownerName = ownerName;
+        this.inkLayer = inkLayer;
 
         chunksX = Mathf.CeilToInt((float)gridW / chunkSize);
         chunksY = Mathf.CeilToInt((float)gridH / chunkSize);
@@ -56,27 +61,13 @@ internal class InkCollisionChunks
         collisionChild.transform.SetParent(owner, false);
         collisionChild.layer = inkLayer;
 
-        // チャンクごとにMeshCollider子オブジェクトを作成
+        // ★遅延生成: チャンクのGameObject/MeshCollider/Meshはここでは作らない。
+        //   実際に塗られた(=geometryが出る)チャンクだけ RebuildChunk → EnsureChunk で初めて生成する。
+        //   こうしないと Awake で最大 chunksX*chunksY 個(例: 512解像度なら1024個)の
+        //   GameObject生成が走り、シーン開始/Play移行が固まる。
         int chunkCount = chunksX * chunksY;
-        chunkColliders = new MeshCollider[chunkCount];
-        chunkMeshes = new Mesh[chunkCount];
-
-        for (int i = 0; i < chunkCount; i++)
-        {
-            var chunkObj = new GameObject($"InkChunk_{i}");
-            chunkObj.transform.SetParent(collisionChild.transform, false);
-            chunkObj.layer = inkLayer;
-
-            var chunkMc = chunkObj.AddComponent<MeshCollider>();
-            chunkColliders[i] = chunkMc;
-
-            // 32bitインデックス対応（念のため、チャンク内で65535を超えても安全）
-            chunkMeshes[i] = new Mesh
-            {
-                name = $"InkCol_{ownerName}_chunk{i}",
-                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
-            };
-        }
+        chunkColliders = new MeshCollider[chunkCount];  // 全null（遅延生成）
+        chunkMeshes = new Mesh[chunkCount];             // 全null（遅延生成）
     }
 
     /// <summary>セル(gx,gy)が属するチャンクをdirtyにする。</summary>
@@ -174,19 +165,52 @@ internal class InkCollisionChunks
             }
         }
 
-        Mesh mesh = chunkMeshes[chunkIdx];
-        mesh.Clear();
         if (verts.Count > 0)
         {
+            EnsureChunk(chunkIdx);   // 初めてgeometryが出たチャンクだけ生成
+
+            Mesh mesh = chunkMeshes[chunkIdx];
+            mesh.Clear();
             mesh.SetVertices(verts);
             mesh.SetTriangles(tris, 0);
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
-        }
 
-        var mc = chunkColliders[chunkIdx];
-        mc.sharedMesh = null;
-        mc.sharedMesh = (verts.Count > 0) ? mesh : null;
+            var mc = chunkColliders[chunkIdx];
+            mc.sharedMesh = null;
+            mc.sharedMesh = mesh;
+        }
+        else if (chunkColliders[chunkIdx] != null)
+        {
+            // 消去等でgeometryが空になった既存チャンク: メッシュを外す
+            chunkMeshes[chunkIdx].Clear();
+            chunkColliders[chunkIdx].sharedMesh = null;
+        }
+        // verts==0 かつ 未生成 → 何もしない（生成不要）
+    }
+
+    /// <summary>
+    /// チャンクのGameObject/MeshCollider/Meshを遅延生成する（初回のみ）。
+    /// 塗られてgeometryが出たチャンクだけ生成されるので、Awakeの大量生成を回避できる。
+    /// </summary>
+    private void EnsureChunk(int chunkIdx)
+    {
+        if (chunkColliders[chunkIdx] != null) return;
+
+        var chunkObj = new GameObject($"InkChunk_{chunkIdx}");
+        chunkObj.transform.SetParent(collisionChild.transform, false);
+        chunkObj.layer = inkLayer;
+
+        var mc = chunkObj.AddComponent<MeshCollider>();
+        mc.enabled = collidersEnabled;   // Disable中に塗られたチャンクも無効状態を引き継ぐ
+        chunkColliders[chunkIdx] = mc;
+
+        // 32bitインデックス対応（チャンク内で65535を超えても安全）
+        chunkMeshes[chunkIdx] = new Mesh
+        {
+            name = $"InkCol_{ownerName}_chunk{chunkIdx}",
+            indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
+        };
     }
 
     /// <summary>当たったコライダーが自分のインクチャンクのどれかか判定</summary>
@@ -203,6 +227,7 @@ internal class InkCollisionChunks
     /// <summary>インクコリジョンを有効化（全チャンク）</summary>
     public void EnableAll()
     {
+        collidersEnabled = true;
         if (chunkColliders == null) return;
         for (int i = 0; i < chunkColliders.Length; i++)
             if (chunkColliders[i] != null) chunkColliders[i].enabled = true;
@@ -211,6 +236,7 @@ internal class InkCollisionChunks
     /// <summary>インクコリジョンを無効化（全チャンク）。塗りデータは残る。</summary>
     public void DisableAll()
     {
+        collidersEnabled = false;
         if (chunkColliders == null) return;
         for (int i = 0; i < chunkColliders.Length; i++)
             if (chunkColliders[i] != null) chunkColliders[i].enabled = false;
