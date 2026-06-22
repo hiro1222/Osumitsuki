@@ -1,23 +1,28 @@
-// 設計書 第5章: PaintableSurfaceInk シェーダー（色対応+グレースケール+滲み版）
+// PaintableSurfaceInk シェーダー（旧フラットライティング + ノーマルマップ対応）
 //
-// ■ 機能:
-// - メッシュのUV1でdensity/colorId/paletteを読む
-// - 墨が塗られた場所は元の色をグレースケール化（墨絵表現、方式D）
-// - 色番号から色パレットを引いて墨の色を決定
-// - 滲みエッジ: fBmノイズで輪郭を揺らがす（大神風）
+// ■ 方針:
+// - 旧の見た目（フラットライティング, 最低明るさ0.5, 青空を拾わない）を維持
+// - そこに「塗った/塗ってない」で別のノーマルマップを足すだけ
+// - PBR/環境アンビエント/環境反射は使わない（＝床が青く/暗くならない）
+// - メタルネスは無し（メタルネスは環境反射＝青空を映すため、ここでは扱わない）
 //
-// ■ テクスチャ:
-// _InkTex       : density (R8, 0-255)
-// _InkColorTex  : 色番号 (R8, 0-255)
-// _InkPalette   : 色パレット (256x1 RGBA32)
+// ■ _InkTex / _InkColorTex / _InkPalette は InkSurfaceRenderer から自動セット
 
 Shader "Ink/PaintableSurfaceInk"
 {
     Properties
     {
         _BaseColor ("地面の色", Color) = (0.85, 0.82, 0.75, 1)
-        _BaseTex ("地面のテクスチャ", 2D) = "white" {}
-        _OsumiTex ("オスミツキテクスチャ", 2D) = "black" {}
+
+        [Header(Painted ground  Base)]
+        _BaseTex ("Base Map", 2D) = "white" {}
+        [Normal] _BumpMap ("Normal Map", 2D) = "bump" {}
+        _BumpScale ("Normal Scale", Float) = 1.0
+
+        [Header(Unpainted ground  Osumi)]
+        _OsumiTex ("Osumi Base Map", 2D) = "black" {}
+        [Normal] _OsumiBumpMap ("Osumi Normal Map", 2D) = "bump" {}
+        _OsumiBumpScale ("Osumi Normal Scale", Float) = 1.0
 
         [Header(Ink Textures auto set)]
         _InkTex ("Ink Density", 2D) = "black" {}
@@ -33,6 +38,9 @@ Shader "Ink/PaintableSurfaceInk"
         [Toggle] _EnableBleed ("滲みエッジ ON", Float) = 1
         _BleedStrength ("滲みの強さ", Range(0, 1)) = 0.5
         _BleedScale ("滲みノイズの大きさ", Range(1, 50)) = 12
+
+        [Header(Lighting flat)]
+        _LightFloor ("最低明るさ", Range(0, 1)) = 0.5
     }
 
     SubShader
@@ -41,7 +49,7 @@ Shader "Ink/PaintableSurfaceInk"
 
         Pass
         {
-            Name "PaintableSurfaceInk"
+            Name "ForwardLit"
             Tags { "LightMode"="UniversalForward" }
 
             HLSLPROGRAM
@@ -54,6 +62,7 @@ Shader "Ink/PaintableSurfaceInk"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
+                float4 tangentOS  : TANGENT;
                 float2 uv         : TEXCOORD0;
             };
 
@@ -62,34 +71,37 @@ Shader "Ink/PaintableSurfaceInk"
                 float4 positionCS : SV_POSITION;
                 float2 uv         : TEXCOORD0;
                 float3 normalWS   : TEXCOORD1;
+                float4 tangentWS  : TEXCOORD2;
             };
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor;
                 float4 _BaseTex_ST;
-                float _GrayscaleStrength;
-                float _InkColorStrength;
-                float _BleedStrength;
-                float _BleedScale;
-                float _EnableBleed;
-                float _EnableGrayscale;
+                float  _BumpScale;
+                float  _OsumiBumpScale;
+                float  _GrayscaleStrength;
+                float  _InkColorStrength;
+                float  _BleedStrength;
+                float  _BleedScale;
+                float  _EnableBleed;
+                float  _EnableGrayscale;
+                float  _LightFloor;
             CBUFFER_END
 
-            TEXTURE2D(_BaseTex);     SAMPLER(sampler_BaseTex);
-            TEXTURE2D(_OsumiTex);    SAMPLER(sampler_OsumiTex);
-            TEXTURE2D(_InkTex);      SAMPLER(sampler_InkTex);
-            TEXTURE2D(_InkColorTex); SAMPLER(sampler_InkColorTex);
-            TEXTURE2D(_InkPalette);  SAMPLER(sampler_InkPalette);
+            TEXTURE2D(_BaseTex);      SAMPLER(sampler_BaseTex);
+            TEXTURE2D(_BumpMap);      SAMPLER(sampler_BumpMap);
+            TEXTURE2D(_OsumiTex);     SAMPLER(sampler_OsumiTex);
+            TEXTURE2D(_OsumiBumpMap); SAMPLER(sampler_OsumiBumpMap);
+            TEXTURE2D(_InkTex);       SAMPLER(sampler_InkTex);
+            TEXTURE2D(_InkColorTex);  SAMPLER(sampler_InkColorTex);
+            TEXTURE2D(_InkPalette);   SAMPLER(sampler_InkPalette);
 
-            // 2D hash
             float hash21(float2 p)
             {
                 p = frac(p * float2(123.34, 456.21));
                 p += dot(p, p + 45.32);
                 return frac(p.x * p.y);
             }
-
-            // value noise
             float valueNoise(float2 p)
             {
                 float2 i = floor(p);
@@ -101,78 +113,72 @@ Shader "Ink/PaintableSurfaceInk"
                 float d = hash21(i + float2(1, 1));
                 return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
             }
-
-            // fBm
             float fbm(float2 p)
             {
-                float total = 0.0;
-                float amp = 0.5;
-                float freq = 1.0;
+                float total = 0.0, amp = 0.5, freq = 1.0;
                 for (int i = 0; i < 3; i++)
                 {
                     total += valueNoise(p * freq) * amp;
-                    freq *= 2.0;
-                    amp *= 0.5;
+                    freq *= 2.0; amp *= 0.5;
                 }
                 return total;
             }
 
             Varyings vert(Attributes input)
             {
-                Varyings output;
+                Varyings output = (Varyings)0;
                 output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.uv = input.uv;
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                VertexNormalInputs nrm = GetVertexNormalInputs(input.normalOS, input.tangentOS);
+                output.normalWS  = nrm.normalWS;
+                output.tangentWS = float4(nrm.tangentWS, input.tangentOS.w * GetOddNegativeScale());
+                output.uv        = input.uv;
                 return output;
             }
 
             half4 frag(Varyings input) : SV_Target
             {
-                // 地面の色
                 float2 baseUV = TRANSFORM_TEX(input.uv, _BaseTex);
-                half4 baseCol = SAMPLE_TEXTURE2D(_BaseTex, sampler_BaseTex, baseUV) * _BaseColor;
 
-                // 墨のデータを読む
+                // --- 墨データ ---
                 float density  = SAMPLE_TEXTURE2D(_InkTex, sampler_InkTex, input.uv).r;
                 float colorIdN = SAMPLE_TEXTURE2D(_InkColorTex, sampler_InkColorTex, input.uv).r;
-
-                // 滲みエッジ: fBmノイズで density の輪郭を揺らがす
                 if (_EnableBleed > 0.5)
                 {
                     float bleedNoise = fbm(input.uv * _BleedScale);
                     float edgeFactor = density * (1.0 - density) * 4.0;
                     density = saturate(density + (bleedNoise - 0.5) * _BleedStrength * edgeFactor);
                 }
+                float3 inkColor = SAMPLE_TEXTURE2D(_InkPalette, sampler_InkPalette, float2(colorIdN, 0.5)).rgb;
+                float painted = density > 0.001 ? 1.0 : 0.0;
 
-                // 色パレットから墨の色を取得
-                float3 inkColor = SAMPLE_TEXTURE2D(_InkPalette, sampler_InkPalette,
-                                                    float2(colorIdN, 0.5)).rgb;
-
-                half3 finalRgb = baseCol.rgb;
-
-                if (density > 0.001)
+                // --- albedo（塗り側: グレースケール＋墨 / 未塗り側: オスミツキ）---
+                half4 baseCol = SAMPLE_TEXTURE2D(_BaseTex, sampler_BaseTex, baseUV) * _BaseColor;
+                half3 paintedAlbedo = baseCol.rgb;
+                if (_EnableGrayscale > 0.5)
                 {
-                    if (_EnableGrayscale > 0.5)
-                    {
-                        float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
-                        float3 grayRgb = float3(gray, gray, gray);
-                        finalRgb = lerp(finalRgb, grayRgb, _GrayscaleStrength);
-                    }
-
-                    // 墨の色を重ねる
-                    float inkAlpha = smoothstep(0.0, 0.4, density) * _InkColorStrength;
-                    finalRgb = lerp(finalRgb, inkColor, inkAlpha);
+                    float gray = dot(baseCol.rgb, float3(0.299, 0.587, 0.114));
+                    paintedAlbedo = lerp(paintedAlbedo, float3(gray, gray, gray), _GrayscaleStrength);
                 }
-                else
-                {
-                    half4 OsumiCol = SAMPLE_TEXTURE2D(_OsumiTex, sampler_OsumiTex, baseUV) * _BaseColor;
-                    finalRgb = OsumiCol.rgb;
-                }
+                float inkAlpha = smoothstep(0.0, 0.4, density) * _InkColorStrength;
+                paintedAlbedo = lerp(paintedAlbedo, inkColor, inkAlpha);
 
-                // 簡易ライティング
+                half3 osumiAlbedo = (SAMPLE_TEXTURE2D(_OsumiTex, sampler_OsumiTex, baseUV) * _BaseColor).rgb;
+                half3 finalRgb = lerp(osumiAlbedo, paintedAlbedo, painted);
+
+                // --- ノーマルマップ（塗り状態で別マップ）→ ワールド法線 ---
+                float3 nBase  = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, baseUV), _BumpScale);
+                float3 nOsumi = UnpackNormalScale(SAMPLE_TEXTURE2D(_OsumiBumpMap, sampler_OsumiBumpMap, baseUV), _OsumiBumpScale);
+                float3 normalTS = lerp(nOsumi, nBase, painted);
+                float sgn = input.tangentWS.w;
+                float3 bitangent = sgn * cross(input.normalWS.xyz, input.tangentWS.xyz);
+                float3x3 tangentToWorld = float3x3(input.tangentWS.xyz, bitangent, input.normalWS.xyz);
+                float3 N = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+
+                // --- 旧フラットライティング（青空を拾わない・最低明るさあり）---
+                // ノーマルマップで揺らいだ N を使うので、凹凸が陰影に出る
                 float3 lightDir = normalize(float3(0.5, 1.0, 0.3));
-                float NdotL = saturate(dot(input.normalWS, lightDir));
-                finalRgb *= (NdotL * 0.5 + 0.5);
+                float NdotL = saturate(dot(N, lightDir));
+                finalRgb *= (NdotL * (1.0 - _LightFloor) + _LightFloor);
 
                 return half4(finalRgb, 1.0);
             }

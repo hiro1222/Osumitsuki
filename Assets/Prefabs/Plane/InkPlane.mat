@@ -43,6 +43,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 79c4b382b4c00a641bbc28896b293865, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: b47de542ac707624ea6758c76ca04ef4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _InkColorTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -63,20 +67,42 @@ Material:
         m_Texture: {fileID: 2800000, guid: dc2e64b0e186d53438c5e2d461d10887, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OsumiBumpMap:
+        m_Texture: {fileID: 2800000, guid: e6bb30b797ea4094f9df805b76944078, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OsumiMetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OsumiTex:
         m_Texture: {fileID: 2800000, guid: 6989463f77b66e348ae0b6e00c786922, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AmbientStrength: 1
     - _BleedScale: 50
     - _BleedStrength: 1
+    - _BumpScale: 1
+    - _DebugPainted: 0
     - _EdgeSoftness: 0.05
     - _EnableBleed: 1
     - _EnableGrayscale: 1
     - _GrayscaleStrength: 1
     - _InkColorStrength: 0.7
+    - _InkFloor: 0
     - _Intensity: 1
+    - _LightFloor: 0.5
+    - _Metallic: 0
+    - _OsumiBumpScale: 1
+    - _OsumiMetallic: 0
+    - _OsumiSmoothness: 0.5
+    - _Smoothness: 0.5
     - _Threshold: 0.3
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

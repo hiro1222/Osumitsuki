@@ -7,12 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TORII_LANTERN
+  m_Name: peinssaffu
   m_Shader: {fileID: 4800000, guid: 69b7a9020ed1d2c409e10193b6ca99cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _DEBUGPAINTED_ON
   - _ENABLEBLEED_ON
   - _ENABLEGRAYSCALE_ON
   m_LightmapFlags: 4
@@ -31,11 +32,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTex:
-        m_Texture: {fileID: 2800000, guid: acbd93e0275311c4b8910e9d2fb6cd9c, type: 3}
+        m_Texture: {fileID: 2800000, guid: d70c899dd95a8564e8468d9da6e35d64, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 40f0df40dec39dd469a3851df3c63ba6, type: 3}
+        m_Texture: {fileID: 2800000, guid: b61eae326f7372743807b3dcd9877117, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -71,7 +72,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 2800000, guid: 5671b898e504fd34690c91839c5c29ef, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0fd4c001e08278545ab1c30ee415ba16, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -79,15 +80,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OsumiBumpMap:
-        m_Texture: {fileID: 2800000, guid: 8cc06f78f4ff1654b853b0bb80b16240, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2ce7bc678f41afc48b01cc922bc40981, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OsumiMetallicGlossMap:
-        m_Texture: {fileID: 2800000, guid: 7dfbf763e14b0294d838e330986adf1d, type: 3}
+        m_Texture: {fileID: 2800000, guid: b71bb4d1975eef943a4c33764d0b8d1d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OsumiTex:
-        m_Texture: {fileID: 2800000, guid: c4e2386a7266476498c79cb4e51f0cfd, type: 3}
+        m_Texture: {fileID: 2800000, guid: cf8994f9428f2db4eaca4bad8aded195, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
@@ -115,6 +116,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _AmbientStrength: 1
     - _BleedScale: 12
     - _BleedStrength: 0.5
     - _Blend: 0
@@ -124,6 +126,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DebugPainted: 1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -159,7 +162,7 @@ Material:
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &3161896980959839766
+--- !u!114 &9034927731476428205
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
