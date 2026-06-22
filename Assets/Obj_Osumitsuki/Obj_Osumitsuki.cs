@@ -22,6 +22,16 @@ public class Obj_Osumitsuki : MonoBehaviour
 	[SerializeField] private Transform[] allyEnemyTarget;    //AllyEnemyñ⁄ïWç¿ïW
 	[SerializeField] private AllyEnemyManager allyEnemyManager;
 
+	[SerializeField] private GameObject prefab_aura;
+	[SerializeField] private GameObject prefab_flash;
+	[SerializeField] private Vector3 offset_Aura;
+	[SerializeField] private Vector3 scale_Aura = new Vector3(5, 5, 5);
+	[SerializeField] private Vector3 offset_Flash;
+	[SerializeField] private Vector3 scale_Flash = new Vector3(8, 8, 8);
+
+	 private ParticleSystem auraEffect;
+	 private ParticleSystem flashEffect;
+
 	private AllyEnemy[] helperAllyEnemys;   //Osumitsuki_ObjÇ™Ç®ñnïtÇ´å„à⁄ìÆï‚èïÇ‚Ç≠ñnë‹
 	private AllyEnemy.IAllyEnemyState[] helperEnemyStates;
 
@@ -143,6 +153,8 @@ public class Obj_Osumitsuki : MonoBehaviour
             if (maskS != null)
                 maskSystems.Add(maskS);
         }
+
+		SpawnAuraEffect();
     }
 
 	public void Action_Osumitsuki_Cover()
@@ -168,7 +180,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 	private void PaintedRaper(int _cells,int _density)
 	{
-		Debug.Log("///////////alkdjfoa;isjhefjklnaisdf@ooafd");
 		Painted(5f);
 	}
 
@@ -207,6 +218,8 @@ public class Obj_Osumitsuki : MonoBehaviour
                     all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
                 }
             }
+			StopAuraEffect();
+			SpawnFlashEffect();
 
 			return osumitsukiTrg;
 		}
@@ -335,6 +348,35 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 			AllyEnemy_Func_Base_Obj_Osumitsuki func = (AllyEnemy_Func_Base_Obj_Osumitsuki)newState;
 			func.SetTarget(targetTrf);
+		}
+	}
+
+	private void SpawnAuraEffect()
+	{
+		if (prefab_aura != null)
+		{
+			GameObject instance = Instantiate(prefab_aura, transform);
+			instance.transform.position += offset_Aura;
+			instance.transform.localScale += scale_Aura;
+
+			auraEffect = instance.GetComponent<ParticleSystem>();
+		}
+	}
+	private void StopAuraEffect()
+	{
+		if (auraEffect != null)
+			auraEffect.Stop();
+	}
+
+	private void SpawnFlashEffect()
+	{
+		if (prefab_flash != null)
+		{
+			GameObject instance = Instantiate(prefab_flash, transform);
+			instance.transform.position += offset_Flash;
+			instance.transform.localScale += scale_Flash;
+
+			flashEffect = instance.GetComponent<ParticleSystem>();
 		}
 	}
 

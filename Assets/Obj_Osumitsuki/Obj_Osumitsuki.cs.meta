@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: a7f47f5e0af6f934c90f04b09e5db2ec
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - myMaterial: {instanceID: 0}
+  - allyEnemyManager: {instanceID: 0}
+  - prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
+  - prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

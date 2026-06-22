@@ -195,6 +195,7 @@ MonoBehaviour:
   collideDistance: 2
   stopDuration: 3
   bodyTransform: {fileID: 0}
+  hitEffectPlayer: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
@@ -202,6 +203,7 @@ MonoBehaviour:
   bounceHeight: 1.5
   bounceDuration: 0.5
   paintStatus: {fileID: 1017365753}
+  damageAmount: 1
 --- !u!4 &64320510
 Transform:
   m_ObjectHideFlags: 0
@@ -333,6 +335,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 752184154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &208171224
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8539961868658755390, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_Name
+      value: hanebukurokun
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.747608
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.73
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.538105
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8671807620158924693, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3c658064324876044b78d5ad809a26b6, type: 3}
 --- !u!1 &219476131
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,6 +653,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -721,6 +784,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -848,6 +915,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1076,6 +1147,7 @@ MonoBehaviour:
   collideDistance: 2
   stopDuration: 3
   bodyTransform: {fileID: 0}
+  hitEffectPlayer: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
@@ -1083,6 +1155,7 @@ MonoBehaviour:
   bounceHeight: 1.5
   bounceDuration: 0.5
   paintStatus: {fileID: 1017365753}
+  damageAmount: 1
 --- !u!4 &752184154
 Transform:
   m_ObjectHideFlags: 0
@@ -1133,6 +1206,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1317,6 +1394,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1471,6 +1552,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -1989,6 +2074,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2121,6 +2210,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2416,6 +2509,7 @@ MonoBehaviour:
   collideDistance: 2
   stopDuration: 3
   bodyTransform: {fileID: 0}
+  hitEffectPlayer: {fileID: 0}
   attackPower: 1
   knockbackUpForce: 5
   requiredInkCount: 1
@@ -2423,6 +2517,7 @@ MonoBehaviour:
   bounceHeight: 1.5
   bounceDuration: 0.5
   paintStatus: {fileID: 1017365753}
+  damageAmount: 1
 --- !u!4 &2007034329
 Transform:
   m_ObjectHideFlags: 0
@@ -2473,6 +2568,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoGridResolution: 1
+  targetCellSize: 0.05
+  minGridResolution: 32
+  maxGridResolution: 512
   gridResolution: 64
   walkThreshold: 50
   chunkSize: 16
@@ -2876,3 +2975,4 @@ SceneRoots:
   - {fileID: 8356421495039158897}
   - {fileID: 1205627728}
   - {fileID: 1316245461}
+  - {fileID: 208171224}

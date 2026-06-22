@@ -10,6 +10,7 @@ public class CannonMuzzle : MonoBehaviour
     [SerializeField] private Boss_SB boss;
     [SerializeField] private CannonAutoAim cannonAutoAim;
 
+
     [Header("── 打ち上げ ──")]
     [Tooltip("ボスが詰まってから打ち上げるまでの秒数")]
     [SerializeField] private float launchDelay = 1.5f;
@@ -17,6 +18,9 @@ public class CannonMuzzle : MonoBehaviour
     [SerializeField] private float launchForce = 20f;
     [Tooltip("打ち上げ時の前方向の力")]
     [SerializeField] private float launchForwardForce = 5f;
+
+    [Header("── 打ち上げエフェクト ──")]
+    [SerializeField] private GameObject launchEffect;
 
     [Header("── 着地 ──")]
     [Tooltip("地面のTransform（この位置のY座標を着地点にする）")]
@@ -38,6 +42,8 @@ public class CannonMuzzle : MonoBehaviour
 
     [Header("── カメラ ──")]
     [SerializeField] private ThirdPersonOrbitCamera cameraController;
+    [Header("── プレイヤー制御 ──")]
+    [SerializeField] private PlayerMove playerMove;
 
 
     private Collider muzzleCollider;
@@ -45,8 +51,27 @@ public class CannonMuzzle : MonoBehaviour
 
     private void Start()
     {
+
         if (boss == null)
             boss = FindObjectOfType<Boss_SB>();
+
+        if (cameraController == null)
+            cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
+
+        // ★ playerMoveを自動取得
+        if (playerMove == null)
+        {
+            int playerLayer = LayerMask.NameToLayer("Player");
+            var allObjects = FindObjectsOfType<PlayerMove>();
+            foreach (var pm in allObjects)
+            {
+                if (pm.gameObject.layer == playerLayer)
+                {
+                    playerMove = pm;
+                    break;
+                }
+            }
+        }
 
         if (cameraController == null)
             cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
@@ -80,21 +105,36 @@ public class CannonMuzzle : MonoBehaviour
 
         if (muzzleCollider != null && !muzzleCollider.isTrigger)
             Debug.LogWarning($"[CannonMuzzle] {gameObject.name}: Is Trigger を ON にしてください");
+
+        if (playerMove == null)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null)
+                playerMove = go.GetComponent<PlayerMove>();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[CannonMuzzle] Trigger検知: other={other.name} boss={boss} hasLaunched={hasLaunched}");
+
         if (boss == null) return;
         if (hasLaunched) return;
+
+        Debug.Log($"[CannonMuzzle] phase={boss.GetCurrentPhase()} isHipDropping={boss.GetIsHipDropping()}");
 
         if (boss.GetCurrentPhase() != 2) return;
         if (!boss.GetIsHipDropping()) return;
 
-        // 砲身が上を向いていないときは判定しない
-        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp()) return;
+        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp())
+        {
+            Debug.Log("[CannonMuzzle] 砲身がまだ上を向いていない");
+            return;
+        }
+
+        Debug.Log($"[CannonMuzzle] OnTriggerEnter発火 Time={Time.time}");
 
         hasLaunched = true;
-        Debug.Log("[CannonMuzzle] ボスが砲口に当たった！");
         boss.NotifyHitCannon();
 
         StartCoroutine(LaunchCoroutine());
@@ -102,6 +142,13 @@ public class CannonMuzzle : MonoBehaviour
 
     private IEnumerator LaunchCoroutine()
     {
+        if (playerMove == null)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null)
+                playerMove = go.GetComponent<PlayerMove>();
+        }
+
         var bossCC = boss.GetComponent<CharacterController>();
         if (bossCC != null) bossCC.enabled = false;
 
@@ -109,6 +156,10 @@ public class CannonMuzzle : MonoBehaviour
         boss.transform.position = transform.position;
 
         boss.HideHipDropIndicator();
+
+        if (playerMove != null)
+            playerMove.SetExternalPositionLock(true, playerMove.transform.position, false);
+
 
         if (cameraController != null)
             cameraController.SetLookTarget(boss.transform);
@@ -131,7 +182,15 @@ public class CannonMuzzle : MonoBehaviour
                           + cannonForward * launchForwardForce;
         bossRb.linearVelocity = launchVec;
 
-        yield return new WaitForSeconds(0.5f);
+        if (launchEffect != null)
+        {
+            launchEffect.SetActive(true);
+            var ps = launchEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (var p in ps) { p.Clear(); p.Play(); }
+        }
+
+
+        yield return new WaitForSeconds(launchDelay);
 
         float timeout = 10f;
         float elapsed = 0f;
@@ -145,7 +204,6 @@ public class CannonMuzzle : MonoBehaviour
         float landY = groundTransform != null
     ? groundTransform.position.y
     : 0f;
-
         while (elapsed < timeout)
         {
             elapsed += Time.deltaTime;
@@ -199,6 +257,9 @@ public class CannonMuzzle : MonoBehaviour
 
         boss.transform.rotation = finalRot;
         boss.SetLaunching(false);
+
+        if (playerMove != null)
+            playerMove.SetExternalPositionLock(false, Vector3.zero, false);
 
         // 着地後にスタンエフェクトを有効化
         boss.EnableStunEffect();

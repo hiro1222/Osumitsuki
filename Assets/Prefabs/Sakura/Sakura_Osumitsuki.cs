@@ -7,31 +7,6 @@ public class Sakura_Osumitsuki : Obj_Osumitsuki
     [SerializeField] private Material woodMaterial;
     [SerializeField] private Material petalMaterial;
 
-    private PaintableSurfaceGroup group;
-
-    private void Start()
-    {
-        group = GetComponent<PaintableSurfaceGroup>();
-        if (group != null)
-        {
-            group.OnAnyPainted += HandleAnyPainted;
-        }
-    }
-
-
-    private void OnDestroy()
-    {
-        if (group != null)
-        {
-            group.OnAnyPainted -= HandleAnyPainted;
-        }
-    }
-
-    private void HandleAnyPainted(PaintableSurface source, int cells, byte density)
-    {
-        Painted(25f);
-    }
-
     public override void Action_Osumitsuki()
     {
         // 子のMeshRenderer全員のマテリアルを差し替え

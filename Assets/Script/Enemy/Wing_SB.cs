@@ -71,6 +71,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     [Header("── ヒットエフェクト ──")]
     [SerializeField] private HitEffectPlayer hitEffectPlayer;
 
+    [Header("── オーラエフェクト ──")]
+    [SerializeField] private AuraEffectPlayer auraEffectPlayer;
+
     [Header("停止（衝突後・地上待機）")]
     [Tooltip("衝突後の地上待機時間（秒）")]
     [SerializeField] private float stopDuration = 2f;
@@ -142,6 +145,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         if (hitEffectPlayer == null)
             hitEffectPlayer = GetComponent<HitEffectPlayer>();
 
+        if (auraEffectPlayer == null)
+            auraEffectPlayer = GetComponent<AuraEffectPlayer>();
+
         Debug.Log($"[Wing_SB] hitEffectPlayer={hitEffectPlayer}");
 
         isAlly = false;
@@ -149,6 +155,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         inkHitCount = 0;
         state = EnemyState.Free;
         currentPatrolTarget = patrolPointA;
+
+        if (auraEffectPlayer != null)
+            auraEffectPlayer.PlayAura();
 
         // パトロール座標をワールド座標で記憶
         if (patrolPointA != null) patrolPosA = patrolPointA.position;
@@ -257,6 +266,7 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
         if (distXZ <= engageDistance)
         {
             state = EnemyState.Chase;
+
             return;
         }
 
@@ -512,6 +522,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     {
         if (isAlly) return;
         isAlly = true;
+
+        if (auraEffectPlayer != null)
+            auraEffectPlayer.StopAura();
 
         // お墨付き時に塗り範囲を1段階上げる
         if (paintStatus == null)
