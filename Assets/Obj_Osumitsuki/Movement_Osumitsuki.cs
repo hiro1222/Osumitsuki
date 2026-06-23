@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 //このクラスは継承することを前提で作成、機能だけ実装してる
 public class Movement_Osumitsuki : Obj_Osumitsuki
 {
-
+    [Header("移動ステータス")]
     [SerializeField] private List<GameObject> targets;  //自信が移動する目的地
     [SerializeField] private float turnSpd = 60;    //回転速度(１～１００)
     [SerializeField] private float moveSpd = 10;    //移動速度
@@ -59,7 +59,7 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
 
         transform.position = newPos;
         
-        Vector3 difPos = targetPos - transform.position;
+        Vector3 difPos = target - transform.position;
 
         if (difPos.sqrMagnitude < 0.01f)
             ChangeTarget();
