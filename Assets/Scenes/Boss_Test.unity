@@ -243,7 +243,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &61126857
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -374,7 +376,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &66333144
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -505,7 +509,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &73626136
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -636,7 +642,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &86941331
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -829,7 +837,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &112215080
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1029,7 +1039,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &184708244
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1238,7 +1250,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &332688533
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1539,7 +1553,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &410805668
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1670,7 +1686,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &424124319
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1801,7 +1819,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &457698217
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1937,7 +1957,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &506542803
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2068,7 +2090,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &525468936
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2235,7 +2259,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &561881820
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2366,7 +2392,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &576859894
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2497,7 +2525,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &621542220
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2878,7 +2908,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &906119326
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3009,7 +3041,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &919536181
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3140,7 +3174,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &928943384
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3328,7 +3364,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &974956749
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3459,7 +3497,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1032716432
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3714,7 +3754,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1067794120
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3845,7 +3887,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1107014473
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4069,7 +4113,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1255857064
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4211,7 +4257,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1312017233
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4342,7 +4390,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1317989826
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4534,7 +4584,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1445404734
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4751,7 +4803,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1514669536
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4949,7 +5003,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1545314666
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5080,7 +5136,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1564746315
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5390,7 +5448,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1608025321
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5521,7 +5581,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1659744379
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5740,7 +5802,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1707440647
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5902,7 +5966,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1779807885
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6108,7 +6174,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1906904846
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6239,7 +6307,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1929393010
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6401,7 +6471,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1980653473
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -580,7 +580,7 @@ MonoBehaviour:
   frameDuration: 0.05
   initialBlankDuration: 0.3
   delayBeforeText: 3
-  nextSceneName: Boss_Test
+  nextSceneName: LoadingScene
 --- !u!4 &983446141
 Transform:
   m_ObjectHideFlags: 0
