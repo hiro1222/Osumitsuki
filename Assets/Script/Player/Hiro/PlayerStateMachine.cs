@@ -17,7 +17,7 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("Enemy Contact Damage")]
     [SerializeField] private bool enableEnemyContactDamage = true;
 
-    [Tooltip("Enemy Layer‚ğw’èB–¢İ’è‚Å‚àIF_EnemyŒŸo‚Å”»’è‚·‚é")]
+    [Tooltip("Enemy Layerï¿½ï¿½ï¿½wï¿½ï¿½Bï¿½ï¿½ï¿½İ’ï¿½Å‚ï¿½IF_Enemyï¿½ï¿½ï¿½oï¿½Å”ï¿½ï¿½è‚·ï¿½ï¿½")]
     [SerializeField] private LayerMask enemyLayerMask;
 
     [SerializeField] private float damageCheckRadius = 1.2f;
@@ -52,6 +52,11 @@ public class PlayerStateMachine : MonoBehaviour
 
             damageStateTimer = damageStateTime;
             ChangeState(PlayerState.Damage);
+
+            if (controller.Sound != null)
+            {
+                controller.Sound.PlayDamage();
+            }
 
             if (debugLogDamage)
             {
@@ -110,6 +115,11 @@ public class PlayerStateMachine : MonoBehaviour
             damageStateTimer = damageStateTime;
 
             ChangeState(PlayerState.Damage);
+
+            if (controller.Sound != null)
+            {
+                controller.Sound.PlayDamage();
+            }
 
             if (debugLogDamage)
             {

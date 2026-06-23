@@ -179,6 +179,11 @@ public class PlayerActionManager : MonoBehaviour
 
         action.StartAction();
 
+        if (controller.Sound != null)
+        {
+            controller.Sound.PlayActionSound(action.Kind);
+        }
+
         RefreshFlags();
     }
 
@@ -196,6 +201,11 @@ public class PlayerActionManager : MonoBehaviour
 
         IsActing = false;
         IsNazori = false;
+
+        if (controller.Sound != null)
+        {
+            controller.Sound.StopActionLoop();
+        }
 
         if (requireNazoriReleaseAfterAction &&
             finishedKind != ActionKind.None &&
