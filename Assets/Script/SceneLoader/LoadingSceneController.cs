@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class LoadingSceneController : MonoBehaviour
 {
-	[SerializeField] private string targetSceneName;
 	[SerializeField] private Slider progressBar;      // 任意：進捗バー
 	[SerializeField] private RectTransform spinnerIcon; // 任意：くるくる回るアイコン
+	[SerializeField] private float minimumShowTime = 1.0f;	//最小描画時間
 
 	private AsyncOperation loadOp;
 
@@ -17,32 +17,31 @@ public class LoadingSceneController : MonoBehaviour
 
 	private System.Collections.IEnumerator LoadTargetScene()
 	{
-		loadOp = SceneManager.LoadSceneAsync(targetSceneName, LoadSceneMode.Additive);
+
+		if (SceneTransitionData.nextSceneName == "")
+		{
+			Debug.Log("次シーンがわかりません");
+			yield return null;
+		}
+
+		float startTime = Time.time;
+
+		loadOp = SceneManager.LoadSceneAsync(SceneTransitionData.nextSceneName, LoadSceneMode.Additive);
 		loadOp.allowSceneActivation = false;
 
 		while (!loadOp.isDone)
 		{
-			// progressは0〜0.9の範囲で変化する
-			float displayProgress = Mathf.Clamp01(loadOp.progress / 0.9f);
-
-			if (progressBar != null)
-				progressBar.value = displayProgress;
-
-			// ローディングアニメは毎フレーム動かし続ける
-			if (spinnerIcon != null)
-				spinnerIcon.Rotate(0, 0, -180f * Time.deltaTime);
-
-			// ロードがほぼ完了したら、演出側の最低表示時間などを待ってから切り替え
-			if (loadOp.progress >= 0.9f)
-			{
-				// 任意：最低1秒はローディング画面を見せる、等の演出待ち
-				//yield return new WaitForSeconds(0.5f);
-
-				yield return ActivateTargetScene();
-			}
-
+			UpdateVisuals(loadOp.progress / 0.9f);
 			yield return null;
 		}
+		while (Time.time - startTime < minimumShowTime)
+		{
+			UpdateVisuals(1f);
+			yield return null;
+		}
+			// ロードがほぼ完了したら、演出側の最低表示時間などを待ってから切り替え
+			
+		yield return ActivateTargetScene();
 	}
 
 	private System.Collections.IEnumerator ActivateTargetScene()
@@ -54,10 +53,19 @@ public class LoadingSceneController : MonoBehaviour
 			yield return null;
 
 		// 新しいシーンをアクティブシーンに設定
-		Scene newScene = SceneManager.GetSceneByName(targetSceneName);
+		Scene newScene = SceneManager.GetSceneByName(SceneTransitionData.nextSceneName);
 		SceneManager.SetActiveScene(newScene);
 
 		// ローディングシーン自身をアンロード
 		yield return SceneManager.UnloadSceneAsync("LoadingScene");
+	}
+
+	private void UpdateVisuals(float _ratio)
+	{
+		if (progressBar != null)
+			progressBar.value = _ratio;
+
+		if (spinnerIcon != null)
+			spinnerIcon.Rotate(0, 0, -180f * Time.deltaTime);
 	}
 }
