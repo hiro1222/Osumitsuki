@@ -141,7 +141,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 		//paintableSurface.OnPainted += (cells, density) => PaintedRaper(cells,density);
 
-		if (allyEnemyManager != null)
+		if (allyEnemyManager == null)
 		{
 			allyEnemyManager = GameObject.Find("player_v3").GetComponent<AllyEnemyManager>();
 		}
