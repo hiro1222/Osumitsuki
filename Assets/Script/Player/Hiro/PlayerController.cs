@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private PlayerStats playerStats;
     private PlayerStateMachine stateMachine;
     private PlayerAnimatorDriver animatorDriver;
+    private PlayerSound playerSound;
 
     public CharacterController CharacterController => characterController;
     public PlayerInput InputHandler => playerInput;
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStats Stats => playerStats;
     public PlayerStateMachine StateMachine => stateMachine;
     public PlayerAnimatorDriver AnimatorDriver => animatorDriver;
+    public PlayerSound Sound => playerSound;
 
     private void Awake()
     {
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
         stateMachine = GetComponent<PlayerStateMachine>();
         animatorDriver = GetComponent<PlayerAnimatorDriver>();
+        playerSound = GetComponent<PlayerSound>();
 
         playerInput.Initialize(this);
         playerStats.Initialize(this);
@@ -44,6 +47,11 @@ public class PlayerController : MonoBehaviour
         if (animatorDriver != null)
         {
             animatorDriver.Initialize(this);
+        }
+
+        if (playerSound != null)
+        {
+            playerSound.Initialize(this);
         }
     }
 
@@ -59,6 +67,11 @@ public class PlayerController : MonoBehaviour
         if (animatorDriver != null)
         {
             animatorDriver.Tick();
+        }
+
+        if (playerSound != null)
+        {
+            playerSound.Tick();
         }
     }
 }
