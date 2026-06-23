@@ -465,7 +465,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &600222158
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -858,7 +860,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1007420357
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1066,7 +1070,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1369535511
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1321,7 +1327,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1567641532
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1620,7 +1628,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: Y_lock
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4245442724705970, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
       propertyPath: scale_Aura.x

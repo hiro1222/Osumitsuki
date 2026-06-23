@@ -98,6 +98,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1302431366831524454}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3475479925904575006}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
       insertIndex: -1
@@ -111,9 +114,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5643148299202141138, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4887992340686742059}
-    - targetCorrespondingSourceObject: {fileID: 5643148299202141138, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3378534000307069788}
   m_SourcePrefab: {fileID: 100100000, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
 --- !u!1 &1790563241242520131 stripped
 GameObject:
@@ -161,13 +161,18 @@ MonoBehaviour:
     strength: 1
   textureResolution: 512
   targetRenderer: {fileID: 0}
---- !u!114 &3378534000307069788
+--- !u!1 &6505536989946170560 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
+  m_PrefabInstance: {fileID: 6235557753518748049}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1302431366831524454
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1790563241242520131}
+  m_GameObject: {fileID: 6505536989946170560}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdced54294568c34c877545f2613d7ff, type: 3}
@@ -180,13 +185,10 @@ MonoBehaviour:
   gridResolution: 1
   walkThreshold: 1
   chunkSize: 1
-  meshThickness: 1
-  renderResolution: 1
---- !u!1 &6505536989946170560 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 19b983a3ca929e949ac4279817fefa34, type: 3}
-  m_PrefabInstance: {fileID: 6235557753518748049}
-  m_PrefabAsset: {fileID: 0}
+  meshThickness: 0.15
+  visualResolution: 1
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!114 &3475479925904575006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +201,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8c19d0b39ea0a74484de0323ef74472, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 20
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 964fea35ac859ef4c890891eeb020199, type: 2}

@@ -80,6 +80,9 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
         if (osumitsukiFlg)
             return;
 
+        if (playerTrf == null)
+            playerTrf = GameObject.Find("player_v3").transform;
+
         if (boardObj.transform.position == initboardPos)
         {
             Vector3 dif = initboardPos - playerTrf.position;
