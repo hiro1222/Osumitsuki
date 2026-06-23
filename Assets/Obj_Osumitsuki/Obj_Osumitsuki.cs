@@ -8,11 +8,19 @@ using System.Linq;
 public class Obj_Osumitsuki : MonoBehaviour
 {
 
+	[Header("エフェクト")]
+	[SerializeField] private GameObject prefab_aura;
+	[SerializeField] private GameObject prefab_flash;
+	[SerializeField] private Vector3 offset_Aura;
+	[SerializeField] private Vector3 scale_Aura = new Vector3(5, 5, 5);
+	[SerializeField] private Vector3 offset_Flash;
+	[SerializeField] private Vector3 scale_Flash = new Vector3(8, 8, 8);
+
+
 	[Header("インクステータス")]
-	//現在のインクの量
-	protected float curInkAmount = 0;
 	[SerializeField] private float maxInkCapa = 100;    //インクの最大量
 	[SerializeField] private float coolPaintTime = 0.5f;     //インクが塗られたときのクールタイム
+	protected float curInkAmount = 0;
 	private float lastPaintedTime = 0;                     //最後に塗られた時間
 
 	[Header("お墨付き後のテクスチャ")]
@@ -22,12 +30,6 @@ public class Obj_Osumitsuki : MonoBehaviour
 	[SerializeField] private Transform[] allyEnemyTarget;    //AllyEnemy目標座標
 	[SerializeField] private AllyEnemyManager allyEnemyManager;
 
-	[SerializeField] private GameObject prefab_aura;
-	[SerializeField] private GameObject prefab_flash;
-	[SerializeField] private Vector3 offset_Aura;
-	[SerializeField] private Vector3 scale_Aura = new Vector3(5, 5, 5);
-	[SerializeField] private Vector3 offset_Flash;
-	[SerializeField] private Vector3 scale_Flash = new Vector3(8, 8, 8);
 
 	 private ParticleSystem auraEffect;
 	 private ParticleSystem flashEffect;
@@ -138,6 +140,11 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 
 		//paintableSurface.OnPainted += (cells, density) => PaintedRaper(cells,density);
+
+		if (allyEnemyManager != null)
+		{
+			allyEnemyManager = GameObject.Find("player_v3").GetComponent<AllyEnemyManager>();
+		}
 
 		if (allyEnemyTarget != null)
 		{
