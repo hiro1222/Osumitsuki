@@ -24,6 +24,11 @@ public class AllyEnemyManager : MonoBehaviour
     [Header("PaintStatus参照")]
     [SerializeField] private PlayerPaintStatus paintStatus;
 
+    [Header("── 仲間化エフェクト（ストック時用） ──")]
+    [SerializeField] private GameObject allyEffectPrefab;
+
+
+
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
@@ -142,6 +147,9 @@ public class AllyEnemyManager : MonoBehaviour
         {
             stockCount++;
             Debug.Log($"[AllyEnemyManager] ストックに追加。ストック: {stockCount}体");
+
+            // ストック時はモデルなしでエフェクトだけ再生
+            PlayAllyEffectOnly(fixedSpawnPos);
         }
     }
 
@@ -198,5 +206,42 @@ public class AllyEnemyManager : MonoBehaviour
     public IReadOnlyList<AllyEnemy> GetAllyEnemy()
     {
         return followingAllies;
+    }
+
+    /// <summary>仲間が満員のとき、エフェクトだけを再生する</summary>
+    private void PlayAllyEffectOnly(Vector3 position)
+    {
+        if (allyEffectPrefab == null) return;
+
+        GameObject obj = Instantiate(allyEffectPrefab, position, Quaternion.identity);
+        var ps = obj.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var p in ps)
+        {
+            p.Clear();
+            p.Play(true);
+        }
+
+        StartCoroutine(DestroyEffectWhenDone(obj, ps));
+    }
+
+    private System.Collections.IEnumerator DestroyEffectWhenDone(GameObject obj, ParticleSystem[] ps)
+    {
+        bool anyAlive = true;
+        while (anyAlive)
+        {
+            anyAlive = false;
+            foreach (var p in ps)
+            {
+                if (p != null && p.IsAlive())
+                {
+                    anyAlive = true;
+                    break;
+                }
+            }
+            yield return null;
+        }
+
+        if (obj != null)
+            Destroy(obj);
     }
 }
