@@ -110,6 +110,7 @@ public class PauseMenu : MonoBehaviour
                            "Inspectorでタイトルシーン名を入れ、Build Settingsに追加してください。");
             return;
         }
+        // ※ チームのローディング機構が完成したら、それ経由の呼び出しに差し替える
         SceneManager.LoadScene(titleSceneName);
     }
 
