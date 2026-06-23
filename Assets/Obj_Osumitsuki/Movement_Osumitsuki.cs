@@ -110,13 +110,19 @@ public class Movement_Osumitsuki : Obj_Osumitsuki
     //回転と移動切り替え
     protected void Update_RotateMove()
     {
-        restrictedArea.enabled = true;
-		Debug.Log("立ち入り禁止エリアをアクティブに");
+        if (restrictedArea != null)
+        {
+            restrictedArea.enabled = true;
+            Debug.Log("立ち入り禁止エリアをアクティブに");
+        }
 		//ターゲットがいなければ終了
 		if (curTargetIndex == -1)
         {
-            restrictedArea.enabled = false;
-			Debug.Log("立ち入り禁止エリアを非アクティブに");
+            if (restrictedArea != null)
+            {
+                restrictedArea.enabled = false;
+                Debug.Log("立ち入り禁止エリアを非アクティブに");
+            }
 			End();
             return;
         }
