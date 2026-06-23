@@ -72,6 +72,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private GameObject stunHitEffect;
     [SerializeField] private GameObject roarEffect;
     [SerializeField] private GameObject rollEffect;
+    [SerializeField] private GameObject chargeEffect;
 
     [Header("── ヒットエフェクト ──")]
     [SerializeField] private HitEffectPlayer hitEffectPlayer;
@@ -305,6 +306,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private bool isAvoiding = false;
     private float bounceHomingDisableTimer = 0f;
     private float bounceHomingDisableDuration = 1.5f; // バウンド後この時間はホーミング無効
+    private bool isRollWindup = false;
+
     /// <summary>ゴロゴロ中かどうかを返す</summary>
     public bool GetIsRolling() => state == BossState.Roll;
 
@@ -452,6 +455,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         // ゴロゴロエフェクト
         if (rollEffect != null)
             rollEffect.SetActive(state == BossState.Roll);
+
+        // チャージエフェクト
+        if (chargeEffect != null)
+            chargeEffect.SetActive(state == BossState.Charge || isRollWindup);
     }
 
     private IEnumerator DisableEffectWhenDone(GameObject effect)
@@ -1088,13 +1095,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private IEnumerator RollWindupCoroutine()
     {
-        // 移動を一時停止
         BossState prevState = state;
         state = BossState.Stop;
+        isRollWindup = true; // 開始
 
         Quaternion startRot = transform.rotation;
-
-        // 後ろに傾く
         Quaternion tiltRot = startRot * Quaternion.Euler(rollWindupTiltAngle, 0f, 0f);
         float elapsed = 0f;
 
@@ -1106,7 +1111,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             yield return null;
         }
 
-        // 元に戻りながらゴロゴロ開始
         elapsed = 0f;
         while (elapsed < rollWindupReturnDuration)
         {
@@ -1117,8 +1121,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         transform.rotation = startRot;
+        isRollWindup = false; // 終了
 
-        // ゴロゴロ開始
         state = BossState.Roll;
     }
 

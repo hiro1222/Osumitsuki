@@ -206,6 +206,7 @@ MonoBehaviour:
   landingRollDuration: 0.5
   landingRotateSpeed: 720
   cameraController: {fileID: 0}
+  playerMove: {fileID: 0}
 --- !u!1 &7538693658187525563
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +380,7 @@ PrefabInstance:
     - target: {fileID: -524777334910350508, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 24d12e63ad78aef4b8e6c76e384764ad, type: 2}
+      objectReference: {fileID: 2100000, guid: a4fd74849e9235049863d1cc244210ca, type: 2}
     - target: {fileID: 919132149155446097, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
       propertyPath: m_Name
       value: CANNON_Boss
@@ -415,7 +416,7 @@ PrefabInstance:
     - target: {fileID: 4603666431465373503, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 24d12e63ad78aef4b8e6c76e384764ad, type: 2}
+      objectReference: {fileID: 2100000, guid: a4fd74849e9235049863d1cc244210ca, type: 2}
     - target: {fileID: 8761984712599357715, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
@@ -435,7 +436,7 @@ PrefabInstance:
     - target: {fileID: 9049131004516495324, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 24d12e63ad78aef4b8e6c76e384764ad, type: 2}
+      objectReference: {fileID: 2100000, guid: a4fd74849e9235049863d1cc244210ca, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -538,7 +539,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &3385699700758218333
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -603,7 +606,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2290419514031502171
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -693,6 +698,12 @@ MonoBehaviour:
   - {fileID: 1903029148819521481}
   - {fileID: 7956064187554026378}
   allyEnemyManager: {fileID: 0}
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   power: 1000
   rotateSpeed_H: 80
   rotateSpeed_V: 80
@@ -788,7 +799,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5619431408753057056}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -804,7 +815,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: dfb0dce76a5492b4ea667e57e0f57aa4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -868,7 +879,9 @@ MonoBehaviour:
   walkThreshold: 1
   chunkSize: 1
   meshThickness: 1
-  renderResolution: 1
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!4 &6142196439028050816 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7782178544800199695, guid: 796cdbab5f7cc8a449532bc3c2757950, type: 3}
@@ -904,7 +917,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &5237289302927374797
 MeshCollider:
   m_ObjectHideFlags: 0
