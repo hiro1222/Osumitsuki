@@ -6,7 +6,7 @@ public class LoadingSceneController : MonoBehaviour
 {
 	[SerializeField] private Slider progressBar;      // 任意：進捗バー
 	[SerializeField] private RectTransform spinnerIcon; // 任意：くるくる回るアイコン
-	[SerializeField] private float minimumShowTime = 1.0f;	//最小描画時間
+	[SerializeField] private float minimumShowTime = 2.0f;	//最小描画時間
 
 	private AsyncOperation loadOp;
 
@@ -17,11 +17,11 @@ public class LoadingSceneController : MonoBehaviour
 
 	private System.Collections.IEnumerator LoadTargetScene()
 	{
-
+		Debug.Log("ローディングナウ");
 		if (SceneTransitionData.nextSceneName == "")
 		{
-			Debug.Log("次シーンがわかりません");
-			yield return null;
+			Debug.Log("次シーンがわかりません、サンプルシーンに遷移");
+			SceneTransitionData.nextSceneName = "SampleScene";
 		}
 
 		float startTime = Time.time;
@@ -29,9 +29,10 @@ public class LoadingSceneController : MonoBehaviour
 		loadOp = SceneManager.LoadSceneAsync(SceneTransitionData.nextSceneName, LoadSceneMode.Additive);
 		loadOp.allowSceneActivation = false;
 
-		while (!loadOp.isDone)
+		while (loadOp.progress < 0.9f)
 		{
 			UpdateVisuals(loadOp.progress / 0.9f);
+			Debug.Log("adskjfnahnasdgadgadg");
 			yield return null;
 		}
 		while (Time.time - startTime < minimumShowTime)
@@ -39,8 +40,8 @@ public class LoadingSceneController : MonoBehaviour
 			UpdateVisuals(1f);
 			yield return null;
 		}
-			// ロードがほぼ完了したら、演出側の最低表示時間などを待ってから切り替え
-			
+		// ロードがほぼ完了したら、演出側の最低表示時間などを待ってから切り替え
+		Debug.Log("aaaaaaaaaaaihggadjkngnao;idhfasdf");
 		yield return ActivateTargetScene();
 	}
 

@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stage_B_light.unity
     guid: 030d1c4a45a6b784a84f94d18b6d97ff
+  - enabled: 1
+    path: Assets/Scenes/Obj_Osumitsuki_TestScene.unity
+    guid: e8d86f5a1968c4f46b9391dd3e984124
+  - enabled: 1
+    path: Assets/Scenes/LoadingScene.unity
+    guid: f73016da74e57424c9e20b192ff49e53
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
