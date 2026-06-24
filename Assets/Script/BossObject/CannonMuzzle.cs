@@ -45,20 +45,42 @@ public class CannonMuzzle : MonoBehaviour
     [Header("── プレイヤー制御 ──")]
     [SerializeField] private PlayerMove playerMove;
 
+    [Header("── 扉判定（横方向発射時） ──")]
+    [Tooltip("ゴール側の扉などの判定用オブジェクト（未設定ならタグ/名前で自動取得）")]
+    [SerializeField] private Transform goalDoorTransform;
+    [SerializeField] private string goalDoorTag = "GoalDoor";
+    [SerializeField] private float doorHitDistance = 1.5f;
+    [SerializeField] private GameObject doorHitBigEffect;
+
 
     private Collider muzzleCollider;
     private bool hasLaunched = false;
+    private bool hasHitDoor = false;
 
     private void Start()
     {
-
         if (boss == null)
             boss = FindObjectOfType<Boss_SB>();
 
         if (cameraController == null)
             cameraController = FindObjectOfType<ThirdPersonOrbitCamera>();
 
-        // ★ playerMoveを自動取得
+        // 扉を自動取得（タグで検索）
+        if (goalDoorTransform == null)
+        {
+            var doorObj = GameObject.FindGameObjectWithTag(goalDoorTag);
+            if (doorObj != null)
+            {
+                goalDoorTransform = doorObj.transform;
+                Debug.Log($"[CannonMuzzle] 扉自動取得: {doorObj.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[CannonMuzzle] タグ'{goalDoorTag}'の扉が見つかりません");
+            }
+        }
+
+        // playerMoveを自動取得
         if (playerMove == null)
         {
             int playerLayer = LayerMask.NameToLayer("Player");
@@ -116,25 +138,20 @@ public class CannonMuzzle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"[CannonMuzzle] Trigger検知: other={other.name} boss={boss} hasLaunched={hasLaunched}");
-
         if (boss == null) return;
         if (hasLaunched) return;
 
-        Debug.Log($"[CannonMuzzle] phase={boss.GetCurrentPhase()} isHipDropping={boss.GetIsHipDropping()}");
-
         if (boss.GetCurrentPhase() != 2) return;
-        if (!boss.GetIsHipDropping()) return;
 
-        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp())
-        {
-            Debug.Log("[CannonMuzzle] 砲身がまだ上を向いていない");
-            return;
-        }
+        // ヒップドロップ中 または フェーズ3木箱スタン中
+        bool isHipDrop = boss.GetIsHipDropping();
+        bool isBoxStun = boss.GetIsPhase3BoxStun();
+        if (!isHipDrop && !isBoxStun) return;
 
-        Debug.Log($"[CannonMuzzle] OnTriggerEnter発火 Time={Time.time}");
+        if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp()) return;
 
         hasLaunched = true;
+        Debug.Log("[CannonMuzzle] ボスが砲口に当たった！");
         boss.NotifyHitCannon();
 
         StartCoroutine(LaunchCoroutine());
@@ -142,13 +159,6 @@ public class CannonMuzzle : MonoBehaviour
 
     private IEnumerator LaunchCoroutine()
     {
-        if (playerMove == null)
-        {
-            var go = GameObject.FindGameObjectWithTag("Player");
-            if (go != null)
-                playerMove = go.GetComponent<PlayerMove>();
-        }
-
         var bossCC = boss.GetComponent<CharacterController>();
         if (bossCC != null) bossCC.enabled = false;
 
@@ -157,18 +167,12 @@ public class CannonMuzzle : MonoBehaviour
 
         boss.HideHipDropIndicator();
 
-        if (playerMove != null)
-            playerMove.SetExternalPositionLock(true, playerMove.transform.position, false);
-
-
         if (cameraController != null)
             cameraController.SetLookTarget(boss.transform);
 
         Vector3 cannonForward = transform.forward;
         cannonForward.y = 0f;
         cannonForward.Normalize();
-
-        Vector3 rotAxis = Vector3.Cross(Vector3.up, cannonForward).normalized;
 
         yield return new WaitForSeconds(launchDelay);
         if (boss == null) yield break;
@@ -182,6 +186,16 @@ public class CannonMuzzle : MonoBehaviour
                           + cannonForward * launchForwardForce;
         bossRb.linearVelocity = launchVec;
 
+        // ★ 実際の発射方向を基準に回転軸を計算
+        Vector3 launchDir = launchVec.normalized;
+        Vector3 rotAxis = Vector3.Cross(Vector3.up, launchDir).normalized;
+        if (rotAxis.sqrMagnitude < 0.001f)
+            rotAxis = Vector3.Cross(Vector3.up, cannonForward).normalized;
+
+        // ★ うつ伏せの最終角度を、発射前のY軸角度で固定（回転中に変わらないように）
+        float fixedYaw = boss.transform.eulerAngles.y;
+        Quaternion finalRot = Quaternion.Euler(90f, fixedYaw, 0f);
+
         if (launchEffect != null)
         {
             launchEffect.SetActive(true);
@@ -189,21 +203,15 @@ public class CannonMuzzle : MonoBehaviour
             foreach (var p in ps) { p.Clear(); p.Play(); }
         }
 
-
-        yield return new WaitForSeconds(launchDelay);
-
         float timeout = 10f;
         float elapsed = 0f;
-        float startY = transform.position.y;
-        float landedY = startY;
-
-        // 打ち上げ直後の誤検知防止（上昇中は判定しない）
-        bool hasReachedPeak = false;
-        float peakY = transform.position.y;
+        float landedY = transform.position.y;
 
         float landY = groundTransform != null
-    ? groundTransform.position.y
-    : 0f;
+            ? groundTransform.position.y
+            : 0f;
+
+        // ★ 待機なし、発射直後から回転開始
         while (elapsed < timeout)
         {
             elapsed += Time.deltaTime;
@@ -214,7 +222,6 @@ public class CannonMuzzle : MonoBehaviour
                 rotateSpeed * Time.deltaTime,
                 Space.World);
 
-            // 地面のY座標以下になったら着地
             if (boss.transform.position.y <= landY)
             {
                 landedY = landY;
@@ -225,7 +232,6 @@ public class CannonMuzzle : MonoBehaviour
             yield return null;
         }
 
-        // Rigidbody削除と同時にCharacterController有効化（遅延なし）
         if (bossRb != null) Destroy(bossRb);
         if (bossCC != null) bossCC.enabled = true;
 
@@ -234,10 +240,9 @@ public class CannonMuzzle : MonoBehaviour
             landedY,
             boss.transform.position.z);
 
-        yield return StartCoroutine(LandingRollCoroutine(bossCC, cannonForward, rotAxis));
+        yield return StartCoroutine(LandingRollCoroutine(bossCC, launchDir, rotAxis));
 
-        // 同じ回転軸でうつ伏せに
-        Quaternion finalRot = Quaternion.Euler(90f, boss.transform.eulerAngles.y, 0f);
+        // ★ fixedYawを使った最終角度に向かう
         float alignElapsed = 0f;
 
         while (alignElapsed < alignTime)
@@ -246,7 +251,6 @@ public class CannonMuzzle : MonoBehaviour
             float t = alignElapsed / alignTime;
             float speedRate = 1f - t;
 
-            // 同じ軸で回転しながらうつ伏せに向かう
             boss.transform.rotation = Quaternion.RotateTowards(
                 boss.transform.rotation,
                 finalRot,
@@ -258,10 +262,6 @@ public class CannonMuzzle : MonoBehaviour
         boss.transform.rotation = finalRot;
         boss.SetLaunching(false);
 
-        if (playerMove != null)
-            playerMove.SetExternalPositionLock(false, Vector3.zero, false);
-
-        // 着地後にスタンエフェクトを有効化
         boss.EnableStunEffect();
 
         hasLaunched = false;
