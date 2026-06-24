@@ -58,7 +58,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -354,6 +354,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 1
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
@@ -405,7 +411,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!114 &8882643620824209731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,7 +575,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -677,6 +685,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 1
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
@@ -728,7 +742,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!114 &3130294702591157133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +891,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -1436,6 +1452,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 1
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: bbf9efffe5e91bb4f85b82f2b5481633, type: 2}
@@ -1487,7 +1509,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!114 &1109749865639034322
 MonoBehaviour:
   m_ObjectHideFlags: 0

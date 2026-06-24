@@ -78,8 +78,8 @@ GameObject:
   - component: {fileID: 46115201756750537}
   - component: {fileID: 8183923029528119724}
   - component: {fileID: 736339862846101520}
-  - component: {fileID: 6811811379871546568}
   - component: {fileID: 5498733084300352346}
+  - component: {fileID: 1123752728992361675}
   m_Layer: 7
   m_Name: WOOD_BOX
   m_TagString: Untagged
@@ -96,7 +96,7 @@ Transform:
   m_GameObject: {fileID: 7848351613872162606}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5, y: 1.38, z: 12.1}
+  m_LocalPosition: {x: 3.5, y: 2.34, z: 12.1}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -177,7 +177,9 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1314794130463378118
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -229,7 +231,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 1
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
   allyEnemyTarget:
   - {fileID: 5134569167977371405}
@@ -238,6 +247,7 @@ MonoBehaviour:
   targets: []
   turnSpd: 60
   moveSpd: 10
+  Y_lock: 1
 --- !u!114 &736339862846101520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,27 +260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 391a394e38708db4b8db0cf6f65b95f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &6811811379871546568
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7848351613872162606}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 6.498762, y: 6.054258, z: 5.979249}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &5498733084300352346
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -298,3 +287,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &1123752728992361675
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848351613872162606}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.2848928, y: 3.2878253, z: 1.8737242}
+  m_Center: {x: -0.12848938, y: -1.2980968, z: 0.12848961}

@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEditor.SceneTemplate;
 
 public class TitleManager : MonoBehaviour
 {
@@ -19,8 +20,6 @@ public class TitleManager : MonoBehaviour
     [Header("── 設定 ──")]
     [Tooltip("タイトル画像表示後、テキストが出るまでの時間")]
     [SerializeField] private float delayBeforeText = 1.5f;
-
-    [SerializeField] private string nextSceneName = "MainScene";
 
     private bool canProceed = false;
 
@@ -67,9 +66,16 @@ public class TitleManager : MonoBehaviour
     {
         if (!canProceed) return;
 
-        if (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame)
+        // XBOXコントローラーのAボタン
+        bool gamepadPressed = Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame;
+
+        // デバッグ用：Enterキー
+        bool enterPressed = Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame;
+
+        if (gamepadPressed || enterPressed)
         {
-            SceneManager.LoadScene(nextSceneName);
+            SceneTransitionData.nextSceneName = "Stage_B_light";
+            SceneManager.LoadScene("LoadingScene");
         }
     }
 }

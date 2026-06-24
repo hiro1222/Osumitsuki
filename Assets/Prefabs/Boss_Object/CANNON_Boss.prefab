@@ -194,19 +194,23 @@ MonoBehaviour:
   boss: {fileID: 0}
   cannonAutoAim: {fileID: 6490199527678879743}
   launchDelay: 1.5
-  launchForce: 20
-  launchForwardForce: 10
+  launchForce: 30
+  launchForwardForce: 50
   launchEffect: {fileID: 4282530026767933768}
   groundTransform: {fileID: 0}
   groundOffset: 0.1
   extraGravity: 10
   alignTime: 1
-  rotateSpeed: 360
+  rotateSpeed: 720
   landingRollSpeed: 10
   landingRollDuration: 0.5
   landingRotateSpeed: 720
   cameraController: {fileID: 0}
   playerMove: {fileID: 0}
+  goalDoorTransform: {fileID: 0}
+  goalDoorTag: GoalDoor
+  doorHitDistance: 1.5
+  doorHitBigEffect: {fileID: 0}
 --- !u!1 &7538693658187525563
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,6 +693,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea3bae1471e4f04cb4afc8813750a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 1
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: dfb0dce76a5492b4ea667e57e0f57aa4, type: 2}
@@ -698,12 +708,6 @@ MonoBehaviour:
   - {fileID: 1903029148819521481}
   - {fileID: 7956064187554026378}
   allyEnemyManager: {fileID: 0}
-  prefab_aura: {fileID: 0}
-  prefab_flash: {fileID: 0}
-  offset_Aura: {x: 0, y: 0, z: 0}
-  scale_Aura: {x: 5, y: 5, z: 5}
-  offset_Flash: {x: 0, y: 0, z: 0}
-  scale_Flash: {x: 8, y: 8, z: 8}
   power: 1000
   rotateSpeed_H: 80
   rotateSpeed_V: 80
@@ -728,7 +732,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cannon: {fileID: 7499898011686759573}
   requiredAllies: 0
-  raisedLocalEuler: {x: 0, y: 0, z: -90}
+  maxAlliesForFullDown: 4
+  startLocalEuler: {x: 0, y: 0, z: -90}
+  raisedLocalEuler: {x: 0, y: 0, z: 0}
   rotateSpeed: 90
   muzzleTrigger: {fileID: 5964761974286594797}
   debugLog: 0
