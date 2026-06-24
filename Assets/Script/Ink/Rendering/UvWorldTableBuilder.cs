@@ -67,15 +67,12 @@ internal static class UvWorldTableBuilder
     /// </summary>
     public static void Build(Mesh mesh, int gridW, int gridH, string debugName,
                              out Vector3[] cellPositions, out Vector3[] cellNormals,
-                             out bool[] cellValid, out float maxCellDistance,
-                             out float localSpanU, out float localSpanV)
+                             out bool[] cellValid, out float maxCellDistance)
     {
         cellPositions = new Vector3[gridW * gridH];
         cellNormals = new Vector3[gridW * gridH];
         cellValid = new bool[gridW * gridH];
         maxCellDistance = 0f;
-        localSpanU = 0f;
-        localSpanV = 0f;
 
         if (mesh == null) return;
 
@@ -134,10 +131,9 @@ internal static class UvWorldTableBuilder
             }
         }
 
-        // 隣接セル間の3D距離を U/V 方向別に集計
-        // maxCellDistance=UV島境界の判定閾値 / localSpanU,V=各UV軸の1辺ローカル寸法（楕円ブラシ補正用）
-        float totalDistU = 0f, totalDistV = 0f;
-        int countU = 0, countV = 0;
+        // 隣接セル間の平均3D距離を計算（UV島境界の判定閾値）
+        float totalDist = 0f;
+        int distCount = 0;
         for (int gy = 0; gy < gridH; gy++)
         {
             for (int gx = 0; gx < gridW; gx++)
@@ -147,24 +143,18 @@ internal static class UvWorldTableBuilder
 
                 if (gx + 1 < gridW && cellValid[idx + 1])
                 {
-                    totalDistU += (cellPositions[idx + 1] - cellPositions[idx]).magnitude;
-                    countU++;
+                    totalDist += (cellPositions[idx + 1] - cellPositions[idx]).magnitude;
+                    distCount++;
                 }
                 if (gy + 1 < gridH && cellValid[idx + gridW])
                 {
-                    totalDistV += (cellPositions[idx + gridW] - cellPositions[idx]).magnitude;
-                    countV++;
+                    totalDist += (cellPositions[idx + gridW] - cellPositions[idx]).magnitude;
+                    distCount++;
                 }
             }
         }
-        float avgU = countU > 0 ? totalDistU / countU : 0f;
-        float avgV = countV > 0 ? totalDistV / countV : 0f;
-        float avgDist = (countU + countV) > 0 ? (totalDistU + totalDistV) / (countU + countV) : 0.1f;
+        float avgDist = distCount > 0 ? totalDist / distCount : 0.1f;
         maxCellDistance = avgDist * 3f;
-
-        // UV 1辺(0→1)あたりのローカル寸法。片軸しか隣接が無い時はもう片方/平均で代用。
-        localSpanU = (avgU > 1e-6f ? avgU : avgDist) * gridW;
-        localSpanV = (avgV > 1e-6f ? avgV : avgDist) * gridH;
 
 #if UNITY_EDITOR
         int validCount = 0;
