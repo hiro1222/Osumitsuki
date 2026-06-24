@@ -65,6 +65,7 @@ public class PaintableSurface : MonoBehaviour
     private Vector3[] cellNormals;
     private bool[] cellValid;
     private float maxCellDistance;
+    private float worldSpanU, worldSpanV;   // UV各軸の1辺ワールド寸法（楕円ブラシ＝世界で円・非一様スケール対応）
 
     // 描画（テクスチャ生成・アップロードは InkSurfaceRenderer に委譲）
     private InkSurfaceRenderer inkRenderer;
@@ -77,7 +78,7 @@ public class PaintableSurface : MonoBehaviour
     // コリジョン（チャンク管理は InkCollisionChunks に委譲）
     private InkCollisionChunks chunks;
 
-    // 塗り毎に呼ばれる WorldRadiusToUV 等での GetComponent を避けるため Awake でキャッシュ
+    // 塗り毎に呼ばれる RadiiUV 等での GetComponent を避けるため Awake でキャッシュ
     private MeshFilter _meshFilter;
 
     // 遅延ビルド: 重い初期化は EnsureBuilt() まで遅らせる（シーンロード時の一括Awakeフリーズ回避）
@@ -213,8 +214,10 @@ public class PaintableSurface : MonoBehaviour
     {
         Mesh mesh = (_meshFilter != null) ? _meshFilter.sharedMesh : null;
         UvWorldTableBuilder.Build(mesh, gridW, gridH, gameObject.name,
+                                  transform.localToWorldMatrix,
                                   out cellPositions, out cellNormals,
-                                  out cellValid, out maxCellDistance);
+                                  out cellValid, out maxCellDistance,
+                                  out worldSpanU, out worldSpanV);
     }
 
     // ====================================================================
@@ -239,11 +242,12 @@ public class PaintableSurface : MonoBehaviour
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         Vector3 hitNormalLocal = transform.InverseTransformDirection(hit.normal).normalized;
         Vector2 uv = hit.textureCoord;
-        float uvRadius = WorldRadiusToUV(radius);
+        Vector2 uvRadii = RadiiUV(radius);
+        float worldRadiusSq = radius * radius;   // 3D距離判定はワールド空間で（非一様スケール対応）
 
         float avgScale = AvgScale();
         float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
-        float localRadiusSq = localRadius * localRadius;
+        float localRadiusSq = localRadius * localRadius;   // obj_osumi通知用に残す
 
         // ── 旧互換: Obj_Osumitsuki への直接通知 ──
         // DEPRECATED: 新コードは OnPainted イベントを使うこと
@@ -255,14 +259,15 @@ public class PaintableSurface : MonoBehaviour
         }
 #pragma warning restore CS0618
 
-        PaintInternal(uv, uvRadius, hitLocal, hitNormalLocal, localRadiusSq, inkDensity, inkColorId);
+        PaintInternal(uv, uvRadii, hitLocal, hitNormalLocal, worldRadiusSq, inkDensity, inkColorId);
     }
 
     /// <summary>UV座標のみで塗る（3D距離チェックなし。互換用）</summary>
     public void PaintAtUV(Vector2 uv, float uvRadius, byte inkDensity, byte inkColorId = 0)
     {
         EnsureBuilt();
-        PaintInternal(uv, uvRadius, Vector3.zero, Vector3.zero, float.MaxValue, inkDensity, inkColorId);
+        // 明示UV指定なので円のまま（rU=rV=uvRadius）
+        PaintInternal(uv, new Vector2(uvRadius, uvRadius), Vector3.zero, Vector3.zero, float.MaxValue, inkDensity, inkColorId);
     }
 
     /// <summary>
@@ -279,18 +284,18 @@ public class PaintableSurface : MonoBehaviour
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         Vector3 hitNormalLocal = transform.InverseTransformDirection(hit.normal).normalized;
         Vector2 uv = hit.textureCoord;
-        float uvRadius = WorldRadiusToUV(radius);
+        Vector2 uvRadii = RadiiUV(radius);
 
         // 3D距離チェック無効化（float.MaxValue を渡す）
-        PaintInternal(uv, uvRadius, hitLocal, hitNormalLocal, float.MaxValue, inkDensity, inkColorId);
+        PaintInternal(uv, uvRadii, hitLocal, hitNormalLocal, float.MaxValue, inkDensity, inkColorId);
     }
 
-    private void PaintInternal(Vector2 uv, float uvRadius,
+    private void PaintInternal(Vector2 uv, Vector2 uvRadii,
                                Vector3 hitLocal, Vector3 hitNormalLocal,
-                               float localRadiusSq,
+                               float worldRadiusSq,
                                byte inkDensity, byte inkColorId)
     {
-        ApplyBrush(uv, uvRadius, hitLocal, hitNormalLocal, localRadiusSq,
+        ApplyBrush(uv, uvRadii, hitLocal, hitNormalLocal, worldRadiusSq,
                    inkDensity, inkColorId, erase: false);
     }
 
@@ -301,38 +306,45 @@ public class PaintableSurface : MonoBehaviour
     /// - 消し: density/color/normal を 0 に戻す
     /// ※ デリゲートを使わずbool分岐にしているのは、毎フレーム呼ばれるためGCゴミを出さないため
     /// </summary>
-    private void ApplyBrush(Vector2 uv, float uvRadius,
+    private void ApplyBrush(Vector2 uv, Vector2 uvRadii,
                             Vector3 hitLocal, Vector3 hitNormalLocal,
-                            float localRadiusSq,
+                            float worldRadiusSq,
                             byte inkDensity, byte inkColorId, bool erase)
     {
         if (!_built) return;   // 構築不能個体(MeshCollider無し等)では配列がnullなので何もしない
+        float rU = Mathf.Max(uvRadii.x, 1e-5f);
+        float rV = Mathf.Max(uvRadii.y, 1e-5f);
+        Matrix4x4 l2w = transform.localToWorldMatrix;   // 3D判定をワールド空間で（非一様スケール対応）
         int cu = Mathf.FloorToInt(uv.x * gridW);
         int cv = Mathf.FloorToInt(uv.y * gridH);
-        int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
+        // #3対策: U/V別に走査範囲を出してグリッドにクランプ（細い板＋大ブラシで走査数が暴走するのを防ぐ）
+        int crU = Mathf.Min(gridW, Mathf.CeilToInt(rU * gridW));
+        int crV = Mathf.Min(gridH, Mathf.CeilToInt(rV * gridH));
 
         bool useHitNormal = !erase && hitNormalLocal.sqrMagnitude > 0.01f;
 
         int changed = 0;       // 実際に変化したセル数（メッシュ再構築判定用）
         int hitCells = 0;      // ブラシ範囲内にヒットしたセル数（飽和済みも含む。OnPainted用）
 
-        for (int dv = -cellRadius; dv <= cellRadius; dv++)
+        for (int dv = -crV; dv <= crV; dv++)
         {
-            for (int du = -cellRadius; du <= cellRadius; du++)
+            for (int du = -crU; du <= crU; du++)
             {
                 int gx = cu + du;
                 int gy = cv + dv;
                 if (gx < 0 || gx >= gridW || gy < 0 || gy >= gridH) continue;
 
-                float distU = (float)du / gridW;
-                float distV = (float)dv / gridH;
-                if (Mathf.Sqrt(distU * distU + distV * distV) > uvRadius) continue;
+                // 楕円(UV)=世界で円: U/V別半径で正規化し、半径1の外を弾く
+                float eu = ((float)du / gridW) / rU;
+                float ev = ((float)dv / gridH) / rV;
+                if (eu * eu + ev * ev > 1f) continue;
 
                 int idx = gy * gridW + gx;
                 if (!cellValid[idx]) continue;
 
-                float dist3DSq = (cellPositions[idx] - hitLocal).sqrMagnitude;
-                if (dist3DSq > localRadiusSq) continue;
+                // 3D距離はワールド空間で（非一様スケールでも世界で真円・UV島の染み出し防止）
+                float dist3DSq = l2w.MultiplyVector(cellPositions[idx] - hitLocal).sqrMagnitude;
+                if (dist3DSq > worldRadiusSq) continue;
 
                 if (erase)
                 {
@@ -369,8 +381,8 @@ public class PaintableSurface : MonoBehaviour
         }
 
         // ── F: 見た目は高解像度GPU RTへ直接スプラット（density配列とは独立系統）──
-        if (erase) inkRenderer?.SplatErase(uv, uvRadius);
-        else       inkRenderer?.SplatAdd(uv, uvRadius, inkDensity);
+        if (erase) inkRenderer?.SplatErase(uv, rU, rV);
+        else       inkRenderer?.SplatAdd(uv, rU, rV, inkDensity);
 
         if (!erase && hitCells > 0)
         {
@@ -379,23 +391,15 @@ public class PaintableSurface : MonoBehaviour
         }
     }
 
-    private float WorldRadiusToUV(float worldRadius)
+    /// <summary>
+    /// 世界半径を UV 各軸の半径(rU, rV)に変換。UVテーブルから測った各軸の「ワールド寸法」(worldSpanU/V)で割るので、
+    /// 非一様スケールで縦長にした板でも「世界で真円」になる（単一半径だとUV円→世界で楕円だった）。
+    /// </summary>
+    private Vector2 RadiiUV(float worldRadius)
     {
-        if (_meshFilter == null || _meshFilter.sharedMesh == null) return 0.1f;
-
-        Bounds b = _meshFilter.sharedMesh.bounds;
-        Vector3 ws = Vector3.Scale(b.size, transform.lossyScale);
-        float ax = Mathf.Abs(ws.x), ay = Mathf.Abs(ws.y), az = Mathf.Abs(ws.z);
-
-        // UVが実際に張る面の寸法で割る。
-        // 3軸平均だと平面は厚み(最小軸≈0)が平均を引き下げ、uvRadiusが過大になる。
-        // → GPU描画(3D距離クリップ無し)が当たり判定(3Dでクリップ済み)より大きく出る原因。
-        // 最小軸を除いた「大きい2軸の平均」を使うと平面/箱で実寸に一致する。
-        float min = Mathf.Min(ax, Mathf.Min(ay, az));
-        float refSize = (ax + ay + az - min) * 0.5f;
-        if (refSize < 0.001f) return 0.1f;
-
-        return worldRadius / refSize;
+        float rU = (worldSpanU > 1e-4f) ? worldRadius / worldSpanU : 0.1f;
+        float rV = (worldSpanV > 1e-4f) ? worldRadius / worldSpanV : 0.1f;
+        return new Vector2(rU, rV);
     }
 
     /// <summary>lossyScaleの3軸平均（ローカル半径・厚みの換算に使用）</summary>
@@ -421,13 +425,10 @@ public class PaintableSurface : MonoBehaviour
 
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
         Vector2 uv = hit.textureCoord;
-        float uvRadius = WorldRadiusToUV(radius);
+        Vector2 uvRadii = RadiiUV(radius);
+        float worldRadiusSq = radius * radius;
 
-        float avgScale = AvgScale();
-        float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
-        float localRadiusSq = localRadius * localRadius;
-
-        EraseInternal(uv, uvRadius, hitLocal, localRadiusSq);
+        EraseInternal(uv, uvRadii, hitLocal, worldRadiusSq);
     }
 
     /// <summary>
@@ -439,10 +440,8 @@ public class PaintableSurface : MonoBehaviour
         EnsureBuilt();
         if (!_built) return;   // 構築不能個体では配列がnull
         Vector3 localCenter = transform.InverseTransformPoint(worldCenter);
-
-        float avgScale = AvgScale();
-        float localRadius = radius / Mathf.Max(avgScale, 0.0001f);
-        float localRadiusSq = localRadius * localRadius;
+        Matrix4x4 l2w = transform.localToWorldMatrix;   // 3D判定をワールド空間で（非一様スケール対応）
+        float worldRadiusSq = radius * radius;
 
         int erased = 0;
         float bestDistSq = float.MaxValue;
@@ -452,8 +451,8 @@ public class PaintableSurface : MonoBehaviour
             if (!cellValid[i]) continue;
             if (density[i] == 0) continue;
 
-            float dist3DSq = (cellPositions[i] - localCenter).sqrMagnitude;
-            if (dist3DSq > localRadiusSq) continue;
+            float dist3DSq = l2w.MultiplyVector(cellPositions[i] - localCenter).sqrMagnitude;
+            if (dist3DSq > worldRadiusSq) continue;
 
             density[i] = 0;
             colorId[i] = 0;
@@ -475,14 +474,15 @@ public class PaintableSurface : MonoBehaviour
             int bgx = bestIdx % gridW;
             int bgy = bestIdx / gridW;
             Vector2 uvCenter = new Vector2((bgx + 0.5f) / gridW, (bgy + 0.5f) / gridH);
-            inkRenderer?.SplatErase(uvCenter, WorldRadiusToUV(radius));
+            Vector2 er = RadiiUV(radius);
+            inkRenderer?.SplatErase(uvCenter, er.x, er.y);
         }
     }
 
-    private void EraseInternal(Vector2 uv, float uvRadius,
-                               Vector3 hitLocal, float localRadiusSq)
+    private void EraseInternal(Vector2 uv, Vector2 uvRadii,
+                               Vector3 hitLocal, float worldRadiusSq)
     {
-        ApplyBrush(uv, uvRadius, hitLocal, Vector3.zero, localRadiusSq,
+        ApplyBrush(uv, uvRadii, hitLocal, Vector3.zero, worldRadiusSq,
                    0, 0, erase: true);
     }
 

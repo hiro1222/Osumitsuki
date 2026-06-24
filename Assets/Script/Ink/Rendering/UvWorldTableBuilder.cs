@@ -66,13 +66,17 @@ internal static class UvWorldTableBuilder
     /// メッシュが無い / UVが無い場合は空テーブル(cellValid全false, maxCellDistance=0)を返す。
     /// </summary>
     public static void Build(Mesh mesh, int gridW, int gridH, string debugName,
+                             Matrix4x4 localToWorld,
                              out Vector3[] cellPositions, out Vector3[] cellNormals,
-                             out bool[] cellValid, out float maxCellDistance)
+                             out bool[] cellValid, out float maxCellDistance,
+                             out float worldSpanU, out float worldSpanV)
     {
         cellPositions = new Vector3[gridW * gridH];
         cellNormals = new Vector3[gridW * gridH];
         cellValid = new bool[gridW * gridH];
         maxCellDistance = 0f;
+        worldSpanU = 0f;
+        worldSpanV = 0f;
 
         if (mesh == null) return;
 
@@ -131,9 +135,11 @@ internal static class UvWorldTableBuilder
             }
         }
 
-        // 隣接セル間の平均3D距離を計算（UV島境界の判定閾値）
-        float totalDist = 0f;
-        int distCount = 0;
+        // 隣接セル間距離を集計。
+        // maxCellDistance はローカル距離（InkCollisionChunks の tooFar 判定がローカルなので）。
+        // worldSpanU/V は localToWorld を通したワールド距離（非一様スケールでも世界で真円のブラシにするため）。
+        float totalLocal = 0f; int distCount = 0;
+        float totalWorldU = 0f, totalWorldV = 0f; int countU = 0, countV = 0;
         for (int gy = 0; gy < gridH; gy++)
         {
             for (int gx = 0; gx < gridW; gx++)
@@ -143,18 +149,28 @@ internal static class UvWorldTableBuilder
 
                 if (gx + 1 < gridW && cellValid[idx + 1])
                 {
-                    totalDist += (cellPositions[idx + 1] - cellPositions[idx]).magnitude;
-                    distCount++;
+                    Vector3 d = cellPositions[idx + 1] - cellPositions[idx];
+                    totalLocal += d.magnitude; distCount++;
+                    totalWorldU += localToWorld.MultiplyVector(d).magnitude; countU++;
                 }
                 if (gy + 1 < gridH && cellValid[idx + gridW])
                 {
-                    totalDist += (cellPositions[idx + gridW] - cellPositions[idx]).magnitude;
-                    distCount++;
+                    Vector3 d = cellPositions[idx + gridW] - cellPositions[idx];
+                    totalLocal += d.magnitude; distCount++;
+                    totalWorldV += localToWorld.MultiplyVector(d).magnitude; countV++;
                 }
             }
         }
-        float avgDist = distCount > 0 ? totalDist / distCount : 0.1f;
+        float avgDist = distCount > 0 ? totalLocal / distCount : 0.1f;
         maxCellDistance = avgDist * 3f;
+
+        // UV 1辺(0→1)あたりのワールド寸法。片軸欠落時はもう片方で代用。
+        float avgWU = countU > 0 ? totalWorldU / countU : 0f;
+        float avgWV = countV > 0 ? totalWorldV / countV : 0f;
+        float fallback = Mathf.Max(avgWU, avgWV);
+        if (fallback < 1e-6f) fallback = 0.01f;
+        worldSpanU = (avgWU > 1e-6f ? avgWU : fallback) * gridW;
+        worldSpanV = (avgWV > 1e-6f ? avgWV : fallback) * gridH;
 
 #if UNITY_EDITOR
         int validCount = 0;

@@ -3,7 +3,8 @@
 // density用の RenderTexture(R8) に、UV空間で円を「加算(塗り)/減算(消し)」する裏方シェーダ。
 // PaintableSurface(InkSurfaceRenderer)から Shader.Find("Hidden/InkBrushSplat") + DrawProceduralNow で使う。
 //
-// ■ _Brush = (中心UV.x, 中心UV.y, 半径(UV), 強さ)
+// ■ _Brush = (中心UV.x, 中心UV.y, UV半径U, UV半径V) / _BrushStrength = 強さ
+//   U/V別半径＝楕円(UV)で、非一様スケールの板でも世界では真円になる
 // ■ _FlipY = 1 で上下反転（墨が上下逆に出る環境用の保険）
 // ■ 注意: マテリアル参照0・Shader.Findのみなので、ビルドでは
 //         Graphics > Always Included Shaders に登録すること（MaskAdditiveBlendと同じ扱い）。
@@ -16,7 +17,8 @@ Shader "Hidden/InkBrushSplat"
         Cull Off  ZWrite Off  ZTest Always
 
         HLSLINCLUDE
-        float4 _Brush;   // (中心uv.x, 中心uv.y, 半径(UV), 強さ)
+        float4 _Brush;   // (中心uv.x, 中心uv.y, UV半径U, UV半径V)
+        float  _BrushStrength;
         float  _FlipX;
         float  _FlipY;
 
@@ -36,9 +38,12 @@ Shader "Hidden/InkBrushSplat"
         {
             float2 s = float2(lerp(i.uv.x, 1.0 - i.uv.x, _FlipX),
                               lerp(i.uv.y, 1.0 - i.uv.y, _FlipY));
-            float d  = distance(s, _Brush.xy);
-            float a  = 1.0 - smoothstep(_Brush.z * 0.8, _Brush.z, d);   // 中心ベタ＋柔らかい縁
-            return half4(a * _Brush.w, 0.0, 0.0, 0.0);
+            // U/V別半径で正規化 → 楕円(UV)＝世界で真円。d=1.0 が縁
+            float dx = (s.x - _Brush.x) / max(_Brush.z, 1e-5);
+            float dy = (s.y - _Brush.y) / max(_Brush.w, 1e-5);
+            float d  = sqrt(dx * dx + dy * dy);
+            float a  = 1.0 - smoothstep(0.8, 1.0, d);   // 中心ベタ＋柔らかい縁
+            return half4(a * _BrushStrength, 0.0, 0.0, 0.0);
         }
         ENDHLSL
 
