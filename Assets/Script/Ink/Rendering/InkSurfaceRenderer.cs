@@ -28,9 +28,10 @@ internal class InkSurfaceRenderer
     private static readonly int ID_InkTex      = Shader.PropertyToID("_InkTex");
     private static readonly int ID_InkColorTex = Shader.PropertyToID("_InkColorTex");
     private static readonly int ID_InkPalette  = Shader.PropertyToID("_InkPalette");
-    private static readonly int ID_Brush       = Shader.PropertyToID("_Brush");
-    private static readonly int ID_FlipX       = Shader.PropertyToID("_FlipX");
-    private static readonly int ID_FlipY       = Shader.PropertyToID("_FlipY");
+    private static readonly int ID_Brush         = Shader.PropertyToID("_Brush");
+    private static readonly int ID_BrushStrength = Shader.PropertyToID("_BrushStrength");
+    private static readonly int ID_FlipX         = Shader.PropertyToID("_FlipX");
+    private static readonly int ID_FlipY         = Shader.PropertyToID("_FlipY");
 
     /// <summary>
     /// 高解像度densityRT・低解像度colorテクスチャ・GPUブラシを生成し、マテリアルに送る。
@@ -86,23 +87,25 @@ internal class InkSurfaceRenderer
         meshRenderer.SetPropertyBlock(propBlock);
     }
 
-    /// <summary>density RT にブラシを加算（塗り）。</summary>
-    public void SplatAdd(Vector2 uv, float uvRadius, byte density)
+    /// <summary>density RT にブラシを加算（塗り）。rU/rV はUV各軸の半径（楕円＝世界で円）。</summary>
+    public void SplatAdd(Vector2 uv, float rU, float rV, byte density)
     {
-        Splat(uv, uvRadius, density / 255f, pass: 0);
+        Splat(uv, rU, rV, density / 255f, pass: 0);
     }
 
     /// <summary>density RT からブラシ分を減算（消し）。</summary>
-    public void SplatErase(Vector2 uv, float uvRadius)
+    public void SplatErase(Vector2 uv, float rU, float rV)
     {
-        Splat(uv, uvRadius, 1f, pass: 1);
+        Splat(uv, rU, rV, 1f, pass: 1);
     }
 
-    private void Splat(Vector2 uv, float uvRadius, float strength, int pass)
+    private void Splat(Vector2 uv, float rU, float rV, float strength, int pass)
     {
         if (brushMat == null || densityRT == null) return;
 
-        brushMat.SetVector(ID_Brush, new Vector4(uv.x, uv.y, Mathf.Max(uvRadius, 1e-4f), strength));
+        // _Brush = (中心uv.x, 中心uv.y, UV半径U, UV半径V)。強さは別uniform。
+        brushMat.SetVector(ID_Brush, new Vector4(uv.x, uv.y, Mathf.Max(rU, 1e-4f), Mathf.Max(rV, 1e-4f)));
+        brushMat.SetFloat(ID_BrushStrength, strength);
 
         RenderTexture prev = RenderTexture.active;
         Graphics.SetRenderTarget(densityRT);
