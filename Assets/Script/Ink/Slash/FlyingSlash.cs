@@ -44,6 +44,8 @@ public class FlyingSlash : MonoBehaviour
             effectObj.transform.rotation = slashBasis * Quaternion.Euler(pattern.effectRotation);
             effectObj.transform.localScale = pattern.effectScale;
         }
+
+        PrebuildAlongPath();   // 弾道が通る地面サーフェスを先読みで構築キューへ（着弾/trailのカクつき防止）
     }
 
     private void Update()
@@ -120,6 +122,31 @@ public class FlyingSlash : MonoBehaviour
             float trailRadius = pattern.trailRadius;
             byte trailDensity = (byte)(pattern.inkDensity * 0.6f);
             InkPaintService.PaintArea(groundHit, trailRadius, trailDensity);
+        }
+    }
+
+    /// <summary>
+    /// 発射時に弾道(重力込み)をサンプルし、各点の真下にある地面サーフェスを
+    /// ストリーマの優先構築キューへ登録する。trail/着弾が遠くに届く前に構築を済ませ、
+    /// on-demandビルドの一瞬の固まりを防ぐ。（プリビルドは数フレームに分散される）
+    /// </summary>
+    private void PrebuildAlongPath()
+    {
+        var streamer = InkSurfaceStreamer.Instance;
+        if (streamer == null || pattern == null) return;
+
+        Vector3 pos = transform.position;
+        Vector3 vel = velocity;
+        const float dt = 0.05f;
+        for (float t = 0f; t < pattern.lifetime; t += dt)
+        {
+            if (InkPaintService.Raycast(pos, Vector3.down, out RaycastHit hit, 20f, hitMask))
+            {
+                var ps = hit.collider.GetComponentInParent<PaintableSurface>();
+                if (ps != null) streamer.RequestBuild(ps);
+            }
+            vel.y -= pattern.gravity * dt;
+            pos += vel * dt;
         }
     }
 

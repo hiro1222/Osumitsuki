@@ -32,7 +32,7 @@ public class PaintableSurface : MonoBehaviour
     [SerializeField] private float targetCellSize = 0.05f;
     [Tooltip("自動計算時の最小/最大解像度（メモリ節約のための上限）")]
     [SerializeField] private int minGridResolution = 32;
-    [SerializeField] private int maxGridResolution = 512;
+    [SerializeField] private int maxGridResolution = 512;   // CPUグリッド(コリジョン/色ID)。見た目はvisualResolution(GPU)で別管理
     [Tooltip("固定モード時の解像度（autoGridResolution=OFFのときに使う）")]
     [SerializeField] private int gridResolution = 64;
     [Tooltip("通行可能の閾値（0〜255）")]
@@ -43,6 +43,8 @@ public class PaintableSurface : MonoBehaviour
     [SerializeField] private int chunkSize = 16;
     [Tooltip("コリジョンメッシュの厚み")]
     [SerializeField] private float meshThickness = 0.15f;
+    [Tooltip("コリジョン再生成(MeshCollider再cook)の最小間隔(秒)。塗り中は見た目は即時、コリジョンはこの間隔でまとめて更新。0=毎フレーム(現状と同じ)")]
+    [SerializeField] private float collisionRebuildInterval = 0.06f;
 
     [Header("Rendering (GPU高解像度ビジュアル)")]
     [Tooltip("墨の見た目テクスチャ(GPU RenderTexture)の解像度。コリジョン/歩行のgrid解像度とは独立。上げてもCPUコスト・メモリは増えない。")]
@@ -68,8 +70,19 @@ public class PaintableSurface : MonoBehaviour
     private InkSurfaceRenderer inkRenderer;
     private bool visualDirty;
 
+    // コリジョン再cookのthrottle状態（塗り中の毎フレーム再cookを間引く）
+    private bool collisionRebuildPending;
+    private float lastCollisionRebuildTime;
+
     // コリジョン（チャンク管理は InkCollisionChunks に委譲）
     private InkCollisionChunks chunks;
+
+    // 塗り毎に呼ばれる WorldRadiusToUV 等での GetComponent を避けるため Awake でキャッシュ
+    private MeshFilter _meshFilter;
+
+    // 遅延ビルド: 重い初期化は EnsureBuilt() まで遅らせる（シーンロード時の一括Awakeフリーズ回避）
+    private bool _built;
+    private MeshCollider _meshCollider;   // MeshColliderチェック兼 近接判定bounds用
 
     // ── 旧互換用（DEPRECATED: 将来削除予定）──
     // 新しいコードでは OnPainted イベントを購読してください
@@ -81,6 +94,11 @@ public class PaintableSurface : MonoBehaviour
     public int GridW => gridW;
     public int GridH => gridH;
     public bool VisualDirty => visualDirty;
+
+    /// <summary>重い初期化(EnsureBuilt)が完了済みか。</summary>
+    public bool IsBuilt => _built;
+    /// <summary>近接ストリーミング用のワールドAABB（MeshColliderのbounds）。</summary>
+    public Bounds SurfaceBounds => _meshCollider != null ? _meshCollider.bounds : default;
 
     // ====================================================================
     //  イベント
@@ -104,39 +122,49 @@ public class PaintableSurface : MonoBehaviour
 
     private void Awake()
     {
-        // 解像度を決定（自動 or 固定）
-        int finalResolution = autoGridResolution
-            ? CalculateAutoResolution()
-            : gridResolution;
+        // ── 軽い初期化だけ（重い処理は EnsureBuilt に遅延：シーンロード時の一括Awakeフリーズ回避）──
+        _meshFilter = GetComponent<MeshFilter>();
 
-        gridW = finalResolution;
-        gridH = finalResolution;
-        density = new byte[gridW * gridH];
-        colorId = new byte[gridW * gridH];
-        paintedNormals = new Vector3[gridW * gridH];
-
-        // MeshColliderチェック
-        var mc = GetComponent<MeshCollider>();
-        if (mc == null)
+        // MeshColliderチェック（bounds=近接判定にも使うのでキャッシュ）
+        _meshCollider = GetComponent<MeshCollider>();
+        if (_meshCollider == null)
         {
             Debug.LogError($"[PaintableSurface] {gameObject.name}: MeshColliderが必要です");
             enabled = false;
             return;
         }
 
+        // 解像度を決定（自動 or 固定）※軽い計算。配列確保・テーブル構築は EnsureBuilt で行う
+        int finalResolution = autoGridResolution ? CalculateAutoResolution() : gridResolution;
+        gridW = finalResolution;
+        gridH = finalResolution;
+
         // 親メッシュを SumiVSObject レイヤーに入れる
-        // （Player↔SumiVSObject の衝突をOFFにしておくことで、isTriggerなしでも
-        //   CharacterControllerは親メッシュをすり抜ける。凹メッシュはisTriggerにできないため）
+        // （Player↔SumiVSObject の衝突OFFで、isTriggerなしでもCharacterControllerはすり抜ける）
         int sumiLayer = LayerMask.NameToLayer("SumiVSObject");
-        if (sumiLayer >= 0)
-        {
-            gameObject.layer = sumiLayer;
-        }
-        else
-        {
-            Debug.LogWarning($"[PaintableSurface] 'SumiVSObject' レイヤーが見つかりません。" +
-                             "Edit > Project Settings > Tags and Layers で追加してください。");
-        }
+        if (sumiLayer >= 0) gameObject.layer = sumiLayer;
+        else Debug.LogWarning($"[PaintableSurface] 'SumiVSObject' レイヤーが見つかりません。" +
+                              "Edit > Project Settings > Tags and Layers で追加してください。");
+
+        // ── 旧互換: Obj_Osumitsuki への直接通知用 ──
+#pragma warning disable CS0618
+        obj_osumi = GetComponent<Obj_Osumitsuki>();
+#pragma warning restore CS0618
+    }
+
+    /// <summary>
+    /// 重い初期化（density配列確保・UV→3Dテーブル・コリジョンチャンク・描画RT）を初回のみ実行する。
+    /// Awakeでは行わず、InkSurfaceStreamer がプレイヤー近傍で呼ぶ／塗り・消し入口でも保険で呼ぶ。
+    /// → シーンロード時に全サーフェスのAwakeが一斉に固まるのを防ぐ。
+    /// </summary>
+    public void EnsureBuilt()
+    {
+        if (_built || _meshCollider == null) return;
+        _built = true;
+
+        density        = new byte[gridW * gridH];
+        colorId        = new byte[gridW * gridH];
+        paintedNormals = new Vector3[gridW * gridH];
 
         BuildUVToWorldTable();
 
@@ -157,19 +185,18 @@ public class PaintableSurface : MonoBehaviour
         inkRenderer = new InkSurfaceRenderer();
         Shader brushShader = Shader.Find("Hidden/InkBrushSplat");
         if (brushShader == null)
-        {
             Debug.LogWarning("[PaintableSurface] 'Hidden/InkBrushSplat' が見つかりません。" +
                              "Graphics > Always Included Shaders に追加してください（ビルドで墨が出なくなります）。");
-        }
         inkRenderer.Init(GetComponent<Renderer>(), gridW, gridH,
                          visualResolution, brushShader, flipInkHorizontal, flipInkVertical);
         visualDirty = false;
+    }
 
-        // ── 旧互換: Obj_Osumitsuki への直接通知用 ──
-        // 新しいコードは OnPainted イベントを使ってください
-#pragma warning disable CS0618
-        obj_osumi = GetComponent<Obj_Osumitsuki>();
-#pragma warning restore CS0618
+    private void OnEnable()
+    {
+        // 実行時Instantiateや後からSetActiveされた個体もストリーマに拾わせる
+        // （シーン最初からの個体はストリーマ側の起動時スキャンで拾われる）
+        InkSurfaceStreamer.Instance?.Register(this);
     }
 
     private void OnDestroy()
@@ -184,8 +211,7 @@ public class PaintableSurface : MonoBehaviour
 
     private void BuildUVToWorldTable()
     {
-        var mf = GetComponent<MeshFilter>();
-        Mesh mesh = (mf != null) ? mf.sharedMesh : null;
+        Mesh mesh = (_meshFilter != null) ? _meshFilter.sharedMesh : null;
         UvWorldTableBuilder.Build(mesh, gridW, gridH, gameObject.name,
                                   out cellPositions, out cellNormals,
                                   out cellValid, out maxCellDistance);
@@ -201,6 +227,8 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void Paint(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
     {
+        EnsureBuilt();   // 未構築なら今ここで構築（遠距離斬撃の着弾等の保険）
+
         // インクコリジョン子オブジェクトに当たったRaycastHitは弾く
         // （InkCol_xxxメッシュにはUVがないのでtextureCoordが読めずエラーになる）
         if (IsInkChunkCollider(hit.collider))
@@ -233,6 +261,7 @@ public class PaintableSurface : MonoBehaviour
     /// <summary>UV座標のみで塗る（3D距離チェックなし。互換用）</summary>
     public void PaintAtUV(Vector2 uv, float uvRadius, byte inkDensity, byte inkColorId = 0)
     {
+        EnsureBuilt();
         PaintInternal(uv, uvRadius, Vector3.zero, Vector3.zero, float.MaxValue, inkDensity, inkColorId);
     }
 
@@ -244,6 +273,7 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void PaintNeighbor(RaycastHit hit, float radius, byte inkDensity, byte inkColorId = 0)
     {
+        EnsureBuilt();
         if (IsInkChunkCollider(hit.collider)) return;
 
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
@@ -276,6 +306,7 @@ public class PaintableSurface : MonoBehaviour
                             float localRadiusSq,
                             byte inkDensity, byte inkColorId, bool erase)
     {
+        if (!_built) return;   // 構築不能個体(MeshCollider無し等)では配列がnullなので何もしない
         int cu = Mathf.FloorToInt(uv.x * gridW);
         int cv = Mathf.FloorToInt(uv.y * gridH);
         int cellRadius = Mathf.CeilToInt(uvRadius * Mathf.Max(gridW, gridH));
@@ -333,8 +364,8 @@ public class PaintableSurface : MonoBehaviour
 
         if (changed > 0)
         {
-            RebuildDirtyChunks();
-            visualDirty = true;   // colorId(低解像度)のアップロード用
+            collisionRebuildPending = true;   // 実際の再cookはLateUpdateでthrottle（毎フレームcookを防ぐ）
+            visualDirty = true;               // colorId(低解像度)のアップロード用
         }
 
         // ── F: 見た目は高解像度GPU RTへ直接スプラット（density配列とは独立系統）──
@@ -350,10 +381,9 @@ public class PaintableSurface : MonoBehaviour
 
     private float WorldRadiusToUV(float worldRadius)
     {
-        var mf = GetComponent<MeshFilter>();
-        if (mf == null || mf.sharedMesh == null) return 0.1f;
+        if (_meshFilter == null || _meshFilter.sharedMesh == null) return 0.1f;
 
-        Bounds b = mf.sharedMesh.bounds;
+        Bounds b = _meshFilter.sharedMesh.bounds;
         Vector3 ws = Vector3.Scale(b.size, transform.lossyScale);
         float ax = Mathf.Abs(ws.x), ay = Mathf.Abs(ws.y), az = Mathf.Abs(ws.z);
 
@@ -386,6 +416,7 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void Erase(RaycastHit hit, float radius)
     {
+        EnsureBuilt();
         if (IsInkChunkCollider(hit.collider)) return;
 
         Vector3 hitLocal = transform.InverseTransformPoint(hit.point);
@@ -405,6 +436,8 @@ public class PaintableSurface : MonoBehaviour
     /// </summary>
     public void EraseAt(Vector3 worldCenter, float radius)
     {
+        EnsureBuilt();
+        if (!_built) return;   // 構築不能個体では配列がnull
         Vector3 localCenter = transform.InverseTransformPoint(worldCenter);
 
         float avgScale = AvgScale();
@@ -459,40 +492,23 @@ public class PaintableSurface : MonoBehaviour
 
     public bool CanWalk(RaycastHit hit)
     {
+        if (!_built) return false;   // 未構築＝まだ墨なし
         if (IsInkChunkCollider(hit.collider)) return false;
         return GetDensityAtUV(hit.textureCoord) >= walkThreshold;
     }
 
     public bool HasDensityAt(RaycastHit hit)
     {
+        if (!_built) return false;
         if (IsInkChunkCollider(hit.collider)) return false;
         return GetDensityAtUV(hit.textureCoord) > 0;
     }
 
     public byte GetDensity(RaycastHit hit)
     {
+        if (!_built) return 0;
         if (IsInkChunkCollider(hit.collider)) return 0;
         return GetDensityAtUV(hit.textureCoord);
-    }
-
-    /// <summary>ワールド座標からdensity取得（Raycast不要の概算版）</summary>
-    public byte GetDensityAt(Vector3 worldPos)
-    {
-        Vector3 local = transform.InverseTransformPoint(worldPos);
-        float bestDist = float.MaxValue;
-        byte bestDensity = 0;
-
-        for (int i = 0; i < cellValid.Length; i++)
-        {
-            if (!cellValid[i]) continue;
-            float d = (cellPositions[i] - local).sqrMagnitude;
-            if (d < bestDist)
-            {
-                bestDist = d;
-                bestDensity = density[i];
-            }
-        }
-        return bestDensity;
     }
 
     private byte GetDensityAtUV(Vector2 uv)
@@ -509,10 +525,22 @@ public class PaintableSurface : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!visualDirty) return;
-        // density(見た目)はスプラットでRTに反映済み。ここでは色ID(低解像度)だけ送る。
-        inkRenderer?.UploadColor(colorId);
-        visualDirty = false;
+        if (!_built) return;
+
+        // 見た目(色ID低解像度)は即時アップロード（density本体はスプラットでRTに反映済み）
+        if (visualDirty)
+        {
+            inkRenderer?.UploadColor(colorId);
+            visualDirty = false;
+        }
+
+        // コリジョン再cookはthrottle: 溜まったdirtyチャンクを最小間隔でまとめて再構築
+        // （interval=0 なら毎フレーム＝現状と同じ）
+        if (collisionRebuildPending &&
+            Time.time - lastCollisionRebuildTime >= collisionRebuildInterval)
+        {
+            RebuildDirtyChunks();
+        }
     }
 
     // ====================================================================
@@ -521,7 +549,13 @@ public class PaintableSurface : MonoBehaviour
 
     private void MarkChunkDirty(int gx, int gy) => chunks?.MarkDirty(gx, gy);
 
-    private void RebuildDirtyChunks() => chunks?.RebuildDirty(AvgScale());
+    /// <summary>溜まったdirtyチャンクを今すぐ再構築(再cook)し、throttle状態をリセットする。</summary>
+    private void RebuildDirtyChunks()
+    {
+        chunks?.RebuildDirty(AvgScale());
+        collisionRebuildPending = false;
+        lastCollisionRebuildTime = Time.time;
+    }
 
     /// <summary>当たったコライダーが自分のインクチャンクのどれかか判定</summary>
     private bool IsInkChunkCollider(Collider col) => chunks != null && chunks.IsInkChunkCollider(col);
@@ -538,7 +572,7 @@ public class PaintableSurface : MonoBehaviour
     private int CalculateAutoResolution()
     {
         return UvWorldTableBuilder.CalculateResolution(
-            GetComponent<MeshFilter>(), transform, targetCellSize,
+            _meshFilter, transform, targetCellSize,
             minGridResolution, maxGridResolution, gridResolution, gameObject.name);
     }
 
@@ -562,6 +596,7 @@ public class PaintableSurface : MonoBehaviour
     /// <summary>全グリッドをクリアしてコリジョンを消す（デバッグ用にも使える）</summary>
     public void ClearAll()
     {
+        if (!_built) return;   // 未構築＝消すものなし
         System.Array.Clear(density, 0, density.Length);
         System.Array.Clear(colorId, 0, colorId.Length);
         for (int i = 0; i < paintedNormals.Length; i++)

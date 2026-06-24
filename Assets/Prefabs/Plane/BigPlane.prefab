@@ -108,7 +108,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &812725929085254666
 MeshCollider:
   m_ObjectHideFlags: 0
