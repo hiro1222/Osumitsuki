@@ -4,7 +4,7 @@ public class Boss_Lantern : MonoBehaviour
 {
     [SerializeField] private Boss_LanternSet lanternSet;
     private float lastHitTime = -999f;
-    private float hitCooldown = 3f;
+    private float hitCooldown = 0.5f;
     private int inkLayer;
     private Collider[] cachedColliders;
 

@@ -109,6 +109,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private List<Transform> phase3SpawnPoints = new List<Transform>();
     [Tooltip("フェーズ3オブジェクトの生成時の角度")]
     [SerializeField] private Vector3 phase3ObjectRotation = Vector3.zero;
+    [Header("── フェーズ3木箱生成 ──")]
+    [Tooltip("フェーズ3木箱のPrefab")]
+    [SerializeField] private GameObject phase3CratePrefab;
+    [Tooltip("フェーズ3木箱の生成位置")]
+    [SerializeField] private List<Transform> phase3CrateSpawnPoints = new List<Transform>();
 
     [Header("── タックル（フェーズ1）──")]
     [Tooltip("タックル速度")]
@@ -170,6 +175,17 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private int hipDropCount = 3;
     [Tooltip("着地後の硬直時間（秒）")]
     [SerializeField] private float hipDropRecoverTime = 0.3f;
+
+    [Header("── フェーズ3 スタン中の押し ──")]
+    [Tooltip("攻撃が当たったときにボスを押す距離（m）")]
+    [SerializeField] private float pushDistance = 0.3f;
+    [Tooltip("押し動作にかける時間（秒）")]
+    [SerializeField] private float pushDuration = 0.3f;
+    [Tooltip("この距離以内に大砲があれば補正をかける（m）")]
+    [SerializeField] private float cannonCorrectionRadius = 5f;
+    [Tooltip("大砲が近くにあるときの補正の強さ（0=補正なし、1=完全に大砲方向）")]
+    [SerializeField, Range(0f, 1f)] private float pushTowardCannonBlend = 0.4f;
+    [SerializeField] private Transform cannonEntrancePoint;
 
     [Header("── 地面 ──")]
     [SerializeField] private Transform groundTransform;
@@ -323,6 +339,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private int rollAvoidFrameCount = 0;
     private Vector3 rollAvoidMoveDir; // キャッシュした移動方向
 
+    private bool isPushing = false; // 押し処理が重複しないように
+
+    /// <summary>フェーズ3で木箱によりスタンしているか（大砲ヒットによるスタンではない）</summary>
+    public bool GetIsPhase3BoxStun() => currentPhase == 2 && state == BossState.Stun && !isHitCannon;
+
     // Stop用
     private float stopTimer = 0f;
 
@@ -443,13 +464,17 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         // スタンエフェクト
         if (stunEffect != null)
         {
-            if (currentPhase >= 2)
+            // フェーズ3かつ大砲ヒットによるスタンのみ手動制御（CannonMuzzleがEnableStunEffectを呼ぶ）
+            if (currentPhase >= 2 && isHitCannon)
             {
                 if (state != BossState.Stun && state != BossState.Defeated)
                     stunEffect.SetActive(false);
             }
             else
+            {
+                // それ以外（フェーズ1・2、またはフェーズ3の木箱スタン）は自動制御
                 stunEffect.SetActive(state == BossState.Stun);
+            }
         }
 
         // ゴロゴロエフェクト
@@ -519,6 +544,24 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
 
+        // フェーズ3はマスク進行ではなく「押す」処理
+        if (currentPhase == 2)
+        {
+            PushBossOnAttack();
+
+            // 被弾エフェクト再生
+            if (stunHitEffect != null)
+            {
+                stunHitEffect.SetActive(true);
+                var ps = stunHitEffect.GetComponentsInChildren<ParticleSystem>();
+                foreach (var p in ps) { p.Clear(); p.Play(); }
+                StartCoroutine(DisableEffectWhenDone(stunHitEffect));
+            }
+
+            Debug.Log("[Boss_SB] ボスを押した（フェーズ3）");
+            return;
+        }
+
         inkHitCount++;
 
         // 被弾エフェクト再生
@@ -531,13 +574,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         var maskProgress = GetComponentsInChildren<MaskedInkProgress>();
-        Debug.Log($"[Boss_SB] MaskedInkProgress数={maskProgress.Length}");
         foreach (var mask in maskProgress)
-        {
             mask.Advance();
-            Debug.Log($"[Boss_SB] Advance後 step={mask.CurrentStep}/{mask.StepCount}");
-        }
-        Debug.Log($"[Boss_SB] 塗り回数(スタン中): {inkHitCount} / {required} フェーズ{currentPhase + 1}");
 
         if (resetStunTimerOnHit)
             stunTimer = 0f;
@@ -547,6 +585,42 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             inkHitCount = 0;
             EnterRoar();
         }
+    }
+
+    private void PushBossOnAttack()
+    {
+        if (bossController == null || !bossController.enabled) return;
+        if (player == null) return;
+        if (isPushing) return; // ★ 既に押し中なら無視（または下記コメントの方式に変更可）
+
+        Vector3 pushDir = (transform.position - player.position).normalized;
+        pushDir.y = 0f;
+
+        StartCoroutine(PushBossCoroutine(pushDir));
+    }
+
+    private IEnumerator PushBossCoroutine(Vector3 direction)
+    {
+        isPushing = true;
+        float elapsed = 0f;
+
+        while (elapsed < pushDuration)
+        {
+            if (bossController == null || !bossController.enabled) break;
+
+            elapsed += Time.deltaTime;
+            float t = 1f - (elapsed / pushDuration); // ★ 徐々に減速
+            float smoothT = t; // 線形でもOK、t*tにすると急減速
+
+            Vector3 move = direction * (pushDistance / pushDuration) * smoothT * Time.deltaTime;
+            move.y = -9.8f * Time.deltaTime;
+
+            bossController.Move(move);
+
+            yield return null;
+        }
+
+        isPushing = false;
     }
 
     /// <summary>お墨付き状態を返す</summary>
@@ -561,7 +635,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     /// </summary>
     public void NotifyHitCrate()
     {
-        if (currentPhase != 0) return;
+        if (currentPhase != 0 && currentPhase != 2) return;
         if (state != BossState.Tackle) return;
         Debug.Log("[Boss_SB] 木箱に衝突！スタン開始");
         EnterStun();
@@ -802,6 +876,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             float dist = Vector3.Distance(
                 transform.position,
                 crate.transform.position);
+
+            Debug.Log($"[Boss_SB] crate={crate.name} dist={dist}");
             if (dist < 3.5f)
             {
                 var woodBox = crate.GetComponentsInChildren<Boss_WoodBox>();
@@ -1326,9 +1402,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     public void NotifyHitCannon()
     {
         if (currentPhase != 2) return;
-        if (state != BossState.HipDrop) return;
+        if (state != BossState.HipDrop && state != BossState.Stun) return;
         Debug.Log($"[Boss_SB] 砲口に当たった！ bodyTransform.posY={bodyTransform?.position.y} transform.posY={transform.position.y}");
         isHitCannon = true;
+
+        stunTimer = 0f;
 
         if (bossController != null)
             bossController.enabled = false;
@@ -1387,7 +1465,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         StartCoroutine(StunRecoilCoroutine());
 
         // フェーズ3はCannonMuzzleで向きを設定するのでSkip
-        if (currentPhase != 2)
+        if (currentPhase != 2 || !isHitCannon)
             StartCoroutine(StunTiltCoroutine());
 
         if (rollModelTransform != null)
@@ -1534,9 +1612,13 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             BlastObjects(lanternObjects, lanternBlastForce, lanternDestroyDelay);
             lanternObjects.Clear();
 
+            // 大砲を生成
             yield return StartCoroutine(SpawnObjectsFromAbove(
                 phase3ObjectPrefab, phase3SpawnPoints));
 
+            // 木箱も生成
+            yield return StartCoroutine(SpawnObjectsFromAbove(
+                phase3CratePrefab, phase3CrateSpawnPoints));
         }
 
         Debug.Log($"[Boss_SB] 咆哮完了。フェーズ{currentPhase + 1}");
@@ -1560,7 +1642,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     /// <summary>オブジェクトを上から順番に落とすコルーチン</summary>
     private IEnumerator SpawnObjectsFromAbove(
-    GameObject prefab, List<Transform> spawnPoints)
+GameObject prefab, List<Transform> spawnPoints)
     {
         if (prefab == null || spawnPoints == null) yield break;
 
@@ -1580,11 +1662,16 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                         ? Quaternion.Euler(phase3ObjectRotation)
                         : Quaternion.identity);
 
-            // フェーズ2の灯籠なら登録
             if (currentPhase == 0)
                 RegisterLanternObject(obj);
 
-            // ★ 大砲ならCannonMuzzleを取得して保存
+            // フェーズ3木箱の場合はcrateObjectsに登録
+            if (prefab == phase3CratePrefab)
+            {
+                crateObjects.Add(obj);
+                Debug.Log($"[Boss_SB] フェーズ3木箱登録: {obj.name}");
+            }
+
             var muzzle = obj.GetComponentInChildren<CannonMuzzle>(true);
             if (muzzle != null)
             {
