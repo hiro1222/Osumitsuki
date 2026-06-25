@@ -112,9 +112,7 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  visualResolution: 1024
-  flipInkVertical: 1
-  flipInkHorizontal: 0
+  renderResolution: 256
 --- !u!64 &6550800119778307698
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -166,14 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_aura: {fileID: 0}
-  prefab_flash: {fileID: 0}
-  offset_Aura: {x: 0, y: 0, z: 0}
-  scale_Aura: {x: 5, y: 5, z: 5}
-  offset_Flash: {x: 0, y: 0, z: 0}
-  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 100
-  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
   allyEnemyTarget:
   - {fileID: 8844442760287324131}
@@ -182,7 +173,6 @@ MonoBehaviour:
   targets: []
   turnSpd: 60
   moveSpd: 10
-  Y_lock: 1
 --- !u!1 &1987009975761036199
 GameObject:
   m_ObjectHideFlags: 0
