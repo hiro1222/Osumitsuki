@@ -186,13 +186,13 @@ public class CannonMuzzle : MonoBehaviour
                           + cannonForward * launchForwardForce;
         bossRb.linearVelocity = launchVec;
 
-        // ★ 実際の発射方向を基準に回転軸を計算
+        // 実際の発射方向を基準に回転軸を計算
         Vector3 launchDir = launchVec.normalized;
         Vector3 rotAxis = Vector3.Cross(Vector3.up, launchDir).normalized;
         if (rotAxis.sqrMagnitude < 0.001f)
             rotAxis = Vector3.Cross(Vector3.up, cannonForward).normalized;
 
-        // ★ うつ伏せの最終角度を、発射前のY軸角度で固定（回転中に変わらないように）
+        // うつ伏せの最終角度を、発射前のY軸角度で固定（回転中に変わらないように）
         float fixedYaw = boss.transform.eulerAngles.y;
         Quaternion finalRot = Quaternion.Euler(90f, fixedYaw, 0f);
 
@@ -211,7 +211,7 @@ public class CannonMuzzle : MonoBehaviour
             ? groundTransform.position.y
             : 0f;
 
-        // ★ 待機なし、発射直後から回転開始
+        // 待機なし、発射直後から回転開始
         while (elapsed < timeout)
         {
             elapsed += Time.deltaTime;
@@ -221,6 +221,18 @@ public class CannonMuzzle : MonoBehaviour
                 rotAxis,
                 rotateSpeed * Time.deltaTime,
                 Space.World);
+
+            // 扉との距離をチェック
+            if (!hasHitDoor && goalDoorTransform != null)
+            {
+                float distToDoor = Vector3.Distance(boss.transform.position, goalDoorTransform.position);
+                Debug.Log($"[CannonMuzzle] distToDoor={distToDoor}");
+                if (distToDoor <= doorHitDistance)
+                {
+                    hasHitDoor = true;
+                    OnHitDoor();
+                }
+            }
 
             if (boss.transform.position.y <= landY)
             {
@@ -242,7 +254,7 @@ public class CannonMuzzle : MonoBehaviour
 
         yield return StartCoroutine(LandingRollCoroutine(bossCC, launchDir, rotAxis));
 
-        // ★ fixedYawを使った最終角度に向かう
+        // fixedYawを使った最終角度に向かう
         float alignElapsed = 0f;
 
         while (alignElapsed < alignTime)
@@ -297,5 +309,46 @@ public class CannonMuzzle : MonoBehaviour
         }
 
         boss.transform.rotation = targetRot;
+    }
+
+    /// <summary>扉に当たったときの処理（大きいエフェクト再生）</summary>
+    private void OnHitDoor()
+    {
+        Debug.Log("[CannonMuzzle] 扉に当たった！");
+
+        if (doorHitBigEffect != null)
+        {
+            doorHitBigEffect.transform.position = boss.transform.position;
+
+            doorHitBigEffect.SetActive(true);
+            var ps = doorHitBigEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (var p in ps) { p.Clear(); p.Play(); }
+            StartCoroutine(DisableDoorEffectWhenDone());
+        }
+    }
+
+    private IEnumerator DisableDoorEffectWhenDone()
+    {
+        if (doorHitBigEffect == null) yield break;
+
+        var ps = doorHitBigEffect.GetComponentsInChildren<ParticleSystem>();
+
+        bool anyAlive = true;
+        while (anyAlive)
+        {
+            anyAlive = false;
+            foreach (var p in ps)
+            {
+                if (p != null && p.IsAlive())
+                {
+                    anyAlive = true;
+                    break;
+                }
+            }
+            yield return null;
+        }
+
+        if (doorHitBigEffect != null)
+            doorHitBigEffect.SetActive(false);
     }
 }

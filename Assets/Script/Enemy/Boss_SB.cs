@@ -77,6 +77,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── ヒットエフェクト ──")]
     [SerializeField] private HitEffectPlayer hitEffectPlayer;
 
+    [Header("── 撃破時の大きいヒットエフェクト ──")]
+    [Tooltip("HPを削り切った瞬間に出す大きいエフェクト（未設定ならstunHitEffectを拡大して使う）")]
+    [SerializeField] private GameObject finalHitBigEffect;
+    [Tooltip("finalHitBigEffectが未設定の場合のスケール倍率")]
+    [SerializeField] private float finalHitScaleMultiplier = 2f;
+
     [Header("── ヒップドロップ予告 ──")]
     [SerializeField] private HipDropIndicator hipDropIndicator;
 
@@ -214,6 +220,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private bool resetStunTimerOnHit = true;
     [Tooltip("フェーズ3スタン時のエフェクトZ位置")]
     [SerializeField] private float stunEffectPhase3Z = -1f;
+    [Header("── HP削り切り後の余韻 ──")]
+    [Tooltip("HPを削り切ってから起き上がる（咆哮）までの待機時間（秒）")]
+    [SerializeField] private float defeatStunLingerTime = 1.5f;
 
     [Header("── ステータス ──")]
     [Tooltip("攻撃力（フェーズ1:5 フェーズ2:6）")]
@@ -354,6 +363,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private float stunTimer = 0f;
     private float lastInkTime = -999f;
     private float inkCooldown = 0.5f;
+    private bool isWaitingToRoar = false;
 
     // ノックバック
     private CharacterController playerController;
@@ -473,7 +483,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             else
             {
                 // それ以外（フェーズ1・2、またはフェーズ3の木箱スタン）は自動制御
-                stunEffect.SetActive(state == BossState.Stun);
+                stunEffect.SetActive(state == BossState.Stun && !isWaitingToRoar);
             }
         }
 
@@ -530,6 +540,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (isAlly) return;
         if (state == BossState.Roar) return;
         if (state == BossState.Defeated) return;
+        if (isWaitingToRoar) return;
 
         int required = requiredInkCounts[currentPhase];
 
@@ -563,14 +574,29 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
 
         inkHitCount++;
+        bool isFinalHit = inkHitCount >= required;
 
-        // 被弾エフェクト再生
-        if (stunHitEffect != null)
+        if (isFinalHit)
         {
-            stunHitEffect.SetActive(true);
-            var ps = stunHitEffect.GetComponentsInChildren<ParticleSystem>();
-            foreach (var p in ps) { p.Clear(); p.Play(); }
-            StartCoroutine(DisableEffectWhenDone(stunHitEffect));
+            // ★ 最後の一発は大きいエフェクトのみ（stunHitEffectは絶対出さない）
+            if (finalHitBigEffect != null)
+            {
+                finalHitBigEffect.SetActive(true);
+                var ps = finalHitBigEffect.GetComponentsInChildren<ParticleSystem>();
+                foreach (var p in ps) { p.Clear(); p.Play(); }
+                StartCoroutine(DisableEffectWhenDone(finalHitBigEffect));
+            }
+        }
+        else
+        {
+            // ★ 通常ヒットのみstunHitEffectを再生
+            if (stunHitEffect != null)
+            {
+                stunHitEffect.SetActive(true);
+                var ps = stunHitEffect.GetComponentsInChildren<ParticleSystem>();
+                foreach (var p in ps) { p.Clear(); p.Play(); }
+                StartCoroutine(DisableEffectWhenDone(stunHitEffect));
+            }
         }
 
         var maskProgress = GetComponentsInChildren<MaskedInkProgress>();
@@ -580,10 +606,37 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (resetStunTimerOnHit)
             stunTimer = 0f;
 
-        if (inkHitCount >= required)
+        if (isFinalHit)
         {
             inkHitCount = 0;
-            EnterRoar();
+            StartCoroutine(EnterRoarWithDelay());
+        }
+    }
+    private IEnumerator DisableEffectWhenDoneAndResetScale(GameObject effect, Vector3 originalScale)
+    {
+        if (effect == null) yield break;
+
+        var ps = effect.GetComponentsInChildren<ParticleSystem>();
+
+        bool anyAlive = true;
+        while (anyAlive)
+        {
+            anyAlive = false;
+            foreach (var p in ps)
+            {
+                if (p != null && p.IsAlive())
+                {
+                    anyAlive = true;
+                    break;
+                }
+            }
+            yield return null;
+        }
+
+        if (effect != null)
+        {
+            effect.SetActive(false);
+            effect.transform.localScale = originalScale; // ★ スケールを元に戻す
         }
     }
 
@@ -1545,6 +1598,22 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Debug.Log($"[Boss_SB] 咆哮！フェーズ{currentPhase + 1}");
 
         StartCoroutine(RoarCoroutine());
+    }
+
+    private IEnumerator EnterRoarWithDelay()
+    {
+        isWaitingToRoar = true; // フラグON
+
+        if (stunEffect != null)
+            stunEffect.SetActive(false);
+
+        if (stunHitEffect != null)
+            stunHitEffect.SetActive(false);
+
+        yield return new WaitForSeconds(defeatStunLingerTime);
+
+        isWaitingToRoar = false; // フラグOFF
+        EnterRoar();
     }
 
     private IEnumerator PlayRoarEffect()
