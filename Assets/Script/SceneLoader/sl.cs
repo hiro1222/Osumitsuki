@@ -20,7 +20,7 @@ public class sl : MonoBehaviour
 	{
         if (Input.GetKeyUp(KeyCode.P))
         {
-            SceneTransitionData.nextSceneName = "TileScene";
+            SceneTransitionData.nextSceneName = "Stage_B_light";
             SceneManager.LoadScene("LoadingScene");
         }
 	}
