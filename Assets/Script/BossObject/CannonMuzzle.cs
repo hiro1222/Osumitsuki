@@ -49,7 +49,10 @@ public class CannonMuzzle : MonoBehaviour
     [Tooltip("ゴール側の扉などの判定用オブジェクト（未設定ならタグ/名前で自動取得）")]
     [SerializeField] private Transform goalDoorTransform;
     [SerializeField] private string goalDoorTag = "GoalDoor";
-    [SerializeField] private float doorHitDistance = 1.5f;
+    [Tooltip("Boss_Doorのradiusと同じ値を入れる")]
+    [SerializeField] private float doorHitDistance = 2f; 
+    [Tooltip("Boss_Doorのoffsetと同じ値を入れる")]
+    [SerializeField] private Vector3 doorOffset = Vector3.zero;
     [SerializeField] private GameObject doorHitBigEffect;
 
 
@@ -225,7 +228,8 @@ public class CannonMuzzle : MonoBehaviour
             // 扉との距離をチェック
             if (!hasHitDoor && goalDoorTransform != null)
             {
-                float distToDoor = Vector3.Distance(boss.transform.position, goalDoorTransform.position);
+                Vector3 doorCenter = goalDoorTransform.position + doorOffset;
+                float distToDoor = Vector3.Distance(boss.transform.position, doorCenter);
                 Debug.Log($"[CannonMuzzle] distToDoor={distToDoor}");
                 if (distToDoor <= doorHitDistance)
                 {
