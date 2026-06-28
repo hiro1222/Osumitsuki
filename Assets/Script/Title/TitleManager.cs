@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEditor.SceneTemplate;
 
 public class TitleManager : MonoBehaviour
 {
