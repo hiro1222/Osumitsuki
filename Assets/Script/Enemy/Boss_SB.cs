@@ -578,9 +578,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (isFinalHit)
         {
-            // ★ 最後の一発は大きいエフェクトのみ（stunHitEffectは絶対出さない）
+            // 最後の一発は大きいエフェクトのみ（stunHitEffectは絶対出さない）
             if (finalHitBigEffect != null)
             {
+                finalHitBigEffect.transform.rotation = player.rotation;
+
                 finalHitBigEffect.SetActive(true);
                 var ps = finalHitBigEffect.GetComponentsInChildren<ParticleSystem>();
                 foreach (var p in ps) { p.Clear(); p.Play(); }
@@ -589,9 +591,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
         else
         {
-            // ★ 通常ヒットのみstunHitEffectを再生
+            // 通常ヒットのみstunHitEffectを再生
             if (stunHitEffect != null)
             {
+                stunHitEffect.transform.rotation = player.rotation;
+
                 stunHitEffect.SetActive(true);
                 var ps = stunHitEffect.GetComponentsInChildren<ParticleSystem>();
                 foreach (var p in ps) { p.Clear(); p.Play(); }
