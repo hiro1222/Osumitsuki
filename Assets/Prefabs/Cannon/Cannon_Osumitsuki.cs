@@ -38,11 +38,26 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
 
         curAngle_V = cannon.transform.localEulerAngles.z;
         if (curAngle_V > 180f) curAngle_V -= 360f;
-    }
+
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("InstanceがNULLです");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
+	}
+
 
     public override void Action_Osumitsuki()
     {
-        // 子のMeshRenderer全員のマテリアルを差し替え
+        changeFlg = true;
+        Action2Update();
+    }
+
+    public override void Osumitsuki_Tex()
+    {
         if (myMaterial != null && !changeFlg)
         {
             var renderers = GetComponentsInChildren<MeshRenderer>();
@@ -53,11 +68,11 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
 
                 r.material = myMaterial;
             }
-            changeFlg = true;
-        }
 
-        Action2Update();
+        }
     }
+
+
     public override void Update_Osumitsuki()
     {
         if (Keyboard.current.rightArrowKey.isPressed)
@@ -121,7 +136,6 @@ public class Cannon_Osumitsuki : Obj_Osumitsuki
 
     private void FixedUpdate()
     {
-		Debug.Log("Cannon MaskSystem NUM : " + maskSystems.Count);
 		if (!osumitsukiTrg)
             return;
 

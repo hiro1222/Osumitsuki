@@ -134,6 +134,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 	protected virtual void Awake()
 	{
 		paintableSurface = GetComponent<PaintableSurface>();
+
 		if (paintableSurface == null)
 		{
 			Debug.LogError("Obj_OsumitsukiにPaintableSurfaceがアタッチされていません。");
@@ -163,6 +164,19 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 		SpawnAuraEffect();
     }
+
+	private void Start()
+	{
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("InstanceがNULLです");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
+	}
+
 
 	public void Action_Osumitsuki_Cover()
 	{
@@ -206,27 +220,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 		if (maxInkCapa <= curInkAmount && !osumitsukiTrg)
 		{
 			//本来のマテリアルに変更
-			var meshRenderer = GetComponent<MeshRenderer>();
-			if (meshRenderer != null)
-				meshRenderer.material = myMaterial;
-
-			//お墨付きマネージャーに渡す
-			osumitsukiTrg = true;
-			Mng_Osumitsuki.instance.AddObject(this);
-
-			gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
-			//インクコライダーを削除する
-			var all = new List<Transform>();
-			GetAllChildren(transform, all);
-			if (all.Count > 0)
-			{
-                for (int i = 0; i < all.Count; i++)
-                {
-                    all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
-                }
-            }
-			StopAuraEffect();
-			SpawnFlashEffect();
+			Osumitsuki();
 
 			return osumitsukiTrg;
 		}
@@ -259,6 +253,42 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 
 		return osumitsukiTrg;
+	}
+
+	private void Osumitsuki()
+	{
+		Osumitsuki_Tex();
+		Osumituski_Col();
+
+		//お墨付きマネージャーに渡す
+		osumitsukiTrg = true;
+		Mng_Osumitsuki.instance.AddObject(this);
+
+		StopAuraEffect();
+		SpawnFlashEffect();
+	}
+
+	public virtual void Osumitsuki_Tex()
+	{
+		//本来のマテリアルに変更
+		var meshRenderer = GetComponent<MeshRenderer>();
+		if (meshRenderer != null)
+			meshRenderer.material = myMaterial;
+	}
+
+	private void Osumituski_Col()
+	{
+		gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+		//インクコライダーを削除する
+		var all = new List<Transform>();
+		GetAllChildren(transform, all);
+		if (all.Count > 0)
+		{
+			for (int i = 0; i < all.Count; i++)
+			{
+				all[i].gameObject.layer = LayerMask.NameToLayer("PlayerVSObject");
+			}
+		}
 	}
 
 	void GetAllChildren(Transform _parent, List<Transform> _result)

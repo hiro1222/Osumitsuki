@@ -8,8 +8,15 @@ public class TORII_Osumi : Obj_Osumitsuki
 
     private void Start()
     {
-
-    }
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("Instance‚ªNULL‚Å‚·");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
+	}
 
     public override void Action_Osumitsuki()
     {
