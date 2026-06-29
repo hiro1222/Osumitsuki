@@ -27,24 +27,18 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 	private void Start()
 	{
 		activeDist *= activeDist;
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("InstanceがNULLです");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
 	}
 
 	public override void Action_Osumitsuki()
 	{
-		// 子のMeshRenderer全員のマテリアルを差し替え
-		if (myMaterial != null && !changeFlg)
-		{
-			var renderers = GetComponentsInChildren<MeshRenderer>();
-			foreach (var r in renderers)
-			{
-				// 親自身のRendererは除外（親は見えないダミー）
-				if (r.gameObject == gameObject) continue;
-
-				r.material = myMaterial;
-			}
-			changeFlg = true;
-		}
-
 		Vector3 dif = player.transform.position - playerTarget.position;
 		if (dif.sqrMagnitude > activeDist)
 		{
@@ -54,6 +48,18 @@ public class Seesaw_Osumitsuki : Obj_Osumitsuki
 		Action2Update();
 	}
 
+	public override void Osumitsuki_Tex()
+	{
+		var renderers = GetComponentsInChildren<MeshRenderer>();
+		foreach (var r in renderers)
+		{
+			// 親自身のRendererは除外（親は見えないダミー）
+			if (r.gameObject == gameObject) continue;
+
+			r.material = myMaterial;
+		}
+		changeFlg = true;
+	}
 	public override void Update_Osumitsuki()
 	{
 	}

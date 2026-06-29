@@ -50,7 +50,16 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
             rightClosedRot = rightDoor.localRotation;
             rightOpenRot = rightClosedRot * Quaternion.Euler(0, rightOpenAngle, 0);
         }
-    }
+
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("InstanceがNULLです");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
+	}
 
     /// <summary>
     /// お墨付き達成の瞬間に1回呼ばれる
@@ -59,22 +68,24 @@ public class DOOR_MoveAcsyon : Obj_Osumitsuki
     public override void Action_Osumitsuki()
     {
         Debug.Log($"[DOOR_MoveAcsyon] {name}: お墨付き達成、ドア開門開始");
-
-        // 子のMeshRenderer全員のマテリアルを差し替え
-        if (childOsumiMaterial != null)
-        {
-            var renderers = GetComponentsInChildren<MeshRenderer>();
-            foreach (var r in renderers)
-            {
-                // 親自身のRendererは除外（親は見えないダミー）
-                if (r.gameObject == gameObject) continue;
-                r.material = childOsumiMaterial;
-            }
-        }
-
         Action2Update();
 
     }
+
+	public override void Osumitsuki_Tex()
+	{
+		// 子のMeshRenderer全員のマテリアルを差し替え
+		if (childOsumiMaterial != null)
+		{
+			var renderers = GetComponentsInChildren<MeshRenderer>();
+			foreach (var r in renderers)
+			{
+				// 親自身のRendererは除外（親は見えないダミー）
+				if (r.gameObject == gameObject) continue;
+				r.material = childOsumiMaterial;
+			}
+		}
+	}
 
     /// <summary>毎フレームのドア開閉処理（Mng_Osumitsukiから呼ばれる想定）</summary>
     public override void Update_Osumitsuki()

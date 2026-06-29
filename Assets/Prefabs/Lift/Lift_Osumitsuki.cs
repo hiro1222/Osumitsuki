@@ -29,7 +29,16 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
         if (boardObj == null)
             boardObj = gameObject.transform.GetChild(0).gameObject;
 
-    }
+		if (Mng_Osumitsuki.instance == null)
+		{
+			Debug.Log("InstanceがNULLです");
+		}
+		else
+		{
+			Mng_Osumitsuki.instance.AddAllList(this);
+		}
+
+	}
 
     private void OnDestroy()
     {
@@ -37,22 +46,25 @@ public class Lift_Osumitsuki : Obj_Osumitsuki
 
     public override void Action_Osumitsuki()
     {
-        // 子のMeshRenderer全員のマテリアルを差し替え
-        if (myMaterial != null && !changeFlg)
-        {
-            var renderers = GetComponentsInChildren<MeshRenderer>();
-            foreach (var r in renderers)
-            {
-                // 親自身のRendererは除外（親は見えないダミー）
-                if (r.gameObject == gameObject) continue;
-
-                r.material = myMaterial;
-            }
-            changeFlg = true;
-        }
-
-        Action2Update();
+		changeFlg = true;
+		Action2Update();
     }
+
+	public override void Osumitsuki_Tex()
+	{
+		// 子のMeshRenderer全員のマテリアルを差し替え
+		if (myMaterial != null && !changeFlg)
+		{
+			var renderers = GetComponentsInChildren<MeshRenderer>();
+			foreach (var r in renderers)
+			{
+				// 親自身のRendererは除外（親は見えないダミー）
+				if (r.gameObject == gameObject) continue;
+
+				r.material = myMaterial;
+			}
+		}
+	}
 
     public override void Update_Osumitsuki()
     {

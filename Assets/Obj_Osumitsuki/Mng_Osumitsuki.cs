@@ -8,6 +8,7 @@ public class Mng_Osumitsuki : MonoBehaviour
 {
     public static Mng_Osumitsuki instance { get; private set; }
 
+    private List<Obj_Osumitsuki> all_Objects;
     private List<Obj_Osumitsuki> action_Objects;
     private List<Obj_Osumitsuki> update_Objects;
 
@@ -21,15 +22,16 @@ public class Mng_Osumitsuki : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         instance = this;
-        DontDestroyOnLoad(gameObject);  //お墨付きオブジェクトのみを必要とすることがあるかも？
+		all_Objects = new List<Obj_Osumitsuki>();
+		action_Objects = new List<Obj_Osumitsuki>();
+		update_Objects = new List<Obj_Osumitsuki>();
+		DontDestroyOnLoad(gameObject);  //お墨付きオブジェクトのみを必要とすることがあるかも？
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        action_Objects = new List<Obj_Osumitsuki>();
-        update_Objects = new List<Obj_Osumitsuki>();
+
     }
 
     private void FixedUpdate()
@@ -62,4 +64,23 @@ public class Mng_Osumitsuki : MonoBehaviour
         action_Objects.Add(_obj);
         Debug.Log(_obj.name + "、Osumitsuki!!");
     }
+
+    public void AddAllList(Obj_Osumitsuki _obj)
+    {
+        all_Objects.Add(_obj);
+    }
+
+    public void AllOsumitsuki()
+    {
+        foreach (Obj_Osumitsuki obj in all_Objects)
+            obj.Osumitsuki_Tex();
+    }
+
+    public void AllClear()
+    {
+        all_Objects.Clear();
+        action_Objects.Clear();
+        update_Objects.Clear();
+    }
+
 }
