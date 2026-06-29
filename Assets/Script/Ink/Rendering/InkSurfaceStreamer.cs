@@ -12,15 +12,19 @@ using UnityEngine.SceneManagement;
 /// - RuntimeInitializeOnLoadMethod で自動常駐（各シーンに何も置かなくてよい）。DontDestroyOnLoad。
 /// - sceneLoaded で対象シーンの PaintableSurface を再スキャン。
 /// - プレイヤーは「CharacterController + "Player"レイヤー」で取得（見つかるまで0.5s毎リトライ）。
-/// - 毎フレーム、buildRadius 内の未構築サーフェスを maxBuildsPerFrame 枚まで EnsureBuilt。
-/// - 遠距離の斬撃着弾など範囲外は PaintableSurface 側の入口 EnsureBuilt(保険)が拾う。
+/// - 近傍(nearRadius内)は「近い順」に maxNearBuildsPerFrame 枚/frame で即構築（足場確保＝落下防止）。
+///   遠方(nearRadius外)は farBuildInterval 間隔で1枚ずつトリクル構築（start時の一括ロード回避＝FPS低下防止）。
+///   → 近い順にいずれ全サーフェスが構築される（先読み）。
+/// - 斬撃着弾など緊急ぶんは優先キュー(RequestBuild)が距離無視で先に構築。
 /// </summary>
 public class InkSurfaceStreamer : MonoBehaviour
 {
-    [Tooltip("プレイヤーからこの距離(m)内のサーフェスを構築する")]
-    [SerializeField] private float buildRadius = 30f;
-    [Tooltip("1フレームに構築する最大数（固まり防止。低解像度ほど増やせる）")]
-    [SerializeField] private int maxBuildsPerFrame = 3;
+    [Tooltip("この距離(m)内は最優先で即構築（プレイヤー周辺の足場を確保＝落下防止）")]
+    [SerializeField] private float nearRadius = 30f;
+    [Tooltip("近傍(nearRadius内)を1フレームに構築する最大数（固まり防止）")]
+    [SerializeField] private int maxNearBuildsPerFrame = 3;
+    [Tooltip("遠方(nearRadius外)を1枚構築する間隔(秒)。start時の一括ロードを避けてゆっくり先読みする。0以下で遠方の先読みOFF")]
+    [SerializeField] private float farBuildInterval = 0.3f;
 
     public static InkSurfaceStreamer Instance { get; private set; }
 
@@ -29,6 +33,7 @@ public class InkSurfaceStreamer : MonoBehaviour
     private Transform _player;
     private int _playerLayer = -1;
     private float _nextFindTime;
+    private float _nextFarBuildTime;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
@@ -86,7 +91,7 @@ public class InkSurfaceStreamer : MonoBehaviour
         int built = 0;
 
         // ① 優先キュー（斬撃軌道など・距離無視）を先に消化
-        for (int i = _priority.Count - 1; i >= 0 && built < maxBuildsPerFrame; i--)
+        for (int i = _priority.Count - 1; i >= 0 && built < maxNearBuildsPerFrame; i--)
         {
             var ps = _priority[i];
             if (ps == null || ps.IsBuilt) { _priority.RemoveAt(i); continue; }
@@ -95,9 +100,8 @@ public class InkSurfaceStreamer : MonoBehaviour
             built++;
         }
 
-        if (built >= maxBuildsPerFrame || _pending.Count == 0) return;
+        if (built >= maxNearBuildsPerFrame || _pending.Count == 0) return;
 
-        // ② 近接キュー（プレイヤー周辺）
         // プレイヤー取得（CC + "Player"レイヤー。見つかるまで0.5s毎リトライ）
         if (_player == null)
         {
@@ -111,21 +115,40 @@ public class InkSurfaceStreamer : MonoBehaviour
         }
 
         Vector3 p = _player.position;
-        float r2 = buildRadius * buildRadius;
 
-        // 後ろから走査して RemoveAt を安全に
-        for (int i = _pending.Count - 1; i >= 0 && built < maxBuildsPerFrame; i--)
+        // null/ビルド済みを掃除（このあとのSortでnull比較が起きないように）
+        for (int i = _pending.Count - 1; i >= 0; i--)
         {
             var ps = _pending[i];
-            if (ps == null || ps.IsBuilt) { _pending.RemoveAt(i); continue; }
+            if (ps == null || ps.IsBuilt) _pending.RemoveAt(i);
+        }
+        if (_pending.Count == 0) return;
 
-            // 広い床対応で transform.position ではなく bounds 距離で判定
-            if (ps.SurfaceBounds.SqrDistance(p) <= r2)
-            {
-                ps.EnsureBuilt();
-                _pending.RemoveAt(i);
-                built++;
-            }
+        // 近い順に並べ替え（末尾＝最も近い）。広い床対応で position ではなく bounds 距離。
+        // ※129枚規模なら毎フレームSortでも誤差。数千枚規模になるなら距離キャッシュ/周期ソートに。
+        _pending.Sort((a, b) =>
+            b.SurfaceBounds.SqrDistance(p).CompareTo(a.SurfaceBounds.SqrDistance(p)));
+
+        // ② 近傍(nearRadius内)：近い順に maxNearBuildsPerFrame 枚まで即ビルド（落下防止の本命）
+        float nearSq = nearRadius * nearRadius;
+        for (int i = _pending.Count - 1; i >= 0 && built < maxNearBuildsPerFrame; i--)
+        {
+            // nearest順（末尾が最近）なので、遠方に当たったら以降は全部遠方 → 抜ける
+            if (_pending[i].SurfaceBounds.SqrDistance(p) > nearSq) break;
+            _pending[i].EnsureBuilt();
+            _pending.RemoveAt(i);
+            built++;
+        }
+
+        // ③ 遠方(nearRadius外)：近傍が片付いているフレームだけ、時間スロットルで1枚ずつ先読み。
+        //    start時に全枚数を一気にビルドして固まるのを防ぐ（ゆっくり全部そろえる）。
+        if (built == 0 && farBuildInterval > 0f &&
+            Time.time >= _nextFarBuildTime && _pending.Count > 0)
+        {
+            int nearestFar = _pending.Count - 1;   // 残りの中で最も近い遠方
+            _pending[nearestFar].EnsureBuilt();
+            _pending.RemoveAt(nearestFar);
+            _nextFarBuildTime = Time.time + farBuildInterval;
         }
     }
 }

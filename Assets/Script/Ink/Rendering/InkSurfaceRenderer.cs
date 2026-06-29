@@ -48,16 +48,8 @@ internal class InkSurfaceRenderer
         meshRenderer = renderer;
         visualRes = Mathf.Max(64, visualResolution);
 
-        densityRT = new RenderTexture(visualRes, visualRes, 0, RenderTextureFormat.R8)
-        {
-            name = "InkDensityRT",
-            filterMode = FilterMode.Bilinear,
-            wrapMode = TextureWrapMode.Clamp,
-            useMipMap = false,
-            autoGenerateMips = false
-        };
-        densityRT.Create();
-        ClearVisual();   // 黒(density=0)で初期化
+        // densityRT は「初めて塗られた時」に遅延生成する（EnsureDensityRT）。
+        // 未塗装の板は 1024²RT を確保しない → start時の一括ビルドのGPUヒッチ/VRAM消費を回避。
 
         colorTexture = new Texture2D(gridW, gridH, TextureFormat.R8, false)
         {
@@ -73,7 +65,30 @@ internal class InkSurfaceRenderer
         }
 
         propBlock = new MaterialPropertyBlock();
-        BindTextures();
+        BindTextures();   // densityRT 未生成のうちは _InkTex に黒を差す
+    }
+
+    /// <summary>densityRT を初回スプラット時に遅延生成し、黒(density=0)で初期化する。</summary>
+    private void EnsureDensityRT()
+    {
+        if (densityRT != null) return;
+
+        densityRT = new RenderTexture(visualRes, visualRes, 0, RenderTextureFormat.R8)
+        {
+            name = "InkDensityRT",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            useMipMap = false,
+            autoGenerateMips = false
+        };
+        densityRT.Create();
+
+        RenderTexture prev = RenderTexture.active;
+        Graphics.SetRenderTarget(densityRT);
+        GL.Clear(false, true, Color.clear);
+        RenderTexture.active = prev;
+
+        BindTextures();   // _InkTex を黒→実RTに差し替え
     }
 
     /// <summary>マテリアルに3枚のテクスチャを束ねて送る。</summary>
@@ -81,7 +96,8 @@ internal class InkSurfaceRenderer
     {
         if (meshRenderer == null) return;
         meshRenderer.GetPropertyBlock(propBlock);
-        propBlock.SetTexture(ID_InkTex, densityRT);
+        // densityRT 未生成のうちは黒テクスチャ（=墨なし表示）を差しておく
+        propBlock.SetTexture(ID_InkTex, densityRT != null ? (Texture)densityRT : Texture2D.blackTexture);
         propBlock.SetTexture(ID_InkColorTex, colorTexture);
         propBlock.SetTexture(ID_InkPalette, InkPalette.GetPaletteTexture());
         meshRenderer.SetPropertyBlock(propBlock);
@@ -101,7 +117,8 @@ internal class InkSurfaceRenderer
 
     private void Splat(Vector2 uv, float rU, float rV, float strength, int pass)
     {
-        if (brushMat == null || densityRT == null) return;
+        if (brushMat == null) return;
+        EnsureDensityRT();   // 初回スプラットで densityRT を遅延生成
 
         // _Brush = (中心uv.x, 中心uv.y, UV半径U, UV半径V)。強さは別uniform。
         brushMat.SetVector(ID_Brush, new Vector4(uv.x, uv.y, Mathf.Max(rU, 1e-4f), Mathf.Max(rV, 1e-4f)));

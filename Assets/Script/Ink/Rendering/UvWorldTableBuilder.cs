@@ -16,6 +16,21 @@ internal static class UvWorldTableBuilder
     private static List<Vector2> s_uvs;
     private static List<int> s_tris;
 
+    // ── UVテーブルのキャッシュ ──
+    // cellPositions/Normals/Valid と maxCellDistance は「メッシュ＋解像度」だけで決まる
+    // ローカルデータ（位置/回転/スケールに非依存）。同じメッシュの複数インスタンスで使い回す
+    // （塗っても書き換わらない read-only なので共有して安全）。
+    // 129枚でもメッシュが数種なら、重いラスタライズは数回で済む（startの主犯CPU/GCを潰す）。
+    private class CachedTable
+    {
+        public Vector3[] positions;
+        public Vector3[] normals;
+        public bool[] valid;
+        public float maxCellDistance;
+    }
+    private static readonly Dictionary<(int meshId, int gridW, int gridH), CachedTable> s_cache
+        = new Dictionary<(int, int, int), CachedTable>();
+
     /// <summary>
     /// メッシュサイズと targetCellSize から解像度を自動計算
     /// 例: 10m × 10m のオブジェクトで targetCellSize=0.05m なら
@@ -71,12 +86,27 @@ internal static class UvWorldTableBuilder
                              out bool[] cellValid, out float maxCellDistance,
                              out float worldSpanU, out float worldSpanV)
     {
+        worldSpanU = 0f;
+        worldSpanV = 0f;
+
+        // ── キャッシュ命中: ラスタライズせず共有テーブルを使い回す ──
+        // worldSpanU/V だけはスケール依存なので localToWorld から毎回計算する。
+        if (mesh != null &&
+            s_cache.TryGetValue((mesh.GetInstanceID(), gridW, gridH), out var cached))
+        {
+            cellPositions = cached.positions;
+            cellNormals = cached.normals;
+            cellValid = cached.valid;
+            maxCellDistance = cached.maxCellDistance;
+            ComputeWorldSpan(cellPositions, cellValid, gridW, gridH, localToWorld,
+                             out worldSpanU, out worldSpanV);
+            return;
+        }
+
         cellPositions = new Vector3[gridW * gridH];
         cellNormals = new Vector3[gridW * gridH];
         cellValid = new bool[gridW * gridH];
         maxCellDistance = 0f;
-        worldSpanU = 0f;
-        worldSpanV = 0f;
 
         if (mesh == null) return;
 
@@ -135,50 +165,84 @@ internal static class UvWorldTableBuilder
             }
         }
 
-        // 隣接セル間距離を集計。
         // maxCellDistance はローカル距離（InkCollisionChunks の tooFar 判定がローカルなので）。
+        maxCellDistance = ComputeMaxCellDistance(cellPositions, cellValid, gridW, gridH);
+
         // worldSpanU/V は localToWorld を通したワールド距離（非一様スケールでも世界で真円のブラシにするため）。
-        float totalLocal = 0f; int distCount = 0;
-        float totalWorldU = 0f, totalWorldV = 0f; int countU = 0, countV = 0;
-        for (int gy = 0; gy < gridH; gy++)
+        ComputeWorldSpan(cellPositions, cellValid, gridW, gridH, localToWorld,
+                         out worldSpanU, out worldSpanV);
+
+        // ── キャッシュ登録: 次の同一メッシュ＋解像度のインスタンスはラスタライズ不要 ──
+        s_cache[(mesh.GetInstanceID(), gridW, gridH)] = new CachedTable
         {
-            for (int gx = 0; gx < gridW; gx++)
-            {
-                int idx = gy * gridW + gx;
-                if (!cellValid[idx]) continue;
-
-                if (gx + 1 < gridW && cellValid[idx + 1])
-                {
-                    Vector3 d = cellPositions[idx + 1] - cellPositions[idx];
-                    totalLocal += d.magnitude; distCount++;
-                    totalWorldU += localToWorld.MultiplyVector(d).magnitude; countU++;
-                }
-                if (gy + 1 < gridH && cellValid[idx + gridW])
-                {
-                    Vector3 d = cellPositions[idx + gridW] - cellPositions[idx];
-                    totalLocal += d.magnitude; distCount++;
-                    totalWorldV += localToWorld.MultiplyVector(d).magnitude; countV++;
-                }
-            }
-        }
-        float avgDist = distCount > 0 ? totalLocal / distCount : 0.1f;
-        maxCellDistance = avgDist * 3f;
-
-        // UV 1辺(0→1)あたりのワールド寸法。片軸欠落時はもう片方で代用。
-        float avgWU = countU > 0 ? totalWorldU / countU : 0f;
-        float avgWV = countV > 0 ? totalWorldV / countV : 0f;
-        float fallback = Mathf.Max(avgWU, avgWV);
-        if (fallback < 1e-6f) fallback = 0.01f;
-        worldSpanU = (avgWU > 1e-6f ? avgWU : fallback) * gridW;
-        worldSpanV = (avgWV > 1e-6f ? avgWV : fallback) * gridH;
+            positions = cellPositions,
+            normals = cellNormals,
+            valid = cellValid,
+            maxCellDistance = maxCellDistance
+        };
 
 #if UNITY_EDITOR
         int validCount = 0;
         for (int i = 0; i < cellValid.Length; i++)
             if (cellValid[i]) validCount++;
-        Debug.Log($"[PaintableSurface] {debugName}: UV table built. " +
-                  $"{validCount}/{gridW * gridH} cells mapped. avgDist={avgDist:F4} maxDist={maxCellDistance:F4}");
+        Debug.Log($"[PaintableSurface] {debugName}: UV table built (cached). " +
+                  $"{validCount}/{gridW * gridH} cells mapped. maxDist={maxCellDistance:F4}");
 #endif
+    }
+
+    /// <summary>隣接セル間のローカル平均距離×3。UV島の染み出し判定(tooFar)に使う。メッシュ依存なのでキャッシュ可。</summary>
+    private static float ComputeMaxCellDistance(Vector3[] pos, bool[] valid, int gridW, int gridH)
+    {
+        float total = 0f; int count = 0;
+        for (int gy = 0; gy < gridH; gy++)
+        {
+            for (int gx = 0; gx < gridW; gx++)
+            {
+                int idx = gy * gridW + gx;
+                if (!valid[idx]) continue;
+                if (gx + 1 < gridW && valid[idx + 1])
+                { total += (pos[idx + 1] - pos[idx]).magnitude; count++; }
+                if (gy + 1 < gridH && valid[idx + gridW])
+                { total += (pos[idx + gridW] - pos[idx]).magnitude; count++; }
+            }
+        }
+        float avg = count > 0 ? total / count : 0.1f;
+        return avg * 3f;
+    }
+
+    /// <summary>
+    /// UV 1辺(0→1)あたりのワールド寸法。スケール依存なのでインスタンス毎に計算する
+    /// （キャッシュ命中時もこれだけは毎回呼ぶ）。片軸欠落時はもう片方で代用。
+    /// </summary>
+    private static void ComputeWorldSpan(Vector3[] pos, bool[] valid, int gridW, int gridH,
+                                         Matrix4x4 localToWorld,
+                                         out float worldSpanU, out float worldSpanV)
+    {
+        float totalU = 0f, totalV = 0f; int countU = 0, countV = 0;
+        for (int gy = 0; gy < gridH; gy++)
+        {
+            for (int gx = 0; gx < gridW; gx++)
+            {
+                int idx = gy * gridW + gx;
+                if (!valid[idx]) continue;
+                if (gx + 1 < gridW && valid[idx + 1])
+                {
+                    Vector3 d = pos[idx + 1] - pos[idx];
+                    totalU += localToWorld.MultiplyVector(d).magnitude; countU++;
+                }
+                if (gy + 1 < gridH && valid[idx + gridW])
+                {
+                    Vector3 d = pos[idx + gridW] - pos[idx];
+                    totalV += localToWorld.MultiplyVector(d).magnitude; countV++;
+                }
+            }
+        }
+        float avgWU = countU > 0 ? totalU / countU : 0f;
+        float avgWV = countV > 0 ? totalV / countV : 0f;
+        float fallback = Mathf.Max(avgWU, avgWV);
+        if (fallback < 1e-6f) fallback = 0.01f;
+        worldSpanU = (avgWU > 1e-6f ? avgWU : fallback) * gridW;
+        worldSpanV = (avgWV > 1e-6f ? avgWV : fallback) * gridH;
     }
 
     private static bool BarycentricInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c,
