@@ -54,11 +54,15 @@ public class CannonMuzzle : MonoBehaviour
     [Tooltip("Boss_Doorのoffsetと同じ値を入れる")]
     [SerializeField] private Vector3 doorOffset = Vector3.zero;
     [SerializeField] private GameObject doorHitBigEffect;
+    [Tooltip("扉に当たってからボスが消えるまでの時間（秒）")]
+    [SerializeField] private float disappearDelay = 1f;
 
 
     private Collider muzzleCollider;
     private bool hasLaunched = false;
     private bool hasHitDoor = false;
+
+    private int originalBossLayer;
 
     private void Start()
     {
@@ -162,6 +166,20 @@ public class CannonMuzzle : MonoBehaviour
 
     private IEnumerator LaunchCoroutine()
     {
+        originalBossLayer = boss.gameObject.layer;
+        Debug.Log($"[CannonMuzzle] レイヤー変更前: {LayerMask.LayerToName(originalBossLayer)}");
+
+        int projectileLayer = LayerMask.NameToLayer("BossProjectile");
+        if (projectileLayer >= 0)
+        {
+            boss.gameObject.layer = projectileLayer;
+            Debug.Log($"[CannonMuzzle] レイヤー変更後: {LayerMask.LayerToName(boss.gameObject.layer)}");
+        }
+
+        var children = boss.GetComponentsInChildren<Transform>();
+        foreach (var child in children)
+            child.gameObject.layer = projectileLayer;
+
         var bossCC = boss.GetComponent<CharacterController>();
         if (bossCC != null) bossCC.enabled = false;
 
@@ -238,12 +256,12 @@ public class CannonMuzzle : MonoBehaviour
                 }
             }
 
-            if (boss.transform.position.y <= landY)
-            {
-                landedY = landY;
-                Debug.Log($"[CannonMuzzle] ボス着地！posY={landedY}");
-                break;
-            }
+            //if (boss.transform.position.y <= landY)
+            //{
+            //    landedY = landY;
+            //    Debug.Log($"[CannonMuzzle] ボス着地！posY={landedY}");
+            //    break;
+            //}
 
             yield return null;
         }
@@ -329,6 +347,8 @@ public class CannonMuzzle : MonoBehaviour
             foreach (var p in ps) { p.Clear(); p.Play(); }
             StartCoroutine(DisableDoorEffectWhenDone());
         }
+
+        StartCoroutine(MakeBossDisappear());
     }
 
     private IEnumerator DisableDoorEffectWhenDone()
@@ -355,4 +375,20 @@ public class CannonMuzzle : MonoBehaviour
         if (doorHitBigEffect != null)
             doorHitBigEffect.SetActive(false);
     }
+
+    private IEnumerator MakeBossDisappear()
+    {
+        yield return new WaitForSeconds(disappearDelay);
+
+        if (boss != null)
+        {
+            Debug.Log("[CannonMuzzle] ボスが扉の奥へ消えた");
+            boss.gameObject.SetActive(false); // 非表示にする（Destroyではなく安全のためSetActive）
+        }
+
+        if (cameraController != null)
+            cameraController.SetLookTarget(null);
+    }
+
 }
+

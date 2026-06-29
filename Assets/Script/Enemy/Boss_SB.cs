@@ -439,6 +439,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (player == null) return;
 
+        if (!isLaunching)
+            ClampToArea();
+        else
+            Debug.Log("[Boss_SB] 打ち上げ中なのでClampToAreaスキップ");
+
         ClampToArea();
         CheckPlayerCollision();
         UpdateEffects();
@@ -1982,6 +1987,7 @@ GameObject prefab, List<Transform> spawnPoints)
     private void ClampToArea()
     {
         if (areaPointA == null || areaPointB == null) return;
+        if (isLaunching) return;
 
         Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);
         Vector3 max = Vector3.Max(areaPointA.position, areaPointB.position);
@@ -2000,6 +2006,7 @@ GameObject prefab, List<Transform> spawnPoints)
 
     private bool IsOutOfArea()
     {
+        if (isLaunching) return false;
         if (areaPointA == null || areaPointB == null) return false;
 
         Vector3 min = Vector3.Min(areaPointA.position, areaPointB.position);

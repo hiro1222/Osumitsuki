@@ -17,8 +17,8 @@ TagManager:
   - Player
   - PlayerVSObject
   - BossArea
-  - 
-  - 
+  - BossProjectile
+  - GoalDoorWall
   - 
   - 
   - 
