@@ -174,7 +174,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &457995
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -310,7 +313,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &12095749
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -515,7 +521,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &32414850
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -646,7 +655,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &41940818
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -777,7 +789,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &42888060
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1032,7 +1047,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &70270190
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1262,7 +1280,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &80217031
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1451,7 +1472,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &97847429
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1529,7 +1553,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &101654785
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1665,7 +1692,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &113885755
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1796,7 +1826,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &119504902
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2143,7 +2176,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &200122189
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2651,7 +2687,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &253665128
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2895,7 +2934,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &290313216
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3174,7 +3216,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &324693709
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3379,7 +3424,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &329008771
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3653,7 +3701,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &347810553
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3872,7 +3923,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &363938994
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4061,7 +4115,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &374732055
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4195,7 +4252,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &391011893 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 391011892}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &391011894 stripped
@@ -5031,7 +5088,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &498545814
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5132,7 +5192,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &499388907
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5332,7 +5395,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &513473046 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 513473045}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &513473047 stripped
@@ -5433,7 +5496,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &528808940
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5564,7 +5630,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &561482718
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5695,7 +5764,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &562835670
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6042,7 +6114,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &588714776 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 588714775}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &588714777 stripped
@@ -6163,7 +6235,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &591159885
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6412,7 +6487,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &614007295
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6538,7 +6616,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &617083146 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 617083145}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &617083147 stripped
@@ -6659,7 +6737,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &628462805
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6973,7 +7054,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &653483267 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 653483266}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &653483268 stripped
@@ -7041,7 +7122,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &654424767
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7296,7 +7380,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &675663027
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7475,7 +7562,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &682261768 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 682261767}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &682261769 stripped
@@ -7548,7 +7635,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &690081967
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7767,7 +7857,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &701145278
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8060,7 +8153,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &720404542
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8265,7 +8361,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &726675861
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8691,7 +8790,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &745884533
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8792,7 +8894,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &746033539
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9062,7 +9167,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &773571338
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9401,7 +9509,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &813976823
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9633,7 +9744,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &821939106
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9820,6 +9934,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 100
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
@@ -9935,7 +10055,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &836028301 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 836028300}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &836028302 stripped
@@ -10542,6 +10662,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 0}
+  prefab_flash: {fileID: 0}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
   maxInkCapa: 100
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
@@ -10770,7 +10896,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &891566304
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10879,7 +11008,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &892233425
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11116,7 +11248,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1001 &920207185
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11312,7 +11447,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &928073832
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11435,7 +11573,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1001 &935882007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11701,7 +11842,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &943972806 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 943972805}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &943972807 stripped
@@ -11769,7 +11910,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &949935231
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12061,7 +12205,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &957508301 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 957508300}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &957508302 stripped
@@ -12134,7 +12278,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &965277266
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12371,7 +12518,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &973466605
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12502,7 +12652,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &982722335
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12633,7 +12786,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &987481934
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12764,7 +12920,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1001815800
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12895,7 +13054,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1003455990
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -13026,7 +13188,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1003543187
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -13293,7 +13458,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1005069895 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1005069894}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1005069896 stripped
@@ -13449,7 +13614,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1008585373
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -13737,7 +13905,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1022923639
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -13868,7 +14039,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1033364243
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14047,7 +14221,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1033900572 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1033900571}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1033900573 stripped
@@ -14203,7 +14377,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1050658220
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14408,7 +14585,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1064623438
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14539,7 +14719,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1067451610
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14726,7 +14909,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1070933818 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1070933817}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1070933819 stripped
@@ -14863,7 +15046,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1078867283
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14964,7 +15150,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1080794257
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15042,7 +15231,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1084030827
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15302,7 +15494,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1089720205
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15507,7 +15702,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1097848430
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15770,7 +15968,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1107937511
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -16181,7 +16382,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1118530221 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1118530220}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1118530222 stripped
@@ -16457,7 +16658,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1130679528 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1130679527}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1130679529 stripped
@@ -16652,7 +16853,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1135312468
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -16778,7 +16982,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1137922150
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -16909,7 +17116,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1153265014
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17084,7 +17294,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1184145196
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17341,7 +17554,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1203615341
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17530,7 +17746,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1216444261
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17682,7 +17901,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1221499927
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17921,7 +18143,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1230654376
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -18165,7 +18390,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1271848829
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -18288,7 +18516,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1 &1275020407
 GameObject:
   m_ObjectHideFlags: 0
@@ -18378,7 +18609,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1280094089
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -18648,7 +18882,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1300738930
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -18853,7 +19090,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1325871708
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -18984,7 +19224,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1332665329
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -19107,7 +19350,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1 &1341737520
 GameObject:
   m_ObjectHideFlags: 0
@@ -19312,7 +19558,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1371193538
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -19520,7 +19769,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1379396538 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1379396537}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1379396539 stripped
@@ -19663,7 +19912,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1001 &1390974210
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19846,7 +20098,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1391169302
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20064,7 +20319,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1410368350
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20243,7 +20501,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1420965542 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1420965541}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1420965543 stripped
@@ -20367,7 +20625,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1423012144 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1423012143}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1423012145 stripped
@@ -20488,7 +20746,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1430716190
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20645,7 +20906,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1449802813
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20776,7 +21040,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1456601632
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -21076,6 +21343,103 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5683407379645346711, guid: 9cdd746b59a1b0640ae4d496f7041366, type: 3}
   m_PrefabInstance: {fileID: 1469650041}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1470175116
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 323653015809491693, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_Name
+      value: PauseMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121746269804441820, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6a1eedc6088f2b3429a9d4e406aeeb39, type: 3}
 --- !u!1 &1471446898
 GameObject:
   m_ObjectHideFlags: 0
@@ -21166,7 +21530,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1491437386
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -21376,7 +21743,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1507959620
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -21507,7 +21877,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1510593560
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -21765,7 +22138,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1523093487
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -22093,7 +22469,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1557366157 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1557366156}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1557366158 stripped
@@ -22653,7 +23029,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1619713632
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -22754,7 +23133,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1624246409
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -23047,7 +23429,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1662662760
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -23624,7 +24009,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1691154636
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -23702,7 +24090,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1699073561
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -23844,7 +24235,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1712002559
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -24057,7 +24451,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1728452913
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -24241,7 +24638,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1732042773
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -24319,7 +24719,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1737168279
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -24743,7 +25146,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1750028420
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -25000,7 +25406,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &1754622589 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 1754622588}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1754622590 stripped
@@ -25148,7 +25554,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1001 &1785813089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25574,7 +25983,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1826043088
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -25675,7 +26087,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1826050639
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -25823,7 +26238,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1856963790
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -26029,7 +26447,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1 &1883723672 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3624516466938908285, guid: 520a11c2531d83e429bdb7d273213afc, type: 3}
@@ -26112,7 +26533,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1883960495
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -26235,7 +26659,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1001 &1910857702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26365,7 +26792,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1918059473
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -26549,7 +26979,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1926995911
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -26684,7 +27117,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1932339528
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27008,7 +27444,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1945219159
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27086,7 +27525,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1951559517
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27187,7 +27629,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1962372478
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27371,7 +27816,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &1982137672
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27629,7 +28077,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2015787973
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27760,7 +28211,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2019255703
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -27965,7 +28419,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2020026094
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -28013,7 +28470,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2028304767
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -28291,7 +28751,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &2048342393 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 2048342392}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2048342394 stripped
@@ -28494,7 +28954,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2050829344
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -28625,7 +29088,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2052540507
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -28833,7 +29299,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
 --- !u!4 &2067834040 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5250736233897759856, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1892980804840244220, guid: ac8d82a7630dfa043a99b27f4fd8b4da, type: 3}
   m_PrefabInstance: {fileID: 2067834039}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2067834041 stripped
@@ -28954,7 +29420,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2068668417
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29107,7 +29576,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!1 &2075971358
 GameObject:
   m_ObjectHideFlags: 0
@@ -29163,7 +29635,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2075971361
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29294,7 +29769,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2087346805
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29478,7 +29956,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2102103573
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29526,7 +30007,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2119713342
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29604,7 +30088,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2121140034
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -29897,7 +30384,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2140617099
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -30028,7 +30518,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2141447607
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -30106,7 +30599,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.05
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &2144693705
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -30329,3 +30825,4 @@ SceneRoots:
   - {fileID: 849162032}
   - {fileID: 2125008840}
   - {fileID: 758980771}
+  - {fileID: 1470175116}
