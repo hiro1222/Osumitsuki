@@ -23,7 +23,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int currentHP = 3;
 
     [Header("Stock")]
-    [SerializeField] private int stock = 3;
+    [SerializeField] private int stock = 0;
     [SerializeField] private int maxStock = 99;
 
     [Header("Damage / Invincible")]

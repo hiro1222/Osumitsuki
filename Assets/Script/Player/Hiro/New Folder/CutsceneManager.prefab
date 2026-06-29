@@ -1,0 +1,349 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5258673845993860438
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2145756279966251279}
+  - component: {fileID: 6130888526557703688}
+  - component: {fileID: 7607220619444072741}
+  - component: {fileID: 4774576990641065751}
+  - component: {fileID: 2068623091181934487}
+  - component: {fileID: 1956623894186194388}
+  - component: {fileID: 1859926415011481849}
+  m_Layer: 8
+  m_Name: CutsceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2145756279966251279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6130888526557703688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f874522dd1c36f4e825044d98bc1067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iris: {fileID: 2068623091181934487}
+  cutsceneCamera: {fileID: 4774576990641065751}
+  startClosed: 0
+  steps:
+  - label: "\u30AB\u30E1\u30E9\u505C\u6B62"
+    delayBefore: 0
+    kind: 0
+    action:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7607220619444072741}
+          m_TargetAssemblyTypeName: CutsceneActions, Assembly-CSharp
+          m_MethodName: DisableNormalCamera
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1859926415011481849}
+          m_TargetAssemblyTypeName: CutsceneUIToggle, Assembly-CSharp
+          m_MethodName: Hide
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    irisDuration: 0
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u30AB\u30E1\u30E9\u2192Player"
+    delayBefore: 0
+    kind: 3
+    action:
+      m_PersistentCalls:
+        m_Calls: []
+    irisDuration: 0
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u30A2\u30CB\u30E1\u518D\u751F"
+    delayBefore: 0.3
+    kind: 0
+    action:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: Play
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Goal_RoughMotion
+            m_BoolArgument: 0
+          m_CallState: 2
+    irisDuration: 0
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u8996\u754C\u9589\u3058\u308B"
+    delayBefore: 6
+    kind: 1
+    action:
+      m_PersistentCalls:
+        m_Calls: []
+    irisDuration: 0.6
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u30B9\u30AB\u30A4\u5909\u66F4"
+    delayBefore: 0.1
+    kind: 0
+    action:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7607220619444072741}
+          m_TargetAssemblyTypeName: CutsceneActions, Assembly-CSharp
+          m_MethodName: ChangeSkybox
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1956623894186194388}
+          m_TargetAssemblyTypeName: Mng_Osumitsuki, Assembly-CSharp
+          m_MethodName: AllOsumitsuki
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    irisDuration: 0.6
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u30AB\u30E1\u30E9\u2192Sky"
+    delayBefore: 0
+    kind: 3
+    action:
+      m_PersistentCalls:
+        m_Calls: []
+    irisDuration: 0.6
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u8996\u754C\u958B\u304F"
+    delayBefore: 0
+    kind: 2
+    action:
+      m_PersistentCalls:
+        m_Calls: []
+    irisDuration: 0.8
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u82B1\u706B"
+    delayBefore: 0
+    kind: 0
+    action:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7607220619444072741}
+          m_TargetAssemblyTypeName: CutsceneActions, Assembly-CSharp
+          m_MethodName: PlayFireworks
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    irisDuration: 0.8
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  - label: "\u8996\u754C\u9589\u3058\u308B"
+    delayBefore: 8
+    kind: 1
+    action:
+      m_PersistentCalls:
+        m_Calls: []
+    irisDuration: 0.8
+    cameraTarget: {fileID: 0}
+    cameraMoveDuration: 0
+    holdAfter: 0
+  playOnce: 1
+  onSequenceStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onSequenceComplete:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7607220619444072741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4093116730a00ab4f8f865361ab7daa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newSkybox: {fileID: -876546973899608171, guid: 533199e09cf042847ba6fb78f6342616, type: 3}
+  fireworksPrefab: {fileID: 4711207553253879076, guid: 2ab7de1c9a0b7d7459958b6156db9b7b, type: 3}
+  spawnPoints:
+  - {fileID: 0}
+  autoDestroySeconds: 25
+  normalCameraScript: {fileID: 0}
+  playerControlScripts: []
+--- !u!114 &4774576990641065751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 394a4ef8e98a937419f8c1f8074d0c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 0}
+  ease:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  quickSnapTarget: {fileID: 0}
+--- !u!114 &2068623091181934487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd2f2f6732cabc4bb6c8972bb6f0e8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  irisImage: {fileID: 0}
+  openRadius: 1.2
+  closedRadius: -0.1
+  ease:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1956623894186194388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a1d5eb100ec1642bfd700778a61845, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1859926415011481849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258673845993860438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd6fbb713a0c8044d94110729d12d22b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targets:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
