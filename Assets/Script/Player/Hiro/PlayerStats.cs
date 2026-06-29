@@ -53,6 +53,16 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float fallRespawnHeightOffset = 1.0f;
     [SerializeField] private float safePositionUpdateInterval = 0.1f;
 
+    [Header("Fall Detection")]
+    [Tooltip("直前の安全地点からこの距離以上落ちたら落下チェック対象。")]
+    [SerializeField] private float fallDistanceThreshold = 5.0f;
+    [Tooltip("足元に床があるか調べるレイの長さ。")]
+    [SerializeField] private float groundCheckRayLength = 2.0f;
+    [Tooltip("床とみなすレイヤー。Inspectorで地面レイヤーを指定。")]
+    [SerializeField] private LayerMask groundLayer = ~0;
+    [Tooltip("保険として、この絶対高さを下回ったら無条件で落下扱い。")]
+    [SerializeField] private float absoluteRespawnY = -50f;
+
     private Vector3 spawnPosition;
     private Vector3 lastSafeGroundedPosition;
 
@@ -227,13 +237,33 @@ public class PlayerStats : MonoBehaviour
         UpdateInvincibleTimer();
         UpdateLastSafeGroundedPosition();
 
-        if (transform.position.y < respawnY)
+        if (IsFalling())
         {
             FallRespawn();
             return;
         }
 
         UpdateInkRecoveryByNoInput();
+    }
+
+    private bool IsFalling()
+    {
+        if (transform.position.y < absoluteRespawnY)
+            return true;
+        float dropped = lastSafeGroundedPosition.y - transform.position.y;
+        if (dropped < fallDistanceThreshold)
+            return false; // まだ十分落ちていない
+
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        bool hasGround = Physics.Raycast(
+            origin,
+            Vector3.down,
+            groundCheckRayLength,
+            groundLayer,
+            QueryTriggerInteraction.Ignore
+        );
+
+        return !hasGround;
     }
 
     private void UpdateInvincibleTimer()
@@ -393,10 +423,17 @@ public class PlayerStats : MonoBehaviour
 
     private void FallRespawn()
     {
-        SubStock(1);
+        if (stock > 0)
+        {
+            SubStock(1);
 
-        Vector3 respawnPos = lastSafeGroundedPosition + Vector3.up * fallRespawnHeightOffset;
-        MoveToRespawnPosition(respawnPos);
+            Vector3 respawnPos = lastSafeGroundedPosition + Vector3.up * fallRespawnHeightOffset;
+            MoveToRespawnPosition(respawnPos);
+        }
+        else
+        {
+            MoveToRespawnPosition(spawnPosition);
+        }
 
         currentHP = maxHP;
         currentInk = maxInk;
