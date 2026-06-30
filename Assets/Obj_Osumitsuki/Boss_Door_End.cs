@@ -77,7 +77,7 @@ public class Boss_Door : MonoBehaviour
 			foreach (Transform child in children)
 			{
 				if (transform == child) continue;
-				if (child.gameObject.name == auraEffect.name) continue;
+				if (child.gameObject.name == "smoke_aura(Clone)") continue;
 				Renderer rend = child.GetComponent<Renderer>();
 				if (rend == null) continue;
 				rend.material = afferMat;
