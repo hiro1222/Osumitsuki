@@ -77,7 +77,7 @@ public class Boss_Door : MonoBehaviour
 			foreach (Transform child in children)
 			{
 				if (transform == child) continue;
-				if (child.gameObject == auraEffect) continue;
+				if (child.gameObject.name == auraEffect.name) continue;
 				Renderer rend = child.GetComponent<Renderer>();
 				if (rend == null) continue;
 				rend.material = afferMat;
@@ -87,7 +87,10 @@ public class Boss_Door : MonoBehaviour
         }
 
         if (flg) OpenDoor();
-    }
+		StopAuraEffect();
+		SpawnFlashEffect();
+		SpawnStampEffect();
+	}
 
 
     private void OpenDoor()
