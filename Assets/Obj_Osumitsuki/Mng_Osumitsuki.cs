@@ -9,10 +9,12 @@ public class Mng_Osumitsuki : MonoBehaviour
     public static Mng_Osumitsuki instance { get; private set; }
 
     private List<Obj_Osumitsuki> all_Objects;
+    private List<bool> all_ObjectsOsumiFlg;
     private List<Obj_Osumitsuki> action_Objects;
     private List<Obj_Osumitsuki> update_Objects;
 
-
+    private AudioSource audioSource;
+    private int idCnt = 0;
     private int flameCnt = 0;
 
     private void Awake()
@@ -24,9 +26,11 @@ public class Mng_Osumitsuki : MonoBehaviour
         }
         instance = this;
 		all_Objects = new List<Obj_Osumitsuki>();
+        all_ObjectsOsumiFlg = new List<bool>();
 		action_Objects = new List<Obj_Osumitsuki>();
 		update_Objects = new List<Obj_Osumitsuki>();
 		DontDestroyOnLoad(gameObject);  //お墨付きオブジェクトのみを必要とすることがあるかも？
+        audioSource = GetComponent<AudioSource>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -61,13 +65,22 @@ public class Mng_Osumitsuki : MonoBehaviour
         var ansObject = action_Objects.Find(obj => obj.name == _obj.name);
         if (ansObject != null) return;
 
+        if (all_ObjectsOsumiFlg[_obj.OsumiID] == false)
+        {
+            all_ObjectsOsumiFlg[_obj.OsumiID] = true;
+            audioSource.Play();
+        }
+
         action_Objects.Add(_obj);
         Debug.Log(_obj.name + "、Osumitsuki!!");
     }
 
     public void AddAllList(Obj_Osumitsuki _obj)
     {
+        _obj.SetID(idCnt);
+        idCnt++;
         all_Objects.Add(_obj);
+        all_ObjectsOsumiFlg.Add(false);
     }
 
     public void AllOsumitsuki()
@@ -79,6 +92,7 @@ public class Mng_Osumitsuki : MonoBehaviour
     public void AllClear()
     {
         all_Objects.Clear();
+        all_ObjectsOsumiFlg.Clear();
         action_Objects.Clear();
         update_Objects.Clear();
     }

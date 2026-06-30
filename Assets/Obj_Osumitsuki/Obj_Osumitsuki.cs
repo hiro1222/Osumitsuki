@@ -8,13 +8,18 @@ using System.Linq;
 public class Obj_Osumitsuki : MonoBehaviour
 {
 
+	private int osumiID = 0;
+
 	[Header("エフェクト")]
 	[SerializeField] private GameObject prefab_aura;
 	[SerializeField] private GameObject prefab_flash;
+	[SerializeField] private GameObject prefab_stamp;
 	[SerializeField] private Vector3 offset_Aura;
 	[SerializeField] private Vector3 scale_Aura = new Vector3(5, 5, 5);
 	[SerializeField] private Vector3 offset_Flash;
 	[SerializeField] private Vector3 scale_Flash = new Vector3(8, 8, 8);
+	[SerializeField] private float offset_Stamp = 3f;
+	[SerializeField] private Vector3 scale_Stamp = new Vector3(1, 1, 1);
 
 
 	[Header("インクステータス")]
@@ -31,8 +36,9 @@ public class Obj_Osumitsuki : MonoBehaviour
 	[SerializeField] private AllyEnemyManager allyEnemyManager;
 
 
-	 private ParticleSystem auraEffect;
-	 private ParticleSystem flashEffect;
+	private ParticleSystem auraEffect;
+	private ParticleSystem flashEffect;
+	private ParticleSystem stampEffect;
 
 	private AllyEnemy[] helperAllyEnemys;   //Osumitsuki_Objがお墨付き後移動補助やく墨袋
 	private AllyEnemy.IAllyEnemyState[] helperEnemyStates;
@@ -49,11 +55,16 @@ public class Obj_Osumitsuki : MonoBehaviour
 	public event System.Action<int, byte> OnAnyPainted;
 
 	//プロパティ
+	public int OsumiID => osumiID;
 	public bool OsumiTrg => osumitsukiTrg;
 	public bool OsumiFlg => osumitsukiFlg;  //お墨付きかどうか
 	public bool EndFlg => endFlg;           //処理が終了したかどうか
 	
 	
+	public void SetID(int _id)
+	{
+		osumiID = _id;
+	}
 	public int GetHelperNum()
 	{
 		int answer = 0;
@@ -211,11 +222,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 		if (Time.time - lastPaintedTime < coolPaintTime) return osumitsukiTrg;
 		lastPaintedTime = Time.time;
 
-		Debug.Log("AddInkAmount : " + _ink);
 		curInkAmount += _ink;
-		Debug.Log("--------------------------------------------------");
-		Debug.Log(name + "Painted関数呼び出し");
-		Debug.Log("--------------------------------------------------");
 
 		if (maxInkCapa <= curInkAmount && !osumitsukiTrg)
 		{
@@ -236,16 +243,8 @@ public class Obj_Osumitsuki : MonoBehaviour
 				float oneBlockAmount = maxInkCapa / allBlockNum;
 				float curBlockTopAmount = oneBlockAmount * curBlock;
 
-				Debug.Log("maskNum" + maskSystems.Count);
-				Debug.Log("curRatio : " + curRatio * 100f + "％");
-				Debug.Log("allBlockNum : " + allBlockNum);
-				Debug.Log("oneBlcokAmount : " + oneBlockAmount);
-				Debug.Log("curBlockIndex : " + curBlock);
-				Debug.Log("curInkAmount : curBlockTopAmount =" + curInkAmount + " : " + curBlockTopAmount);
-
 				if (curInkAmount >= curBlockTopAmount)
                 {
-					Debug.Log(name + " : 次マスクへ");
 					ms.Advance();
 				}
 
@@ -266,6 +265,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 
 		StopAuraEffect();
 		SpawnFlashEffect();
+		SpawnStampEffect();
 	}
 
 	public virtual void Osumitsuki_Tex()
@@ -417,6 +417,22 @@ public class Obj_Osumitsuki : MonoBehaviour
 		}
 	}
 
+	private void SpawnStampEffect()
+	{
+		if (prefab_flash != null)
+		{
+
+			GameObject instance = Instantiate(prefab_stamp, transform);
+			Vector3 dif = Camera.main.transform.position - transform.position;
+			dif.Normalize();
+			Vector3 offset = dif * offset_Stamp;
+			instance.transform.position += offset;
+			instance.transform.localScale += scale_Flash;
+
+			Debug.Log("スタンプエフェクト");
+			stampEffect = instance.GetComponent<ParticleSystem>();
+		}
+	}
 	/**
     * @brief    お助けエネミーを開放する
     */
