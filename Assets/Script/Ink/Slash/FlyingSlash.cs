@@ -4,7 +4,8 @@ using UnityEngine;
 /// 飛行中の斬撃インスタンス（UV方式）
 /// - 自前で position += velocity * dt（Rigidbody不使用）
 /// - Raycastで地面/壁/敵への着弾を検知
-/// - 着弾時に InkPaintService 経由で塗る（PaintableSurfaceがdensity+テクスチャ+コリジョンを処理）
+/// - 着弾時に InkPaintService 経由で塗る
+/// - 着弾後は stayDuration 秒その場に留まってから消滅（仲間追従用）
 /// </summary>
 public class FlyingSlash : MonoBehaviour
 {
@@ -14,10 +15,21 @@ public class FlyingSlash : MonoBehaviour
     [HideInInspector] public LayerMask hitMask = ~0;
     [HideInInspector] public bool spawnEffect = true;
 
+    [Header("着弾後の滞在")]
+    [Tooltip("着弾後、その場に留まる秒数。仲間が乗る場合の停止時間。")]
+    public float stayDuration = 1.0f;
+
+    // ── 外部参照用の状態 ──
+    /// <summary>着弾して停止したか。仲間追従の判定に使う。</summary>
+    public bool HasImpacted { get; private set; }
+    /// <summary>消滅したか(Destroy予定含む)。</summary>
+    public bool IsFinished { get; private set; }
+
     // ── 内部状態 ──
     private float age;
     private GameObject effectObj;
     private float distSinceLastTrail;
+    private float stayTimer;
 
     private void Start()
     {
@@ -26,18 +38,15 @@ public class FlyingSlash : MonoBehaviour
             effectObj = Instantiate(pattern.effectPrefab, transform);
             effectObj.transform.localPosition = pattern.effectOffset;
 
-            // Z軸 = 飛行方向
             Vector3 slashZAxis = velocity.normalized;
             if (slashZAxis.sqrMagnitude < 0.0001f)
                 slashZAxis = transform.forward;
 
-            // X軸 = 飛行方向に対する水平交差軸
             Vector3 slashXAxis = Vector3.Cross(Vector3.up, slashZAxis);
             if (slashXAxis.sqrMagnitude < 0.0001f)
                 slashXAxis = transform.right;
             slashXAxis.Normalize();
 
-            // Y軸 = 鉛直交差軸
             Vector3 slashYAxis = Vector3.Cross(slashZAxis, slashXAxis).normalized;
 
             Quaternion slashBasis = Quaternion.LookRotation(slashZAxis, slashYAxis);
@@ -45,7 +54,7 @@ public class FlyingSlash : MonoBehaviour
             effectObj.transform.localScale = pattern.effectScale;
         }
 
-        PrebuildAlongPath();   // 弾道が通る地面サーフェスを先読みで構築キューへ（着弾/trailのカクつき防止）
+        PrebuildAlongPath();
     }
 
     private void Update()
@@ -53,17 +62,28 @@ public class FlyingSlash : MonoBehaviour
         if (pattern == null)
         {
             Debug.LogError("[FlyingSlash] pattern=NULL");
-            Destroy(gameObject);
+            FinishAndDestroy();
+            return;
+        }
+
+        // 着弾済みなら滞在タイマーを進めるだけ(移動しない)
+        if (HasImpacted)
+        {
+            stayTimer -= Time.deltaTime;
+            if (stayTimer <= 0f)
+            {
+                FinishAndDestroy();
+            }
             return;
         }
 
         float dt = Time.deltaTime;
         age += dt;
 
-        // 寿命
+        // 寿命(空中のまま寿命が来たら、その場で滞在に移行)
         if (age >= pattern.lifetime)
         {
-            Destroy(gameObject);
+            EnterImpactedState();
             return;
         }
 
@@ -75,7 +95,7 @@ public class FlyingSlash : MonoBehaviour
         float moveDist = movement.magnitude;
         if (moveDist < 0.0001f) return;
 
-        // 衝突判定（少し前からRay開始。Triggerも当たるようにCollide指定）
+        // 衝突判定
         Vector3 rayStart = transform.position + velocity.normalized * 0.2f;
         if (InkPaintService.Raycast(rayStart, movement.normalized, out RaycastHit hit,
                                     moveDist, hitMask))
@@ -103,14 +123,32 @@ public class FlyingSlash : MonoBehaviour
         if (hitReceiver != null)
         {
             hitReceiver.ReceiveInkHit();
-            Destroy(gameObject);
+            // 敵に当たった場合は滞在せず即消滅(仲間は隊列に戻る)
+            FinishAndDestroy();
             return;
         }
 
-        // 地面・壁 → 墨を塗る（着弾点+隣接）＋飛沫だけ追加（着弾点の二重塗りを回避）
+        // 地面・壁 → 墨を塗る
         InkPaintService.PaintArea(hit, pattern);
         InkPaintService.Splatter(hit, pattern);
 
+        // 着弾位置に座って滞在状態へ
+        transform.position = hit.point;
+        EnterImpactedState();
+    }
+
+    /// <summary>着弾(または寿命)で移動を止め、その場に滞在する状態へ。</summary>
+    private void EnterImpactedState()
+    {
+        if (HasImpacted) return;
+        HasImpacted = true;
+        velocity = Vector3.zero;
+        stayTimer = stayDuration;
+    }
+
+    private void FinishAndDestroy()
+    {
+        IsFinished = true;
         Destroy(gameObject);
     }
 
@@ -125,11 +163,6 @@ public class FlyingSlash : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 発射時に弾道(重力込み)をサンプルし、各点の真下にある地面サーフェスを
-    /// ストリーマの優先構築キューへ登録する。trail/着弾が遠くに届く前に構築を済ませ、
-    /// on-demandビルドの一瞬の固まりを防ぐ。（プリビルドは数フレームに分散される）
-    /// </summary>
     private void PrebuildAlongPath()
     {
         var streamer = InkSurfaceStreamer.Instance;
