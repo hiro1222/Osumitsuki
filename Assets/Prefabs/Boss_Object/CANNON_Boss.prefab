@@ -212,6 +212,8 @@ MonoBehaviour:
   doorHitDistance: 5
   doorOffset: {x: 0, y: 5, z: 0}
   doorHitBigEffect: {fileID: 4888351010657403304}
+  disappearDelay: 1
+  cannonLaunchSE: {fileID: 8300000, guid: 9d7512513f71d8544a31f0c92e97ea10, type: 3}
 --- !u!1 &7538693658187525563
 GameObject:
   m_ObjectHideFlags: 0
