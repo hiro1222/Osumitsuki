@@ -399,7 +399,7 @@ public class Obj_Osumitsuki : MonoBehaviour
 			auraEffect = instance.GetComponent<ParticleSystem>();
 		}
 	}
-	private void StopAuraEffect()
+	public void StopAuraEffect()
 	{
 		if (auraEffect != null)
 			auraEffect.Stop();

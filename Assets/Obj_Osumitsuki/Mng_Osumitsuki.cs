@@ -86,7 +86,10 @@ public class Mng_Osumitsuki : MonoBehaviour
     public void AllOsumitsuki()
     {
         foreach (Obj_Osumitsuki obj in all_Objects)
+        {
+            obj.StopAuraEffect();
             obj.Osumitsuki_Tex();
+        }
     }
 
     public void AllClear()
