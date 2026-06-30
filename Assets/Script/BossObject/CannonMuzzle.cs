@@ -57,6 +57,9 @@ public class CannonMuzzle : MonoBehaviour
     [Tooltip("扉に当たってからボスが消えるまでの時間（秒）")]
     [SerializeField] private float disappearDelay = 1f;
 
+    [Header("── SE ──")]
+    [SerializeField] private AudioClip cannonLaunchSE; // 大砲射出（1）.mp3
+
 
     private Collider muzzleCollider;
     private bool hasLaunched = false;
@@ -143,6 +146,14 @@ public class CannonMuzzle : MonoBehaviour
         }
     }
 
+    private void PlaySE(AudioClip clip)
+    {
+        if (boss == null) return;
+        var audioSource = boss.GetComponent<AudioSource>();
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (boss == null) return;
@@ -206,6 +217,8 @@ public class CannonMuzzle : MonoBehaviour
         Vector3 launchVec = Vector3.up * launchForce
                           + cannonForward * launchForwardForce;
         bossRb.linearVelocity = launchVec;
+
+        PlaySE(cannonLaunchSE);
 
         // 実際の発射方向を基準に回転軸を計算
         Vector3 launchDir = launchVec.normalized;

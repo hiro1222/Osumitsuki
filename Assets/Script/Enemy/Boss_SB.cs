@@ -299,6 +299,34 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Header("── 地面追従 ──")]
     [SerializeField] private float groundFollowSpeed = 10f;
 
+    [System.Serializable]
+    public class SoundEffect
+    {
+        public AudioClip clip;
+        [Range(0f, 1f)] public float volume = 1f;
+        public bool loop = false;
+    }
+
+    [Header("── SE ──")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private SoundEffect tackleSE;
+    [SerializeField] private SoundEffect rollSE;
+    [SerializeField] private SoundEffect jumpSE;
+    [SerializeField] private SoundEffect hitCrateSE;
+    [SerializeField] private SoundEffect pinballSE;
+    [SerializeField] private SoundEffect cannonEnterSE;
+    [SerializeField] private SoundEffect stunSE;
+    [SerializeField] private SoundEffect roarSE;
+    [SerializeField] private SoundEffect defeatSE;
+    [SerializeField] private SoundEffect stunHitSE;
+    [SerializeField] private SoundEffect stunHitFinalSE;
+
+    [Header("── ローリングSE（クロスフェードループ用） ──")]
+    [SerializeField] private AudioSource rollAudioSourceA;
+    [SerializeField] private AudioSource rollAudioSourceB;
+    [Tooltip("ループの何秒前から次の再生を重ねて始めるか")]
+    [SerializeField] private float rollCrossfadeOverlap = 0.2f;
+
     // ====================================================================
     //  内部状態（全てprivate）
     // ====================================================================
@@ -332,6 +360,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private float bounceHomingDisableTimer = 0f;
     private float bounceHomingDisableDuration = 1.5f; // バウンド後この時間はホーミング無効
     private bool isRollWindup = false;
+
+    private Coroutine rollLoopCoroutine;
 
     /// <summary>ゴロゴロ中かどうかを返す</summary>
     public bool GetIsRolling() => state == BossState.Roll;
@@ -372,12 +402,18 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private CharacterController bossController;
     private PlayerStats playerStats;
 
+    float tackleSEPreDelay = 0.3f;
+
     // ====================================================================
     //  初期化
     // ====================================================================
 
     private void Start()
     {
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
         if (player == null)
         {
             var go = GameObject.FindGameObjectWithTag("Player");
@@ -463,6 +499,36 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             case BossState.Roar: break;
             case BossState.Defeated: break;
         }
+    }
+
+    private void PlaySE(SoundEffect se)
+    {
+        if (audioSource == null || se == null || se.clip == null) return;
+
+        if (se.loop)
+        {
+            audioSource.clip = se.clip;
+            audioSource.volume = se.volume;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+        else
+        {
+            audioSource.PlayOneShot(se.clip, se.volume);
+        }
+    }
+
+    private IEnumerator PlaySEDelayed(SoundEffect se, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        PlaySE(se);
+    }
+
+    /// <summary>現在再生中のSEを全て停止する</summary>
+    private void StopAllSE()
+    {
+        if (audioSource != null)
+            audioSource.Stop();
     }
 
     /// <summary>状態に応じてエフェクトを切り替える</summary>
@@ -565,6 +631,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             PushBossOnAttack();
 
+            PlaySE(stunHitSE);
+
             // 被弾エフェクト再生
             if (stunHitEffect != null)
             {
@@ -583,6 +651,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (isFinalHit)
         {
+            PlaySE(stunHitFinalSE);
+
             // 最後の一発は大きいエフェクトのみ（stunHitEffectは絶対出さない）
             if (finalHitBigEffect != null)
             {
@@ -596,6 +666,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         }
         else
         {
+            PlaySE(stunHitSE);
+
             // 通常ヒットのみstunHitEffectを再生
             if (stunHitEffect != null)
             {
@@ -699,6 +771,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (currentPhase != 0 && currentPhase != 2) return;
         if (state != BossState.Tackle) return;
+
+        StopAllSE();
+
+        PlaySE(hitCrateSE);
+
         Debug.Log("[Boss_SB] 木箱に衝突！スタン開始");
         EnterStun();
     }
@@ -712,6 +789,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (currentPhase != 1) return;
         if (state != BossState.Roll) return;
+
+        PlaySE(pinballSE);
 
         // 方向を更新
         rollDirection = newDirection.normalized;
@@ -869,6 +948,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (attackIndicator != null)
             attackIndicator.Show(chargeTargetDir);
 
+        if (currentPhase != 1)
+        {
+            float preDelay = Mathf.Max(0f, chargeDuration - tackleSEPreDelay);
+            StartCoroutine(PlaySEDelayed(tackleSE, preDelay));
+        }
+
         Debug.Log("[Boss_SB] チャージ開始！");
     }
 
@@ -911,8 +996,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (attackIndicator != null)
             attackIndicator.Hide();
-
         Debug.Log("[Boss_SB] タックル開始！");
+    }
+
+    private IEnumerator PlaySEDelayed(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 
     private void UpdateTackle()
@@ -970,7 +1061,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     public void NotifyHitCannonTackle(CannonAutoAim cannonAutoAim, Obj_Osumitsuki cannonOsumi, Cannon_Osumitsuki cannon)
     {
         if (state != BossState.Tackle) return;
+
+        StopAllSE();
+
         Debug.Log("[Boss_SB] お墨付き大砲に衝突！");
+
+        PlaySE(pinballSE);
 
         // 大砲リセット
         if (cannonAutoAim != null)
@@ -1089,6 +1185,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
+        StartRollLoopSE();
         StartCoroutine(RollWindupCoroutine());
     }
 
@@ -1150,6 +1247,49 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             return;
         }
     }
+    private void StartRollLoopSE()
+    {
+        if (rollSE?.clip == null) return;
+        rollLoopCoroutine = StartCoroutine(RollLoopCoroutine());
+    }
+
+    private void StopRollLoopSE()
+    {
+        if (rollLoopCoroutine != null)
+        {
+            StopCoroutine(rollLoopCoroutine);
+            rollLoopCoroutine = null;
+        }
+        if (rollAudioSourceA != null) rollAudioSourceA.Stop();
+        if (rollAudioSourceB != null) rollAudioSourceB.Stop();
+    }
+
+    private IEnumerator RollLoopCoroutine()
+    {
+        AudioSource current = rollAudioSourceA;
+        AudioSource next = rollAudioSourceB;
+
+        float clipLength = rollSE.clip.length;
+
+        current.clip = rollSE.clip;
+        current.volume = rollSE.volume;
+        current.Play();
+
+        while (true)
+        {
+            // クリップ終了の少し前に、次のAudioSourceで再生開始（重ねる）
+            yield return new WaitForSeconds(clipLength - rollCrossfadeOverlap);
+
+            next.clip = rollSE.clip;
+            next.volume = rollSE.volume;
+            next.Play();
+
+            // 入れ替え
+            var temp = current;
+            current = next;
+            next = temp;
+        }
+    }
 
     /// <summary>一定時間後にゴロゴロを終了する（外面バウンド時に使う）</summary>
     private IEnumerator RollEndAfterDelay(float delay)
@@ -1162,6 +1302,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     /// <summary>ゴロゴロ終了：ジャンプ→着地→移動</summary>
     private IEnumerator RollEndCoroutine()
     {
+        StopRollLoopSE();
+
         state = BossState.RollEnd;
 
         Vector3 startPos = transform.position;
@@ -1341,6 +1483,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * hipDropJumpHeight;
 
+        PlaySE(jumpSE);
+
         float groundY = groundTransform != null ? groundTransform.position.y : 0f;
 
         // ジャンプ開始と同時にサークル表示
@@ -1465,6 +1609,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (currentPhase != 2) return;
         if (state != BossState.HipDrop && state != BossState.Stun) return;
+
+        PlaySE(cannonEnterSE);
+
         Debug.Log($"[Boss_SB] 砲口に当たった！ bodyTransform.posY={bodyTransform?.position.y} transform.posY={transform.position.y}");
         isHitCannon = true;
 
@@ -1559,6 +1706,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     public void NotifyHitCrateNoStun()
     {
         if (state != BossState.Tackle) return;
+
+        StopAllSE();
+
         Debug.Log("[Boss_SB] 木箱に当たったが塗り量不足。停止のみ");
         if (currentPhase == 2)
             EnterHipDropCharge();
