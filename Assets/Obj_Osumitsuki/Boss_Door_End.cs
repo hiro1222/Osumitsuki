@@ -84,12 +84,12 @@ public class Boss_Door : MonoBehaviour
 			}
 
             flg = true;
-        }
+			StopAuraEffect();
+			SpawnFlashEffect();
+			SpawnStampEffect();
+		}
 
         if (flg) OpenDoor();
-		StopAuraEffect();
-		SpawnFlashEffect();
-		SpawnStampEffect();
 	}
 
 
