@@ -3,6 +3,23 @@ using UnityEngine;
 public class Boss_Door : MonoBehaviour
 {
 
+
+	[Header("エフェクト")]
+	[SerializeField] private GameObject prefab_aura;
+	[SerializeField] private GameObject prefab_flash;
+	[SerializeField] private GameObject prefab_stamp;
+	[SerializeField] private Vector3 offset_Aura;
+	[SerializeField] private Vector3 scale_Aura = new Vector3(5, 5, 5);
+	[SerializeField] private Vector3 offset_Flash;
+	[SerializeField] private Vector3 scale_Flash = new Vector3(8, 8, 8);
+	[SerializeField] private float offset_Stamp = 3f;
+	[SerializeField] private Vector3 scale_Stamp = new Vector3(1, 1, 1);
+
+	private ParticleSystem auraEffect;
+	private ParticleSystem flashEffect;
+	private ParticleSystem stampEffect;
+
+
 	[Header("ドア（開く対象）")]
 	[SerializeField] private Transform leftDoor;
 	[SerializeField] private Transform rightDoor;
@@ -43,6 +60,7 @@ public class Boss_Door : MonoBehaviour
 
 		leftOpenRot = leftDoor.localRotation * Quaternion.Euler(0, leftOpenAngle, 0);
 		rightOpenRot = rightDoor.localRotation * Quaternion.Euler(0, rightOpenAngle, 0);
+		SpawnAuraEffect();
 	}
 
 
@@ -65,6 +83,9 @@ public class Boss_Door : MonoBehaviour
 			}
 
             flg = true;
+			StopAuraEffect();
+			SpawnFlashEffect();
+			SpawnStampEffect();
         }
 
         if (flg) OpenDoor();
@@ -89,6 +110,53 @@ public class Boss_Door : MonoBehaviour
 				rightDoor.localRotation, rightOpenRot,
 				openSpeed * Time.deltaTime);
 			rightDone = Quaternion.Angle(rightDoor.localRotation, rightOpenRot) < 0.5f;
+		}
+	}
+
+
+	private void SpawnAuraEffect()
+	{
+		if (prefab_aura != null)
+		{
+			GameObject instance = Instantiate(prefab_aura, transform);
+			instance.transform.position += offset_Aura;
+			instance.transform.localScale += scale_Aura;
+
+			auraEffect = instance.GetComponent<ParticleSystem>();
+		}
+	}
+	private void StopAuraEffect()
+	{
+		if (auraEffect != null)
+			auraEffect.Stop();
+	}
+
+	private void SpawnFlashEffect()
+	{
+		if (prefab_flash != null)
+		{
+			GameObject instance = Instantiate(prefab_flash, transform);
+			instance.transform.position += offset_Flash;
+			instance.transform.localScale += scale_Flash;
+
+			flashEffect = instance.GetComponent<ParticleSystem>();
+		}
+	}
+
+	private void SpawnStampEffect()
+	{
+		if (prefab_flash != null)
+		{
+
+			GameObject instance = Instantiate(prefab_stamp, transform);
+			Vector3 dif = Camera.main.transform.position - transform.position;
+			dif.Normalize();
+			Vector3 offset = dif * offset_Stamp;
+			instance.transform.position += offset;
+			instance.transform.localScale += scale_Flash;
+
+			Debug.Log("スタンプエフェクト");
+			stampEffect = instance.GetComponent<ParticleSystem>();
 		}
 	}
 
