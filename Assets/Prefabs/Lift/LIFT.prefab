@@ -400,6 +400,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc8357d8ef1bd743b7e4532d769a06a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
+  prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
+  prefab_stamp: {fileID: 4931764959179318859, guid: 38c913f9156128b419391c246468ed9c, type: 3}
+  offset_Aura: {x: 0, y: 1, z: 0}
+  scale_Aura: {x: 20, y: 20, z: 20}
+  offset_Flash: {x: 0, y: 1, z: 0}
+  scale_Flash: {x: 20, y: 20, z: 20}
+  offset_Stamp: {x: 0, y: 0, z: 0}
+  scale_Stamp: {x: 1, y: 1, z: 1}
   maxInkCapa: 5
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: d99e6d0ca95142744a5a7aeafe6dda47, type: 2}
@@ -407,12 +416,6 @@ MonoBehaviour:
   - {fileID: 436868469339301971}
   - {fileID: 494813500933346159}
   allyEnemyManager: {fileID: 0}
-  prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
-  prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
-  offset_Aura: {x: 0, y: 1, z: 0}
-  scale_Aura: {x: 20, y: 20, z: 20}
-  offset_Flash: {x: 0, y: 1, z: 0}
-  scale_Flash: {x: 20, y: 20, z: 20}
   boardObj: {fileID: 2264786321398550826}
   upLimitObjTrf: {fileID: 60978112033292002}
   activeDist: 1.5
@@ -437,7 +440,10 @@ MonoBehaviour:
   walkThreshold: 1
   chunkSize: 1
   meshThickness: 1
-  renderResolution: 1
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &40969545143201374
 MeshCollider:
   m_ObjectHideFlags: 0

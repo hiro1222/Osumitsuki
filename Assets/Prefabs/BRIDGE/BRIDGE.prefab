@@ -250,7 +250,10 @@ MonoBehaviour:
   walkThreshold: 50
   chunkSize: 16
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!114 &3505422304112200362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,19 +285,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 100
+  prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
+  prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
+  prefab_stamp: {fileID: 4931764959179318859, guid: 38c913f9156128b419391c246468ed9c, type: 3}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
+  offset_Stamp: {x: 0, y: 0, z: 0}
+  scale_Stamp: {x: 1, y: 1, z: 1}
+  maxInkCapa: 15
   coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3d61dcfe8097c9c4a9a01751844beda7, type: 2}
   allyEnemyTarget:
   - {fileID: 3188356277877210518}
   - {fileID: 6915829065362116288}
   allyEnemyManager: {fileID: 0}
-  prefab_aura: {fileID: 0}
-  prefab_flash: {fileID: 0}
-  offset_Aura: {x: 0, y: 0, z: 0}
-  scale_Aura: {x: 5, y: 5, z: 5}
-  offset_Flash: {x: 0, y: 0, z: 0}
-  scale_Flash: {x: 8, y: 8, z: 8}
   targets: []
   turnSpd: 60
   moveSpd: 10
