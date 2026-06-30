@@ -27,13 +27,17 @@ public class AllyEnemyManager : MonoBehaviour
     [Header("── 仲間化エフェクト（ストック時用） ──")]
     [SerializeField] private GameObject allyEffectPrefab;
 
-
+    [Header("── Harai中の見た目隠し ──")]
+    [Tooltip("Harai/DerivedHarai開始時から見た目を隠す秒数。Haraiが終わってもこの秒数は隠れ続ける。")]
+    [SerializeField] private float hideDurationSeconds = 0.5f;
 
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
-    // Harai系統の実行中に味方の見た目を隠すための状態
+    // Harai系統の実行で味方の見た目を隠すための状態
     private bool alliesHidden = false;
+    private float hideTimer = 0f;
+    private bool prevInHaraiAction = false;
 
     // 累計の味方番号（リセットしない）
     private int allyIndexCounter = 0;
@@ -111,18 +115,38 @@ public class AllyEnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Harai / DerivedHarai の実行中は味方の見た目を隠す。
-    /// アンカーが遠い位置にあるとき、移動して戻る様子を見せないため。
+    /// Harai / DerivedHarai を開始した瞬間に見た目を隠し、
+    /// hideDurationSeconds 秒が経過したら戻す。
+    /// Haraiが途中で終わっても、この秒数の間は隠れ続ける。
     /// 当たり判定や追従処理は止めず、Rendererのみ切り替える。
     /// </summary>
     private void UpdateAllyVisibility()
     {
-        bool shouldHide = ShouldHideAllies();
+        bool inHaraiAction = ShouldHideAllies();
 
-        if (shouldHide == alliesHidden) return;
+        // Harai系に入った「瞬間」を検出して隠し始める
+        if (inHaraiAction && !prevInHaraiAction)
+        {
+            hideTimer = hideDurationSeconds;
+            if (!alliesHidden)
+            {
+                alliesHidden = true;
+                ApplyAllyVisibility(false);
+            }
+        }
+        prevInHaraiAction = inHaraiAction;
 
-        alliesHidden = shouldHide;
-        ApplyAllyVisibility(!shouldHide);
+        // タイマーが動いている間は隠し続ける(Haraiが終わっても継続)
+        if (hideTimer > 0f)
+        {
+            hideTimer -= Time.deltaTime;
+
+            if (hideTimer <= 0f && alliesHidden)
+            {
+                alliesHidden = false;
+                ApplyAllyVisibility(true);
+            }
+        }
     }
 
     private bool ShouldHideAllies()
