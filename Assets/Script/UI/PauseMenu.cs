@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -16,6 +17,8 @@ using UnityEngine.InputSystem;
 /// ■ カーソルはワールド座標で選択肢へ合わせる → Canvasの位置/スケールを変えてもズレない。
 ///   cursor と options の親が別でも動く。
 /// ■ ゲームプレイ側は PauseMenu.IsPaused を見て入力を止める（SimplePlayerに追加済み）。
+/// ■ 操作音(SE): seSource に AudioSource、selectSE/confirmSE/cancelSE にクリップを割当（Inspector）。
+///   ポーズ中 timeScale=0 でも PlayOneShot は鳴る（AudioListener.pause は本プロジェクト未使用）。
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
@@ -40,6 +43,17 @@ public class PauseMenu : MonoBehaviour
     [Tooltip("スティックを「1回倒した」と判定する閾値")]
     [SerializeField] private float stickThreshold = 0.5f;
 
+    [Header("SE")]
+    [Tooltip("操作音を鳴らすAudioSource。ポーズ中(timeScale=0)でも PlayOneShot は鳴る。" +
+             "playOnAwake=false 推奨。AudioListener.pause を使う場合に備え ignoreListenerPause=true 推奨")]
+    [SerializeField] private AudioSource seSource;
+    [Tooltip("選択(カーソル移動)時の音")]
+    [SerializeField] private AudioClip selectSE;
+    [Tooltip("決定時の音")]
+    [SerializeField] private AudioClip confirmSE;
+    [Tooltip("戻る/閉じる時の音")]
+    [SerializeField] private AudioClip cancelSE;
+
     /// <summary>ポーズ中か（ゲームプレイ側はこれを見て入力を止める）。</summary>
     public static bool IsPaused { get; private set; }
 
@@ -47,6 +61,7 @@ public class PauseMenu : MonoBehaviour
     private bool stickArmed = true;   // スティック連続移動防止（ニュートラル復帰で再武装）
     private CursorLockMode prevCursorLock;
     private bool prevCursorVisible;
+    private bool isLeavingToTitle;    // タイトル遷移待ち中（多重入力ガード）
 
     private void Awake()
     {
@@ -69,11 +84,13 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
+        if (isLeavingToTitle) return;   // タイトル遷移待ち中は入力を受けない（Esc/B/移動を無視）
+
         // 開閉
         if (TogglePressed())
         {
-            if (IsPaused) Resume();
-            else Pause();
+            if (IsPaused) { PlaySE(cancelSE); Resume(); }   // Esc/Startで閉じる=戻る音
+            else Pause();                                   // 開くときは無音
             return;
         }
 
@@ -81,11 +98,13 @@ public class PauseMenu : MonoBehaviour
 
         // 選択移動
         int dir = NavDir();
-        if (dir != 0) MoveSelection(dir);
+        if (dir != 0) { MoveSelection(dir); PlaySE(selectSE); }
 
         // 決定 / 戻る
-        if (ConfirmPressed()) Confirm();
-        else if (CancelPressed()) Resume();
+        // ※SEは Resume()/Confirm() の中ではなくここで鳴らす。
+        //   「続ける」決定は Confirm()→Resume() と呼ぶので、Resume内に置くと決定音と戻る音が二重に鳴る。
+        if (ConfirmPressed()) { PlaySE(confirmSE); Confirm(); }
+        else if (CancelPressed()) { PlaySE(cancelSE); Resume(); }
     }
 
     // ====================================================================
@@ -151,6 +170,12 @@ public class PauseMenu : MonoBehaviour
     {
         Gamepad pad = Gamepad.current;
         return pad != null && pad.buttonEast.wasPressedThisFrame;    // B
+    }
+
+    /// <summary>SEを1回鳴らす（null安全）。TitleManager と同じ PlayOneShot 方式。</summary>
+    private void PlaySE(AudioClip clip)
+    {
+        if (seSource != null && clip != null) seSource.PlayOneShot(clip);
     }
 
     // ====================================================================
@@ -232,6 +257,18 @@ public class PauseMenu : MonoBehaviour
                            "Inspectorでタイトルシーン名を入れ、Build Settingsに追加してください。");
             return;   // ポーズ状態は維持（パネル表示と IsPaused が食い違わない）
         }
+
+        if (isLeavingToTitle) return;
+        isLeavingToTitle = true;
+        StartCoroutine(GoToTitleRoutine());
+    }
+
+    private IEnumerator GoToTitleRoutine()
+    {
+        // 決定音を鳴らし切ってから遷移（LoadSceneでAudioSourceが破棄され音が切れるのを防ぐ）。
+        // ポーズ中は timeScale=0 なので Realtime で待つ（通常の WaitForSeconds は進まない）。
+        float wait = (confirmSE != null) ? Mathf.Clamp(confirmSE.length, 0f, 1.0f) : 0f;
+        if (wait > 0f) yield return new WaitForSecondsRealtime(wait);
 
         IsPaused = false;
         Time.timeScale = 1f;
