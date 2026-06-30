@@ -153,6 +153,37 @@ public class PlayerActionManager : MonoBehaviour
         return baseRadius * rate;
     }
 
+    /// <summary>
+    /// 条件(CanStart)・インク消費を無視して強制的にTomeを発動する。
+    /// リスポーン復帰時などに使用。
+    /// </summary>
+    public void ForceStartTome()
+    {
+        if (actTome == null) return;
+
+        if (currentAction != null && currentAction.IsRunning)
+        {
+            currentAction.EndAction();
+        }
+
+        currentAction = actTome;
+        CurrentAction = actTome.Kind;
+
+        if (actTome.FaceCameraOnStart && controller.Move != null)
+        {
+            controller.Move.FaceCameraDirectionInstant();
+        }
+
+        actTome.StartActionForced();
+
+        if (controller.Sound != null)
+        {
+            controller.Sound.PlayActionSound(actTome.Kind);
+        }
+
+        RefreshFlags();
+    }
+
     private void TryStartAction(PlayerActionBase action)
     {
         if (action == null) return;

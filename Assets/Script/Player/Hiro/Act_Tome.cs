@@ -113,6 +113,25 @@ public class Act_Tome : PlayerActionBase
         StartRise();
     }
 
+    /// <summary>
+    /// インク消費・条件チェックを行わずに強制起動する（リスポーン復帰用）。
+    /// </summary>
+    public void StartActionForced()
+    {
+        base.StartAction();
+
+        phase = TomePhase.Rise;
+        actionTimer = 0.0f;
+        phaseTimer = 0.0f;
+        groundedTimer = 0.0f;
+
+        preLandingPainted = false;
+        landingEffectPlayed = false;
+        fallSpeed = 0.0f;
+
+        StartRise();
+    }
+
     public override void Tick(float dt)
     {
         if (!IsRunning) return;

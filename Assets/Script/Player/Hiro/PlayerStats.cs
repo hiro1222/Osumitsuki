@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -54,13 +54,13 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float safePositionUpdateInterval = 0.1f;
 
     [Header("Fall Detection")]
-    [Tooltip("’¼‘O‚ÌˆÀ‘S’n“_‚©‚ç‚±‚Ì‹——£ˆÈã—‚¿‚½‚ç—‰ºƒ`ƒFƒbƒN‘ÎÛB")]
+    [Tooltip("ï¿½ï¿½ï¿½Oï¿½Ìˆï¿½ï¿½Sï¿½nï¿½_ï¿½ï¿½ï¿½ç‚±ï¿½Ì‹ï¿½ï¿½ï¿½ï¿½Èã—ï¿½ï¿½ï¿½ï¿½ï¿½ç—ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½ÎÛB")]
     [SerializeField] private float fallDistanceThreshold = 5.0f;
-    [Tooltip("‘«Œ³‚É°‚ª‚ ‚é‚©’²‚×‚éƒŒƒC‚Ì’·‚³B")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚éƒŒï¿½Cï¿½Ì’ï¿½ï¿½ï¿½ï¿½B")]
     [SerializeField] private float groundCheckRayLength = 2.0f;
-    [Tooltip("°‚Æ‚İ‚È‚·ƒŒƒCƒ„[BInspector‚Å’n–ÊƒŒƒCƒ„[‚ğw’èB")]
+    [Tooltip("ï¿½ï¿½ï¿½Æ‚İ‚È‚ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½BInspectorï¿½Å’nï¿½Êƒï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½wï¿½ï¿½B")]
     [SerializeField] private LayerMask groundLayer = ~0;
-    [Tooltip("•ÛŒ¯‚Æ‚µ‚ÄA‚±‚Ìâ‘Î‚‚³‚ğ‰º‰ñ‚Á‚½‚ç–³ğŒ‚Å—‰ºˆµ‚¢B")]
+    [Tooltip("ï¿½ÛŒï¿½ï¿½Æ‚ï¿½ï¿½ÄAï¿½ï¿½ï¿½Ìï¿½Îï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç–³ï¿½ï¿½ï¿½ï¿½ï¿½Å—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B")]
     [SerializeField] private float absoluteRespawnY = -50f;
 
     private Vector3 spawnPosition;
@@ -252,7 +252,7 @@ public class PlayerStats : MonoBehaviour
             return true;
         float dropped = lastSafeGroundedPosition.y - transform.position.y;
         if (dropped < fallDistanceThreshold)
-            return false; // ‚Ü‚¾\•ª—‚¿‚Ä‚¢‚È‚¢
+            return false; // ï¿½Ü‚ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½
 
         Vector3 origin = transform.position + Vector3.up * 0.1f;
         bool hasGround = Physics.Raycast(
@@ -419,6 +419,8 @@ public class PlayerStats : MonoBehaviour
         {
             Debug.Log("[PlayerStats] Death Respawn");
         }
+
+        ForceTomeOnRespawn();
     }
 
     private void FallRespawn()
@@ -445,6 +447,16 @@ public class PlayerStats : MonoBehaviour
         {
             Debug.Log("[PlayerStats] Fall Respawn / Stock : " + stock);
         }
+
+        ForceTomeOnRespawn();
+    }
+
+    private void ForceTomeOnRespawn()
+    {
+        if (controller == null) return;
+        if (controller.ActionManager == null) return;
+
+        controller.ActionManager.ForceStartTome();
     }
 
     private void MoveToRespawnPosition(Vector3 position)

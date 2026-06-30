@@ -32,6 +32,9 @@ public class AllyEnemyManager : MonoBehaviour
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
+    // Harai系統の実行中に味方の見た目を隠すための状態
+    private bool alliesHidden = false;
+
     // 累計の味方番号（リセットしない）
     private int allyIndexCounter = 0;
 
@@ -64,6 +67,7 @@ public class AllyEnemyManager : MonoBehaviour
     {
         followingAllies.RemoveAll(a => a == null);
         UpdateFormation();
+        UpdateAllyVisibility();
         ReplenishFromStock();
     }
 
@@ -106,6 +110,51 @@ public class AllyEnemyManager : MonoBehaviour
         return pos;
     }
 
+    /// <summary>
+    /// Harai / DerivedHarai の実行中は味方の見た目を隠す。
+    /// アンカーが遠い位置にあるとき、移動して戻る様子を見せないため。
+    /// 当たり判定や追従処理は止めず、Rendererのみ切り替える。
+    /// </summary>
+    private void UpdateAllyVisibility()
+    {
+        bool shouldHide = ShouldHideAllies();
+
+        if (shouldHide == alliesHidden) return;
+
+        alliesHidden = shouldHide;
+        ApplyAllyVisibility(!shouldHide);
+    }
+
+    private bool ShouldHideAllies()
+    {
+        if (actionManager == null) return false;
+        if (!actionManager.IsActing) return false;
+
+        PlayerActionManager.ActionKind kind = actionManager.CurrentAction;
+
+        return kind == PlayerActionManager.ActionKind.Harai
+            || kind == PlayerActionManager.ActionKind.DerivedHarai;
+    }
+
+    private void ApplyAllyVisibility(bool visible)
+    {
+        for (int i = 0; i < followingAllies.Count; i++)
+        {
+            SetAllyVisible(followingAllies[i], visible);
+        }
+    }
+
+    private void SetAllyVisible(AllyEnemy ally, bool visible)
+    {
+        if (ally == null) return;
+
+        Renderer[] renderers = ally.GetComponentsInChildren<Renderer>(true);
+        for (int r = 0; r < renderers.Length; r++)
+        {
+            renderers[r].enabled = visible;
+        }
+    }
+
     private void ReplenishFromStock()
     {
         while (followingAllies.Count < maxFollowCount && stockCount > 0)
@@ -133,6 +182,13 @@ public class AllyEnemyManager : MonoBehaviour
         allyIndexCounter++;
 
         followingAllies.Add(newAlly);
+
+        // 隠れている最中に補充された個体も合わせて隠す
+        if (alliesHidden)
+        {
+            SetAllyVisible(newAlly, false);
+        }
+
         Debug.Log($"[AllyEnemyManager] AllyEnemy生成。追従中: {followingAllies.Count}体");
     }
 
