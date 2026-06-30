@@ -70,7 +70,8 @@ public class Boss_Door : MonoBehaviour
 
         Vector3 dif = targetTransform.position - (transform.position + offset);
 
-        if (dif.sqrMagnitude < radius * radius && !flg)
+		StopAuraEffect();
+		if (dif.sqrMagnitude < radius * radius && !flg)
         {
 			Transform[] children = GetComponentsInChildren<Transform>();
 
@@ -84,7 +85,6 @@ public class Boss_Door : MonoBehaviour
 			}
 
             flg = true;
-			StopAuraEffect();
 			SpawnFlashEffect();
 			SpawnStampEffect();
 		}
@@ -129,7 +129,10 @@ public class Boss_Door : MonoBehaviour
 	private void StopAuraEffect()
 	{
 		if (auraEffect != null)
+		{
 			auraEffect.Stop();
+			Destroy(auraEffect);
+		}
 	}
 
 	private void SpawnFlashEffect()
