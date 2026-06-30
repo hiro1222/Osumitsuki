@@ -106,13 +106,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoGridResolution: 1
   targetCellSize: 0.05
-  minGridResolution: 32
-  maxGridResolution: 512
-  gridResolution: 64
-  walkThreshold: 50
-  chunkSize: 16
+  minGridResolution: 1
+  maxGridResolution: 1
+  gridResolution: 1
+  walkThreshold: 1
+  chunkSize: 1
   meshThickness: 0.15
-  renderResolution: 256
+  collisionRebuildInterval: 0.06
+  visualResolution: 1024
+  flipInkVertical: 1
+  flipInkHorizontal: 0
 --- !u!64 &6550800119778307698
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -164,7 +167,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f8eb58f00098e4eaf5a27af7e1496c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxInkCapa: 100
+  prefab_aura: {fileID: 5637993744945873680, guid: f0431db1b83c56044a4bfac88f11d0a6, type: 3}
+  prefab_flash: {fileID: 1161900068225726061, guid: ad23a9ff85076124b94938eb97bf8828, type: 3}
+  prefab_stamp: {fileID: 4931764959179318859, guid: 38c913f9156128b419391c246468ed9c, type: 3}
+  offset_Aura: {x: 0, y: 0, z: 0}
+  scale_Aura: {x: 5, y: 5, z: 5}
+  offset_Flash: {x: 0, y: 0, z: 0}
+  scale_Flash: {x: 8, y: 8, z: 8}
+  offset_Stamp: 3
+  scale_Stamp: {x: 1, y: 1, z: 1}
+  maxInkCapa: 15
+  coolPaintTime: 0.5
   myMaterial: {fileID: 2100000, guid: 3bf543586d7c2f848b63137011c7990c, type: 2}
   allyEnemyTarget:
   - {fileID: 8844442760287324131}
@@ -173,6 +186,7 @@ MonoBehaviour:
   targets: []
   turnSpd: 60
   moveSpd: 10
+  Y_lock: 1
 --- !u!1 &1987009975761036199
 GameObject:
   m_ObjectHideFlags: 0
