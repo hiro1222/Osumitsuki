@@ -247,18 +247,6 @@ public class AllyEnemyManager : MonoBehaviour
     public int GetAllyCount() => followingAllies.Count;
     public int GetStockCount() => stockCount;
 
-    private void OnGUI()
-    {
-        GUI.Label(new Rect(10, 130, 400, 20),
-            $"仲間: {followingAllies.Count}体  ストック: {stockCount}体");
-
-        if (actionManager != null && actionManager.IsActing)
-        {
-            GUI.Label(new Rect(10, 150, 400, 20),
-                $"アクション中: {actionManager.CurrentAction} → アンカー移動");
-        }
-    }
-
     public IReadOnlyList<AllyEnemy> GetAllyEnemy()
     {
         return followingAllies;
