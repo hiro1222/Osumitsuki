@@ -309,6 +309,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     [Header("── SE ──")]
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private SoundEffect chargeSE;
     [SerializeField] private SoundEffect tackleSE;
     [SerializeField] private SoundEffect rollSE;
     [SerializeField] private SoundEffect jumpSE;
@@ -948,6 +949,14 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         if (attackIndicator != null)
             attackIndicator.Show(chargeTargetDir);
 
+        if (chargeSE?.clip != null)
+        {
+            audioSource.clip = chargeSE.clip;
+            audioSource.volume = chargeSE.volume;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+
         if (currentPhase != 1)
         {
             float preDelay = Mathf.Max(0f, chargeDuration - tackleSEPreDelay);
@@ -988,6 +997,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterTackle()
     {
+        //if (audioSource.isPlaying && audioSource.loop)
+        //{
+        //    audioSource.loop = false;
+        //    audioSource.Stop();
+        //}
+
         prevState = state;
         state = BossState.Tackle;
 
@@ -1754,6 +1769,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void EnterRoar()
     {
         state = BossState.Roar;
+     
         Debug.Log($"[Boss_SB] 咆哮！フェーズ{currentPhase + 1}");
 
         StartCoroutine(RoarCoroutine());
@@ -1802,6 +1818,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
         if (roarEffect != null)
             StartCoroutine(PlayRoarEffect());
+
+        PlaySE(roarSE);
 
         yield return new WaitForSeconds(0.5f);
 

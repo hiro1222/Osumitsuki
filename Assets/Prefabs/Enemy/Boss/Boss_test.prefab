@@ -324,6 +324,10 @@ MonoBehaviour:
   attackIndicator: {fileID: 7935275333974623246}
   groundFollowSpeed: 10
   audioSource: {fileID: 8361279468790285135}
+  chargeSE:
+    clip: {fileID: 8300000, guid: 931aa5782fb09b44aaa7b2f94a182d16, type: 3}
+    volume: 1
+    loop: 0
   tackleSE:
     clip: {fileID: 8300000, guid: 3b3127064ca67294ab2d72fd810fc945, type: 3}
     volume: 0.5
@@ -353,7 +357,7 @@ MonoBehaviour:
     volume: 1
     loop: 0
   roarSE:
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 78b815cf34ddce949b4dcf5f6e1abb8c, type: 3}
     volume: 1
     loop: 0
   defeatSE:
