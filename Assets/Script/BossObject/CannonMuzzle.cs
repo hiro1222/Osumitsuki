@@ -57,6 +57,7 @@ public class CannonMuzzle : MonoBehaviour
     [Tooltip("扉に当たってからボスが消えるまでの時間（秒）")]
     [SerializeField] private float disappearDelay = 1f;
 
+
     [Header("── SE ──")]
     [SerializeField] private AudioClip cannonLaunchSE; // 大砲射出（1）.mp3
 
@@ -66,6 +67,7 @@ public class CannonMuzzle : MonoBehaviour
     private bool hasHitDoor = false;
 
     private int originalBossLayer;
+
 
     private void Start()
     {
@@ -166,6 +168,8 @@ public class CannonMuzzle : MonoBehaviour
         bool isBoxStun = boss.GetIsPhase3BoxStun();
         if (!isHipDrop && !isBoxStun) return;
 
+        if (!isBoxStun) return;
+
         if (cannonAutoAim != null && !cannonAutoAim.IsAimedUp()) return;
 
         hasLaunched = true;
@@ -203,8 +207,6 @@ public class CannonMuzzle : MonoBehaviour
             cameraController.SetLookTarget(boss.transform);
 
         Vector3 cannonForward = transform.forward;
-        cannonForward.y = 0f;
-        cannonForward.Normalize();
 
         yield return new WaitForSeconds(launchDelay);
         if (boss == null) yield break;
@@ -230,11 +232,21 @@ public class CannonMuzzle : MonoBehaviour
         float fixedYaw = boss.transform.eulerAngles.y;
         Quaternion finalRot = Quaternion.Euler(90f, fixedYaw, 0f);
 
-        if (launchEffect != null)
+        if (goalDoorTransform != null)
         {
-            launchEffect.SetActive(true);
-            var ps = launchEffect.GetComponentsInChildren<ParticleSystem>();
-            foreach (var p in ps) { p.Clear(); p.Play(); }
+            // ★ 扉の方向へ向けて発射
+            cannonForward = (goalDoorTransform.position - transform.position).normalized;
+            cannonForward.y = 0f;
+            cannonForward.Normalize();
+            Debug.Log($"[CannonMuzzle] 発射方向（扉向き）: {cannonForward}");
+        }
+        else
+        {
+            // ★ 扉がない場合はMuzzleTriggerのforward方向（従来通り）
+            cannonForward = transform.forward;
+            cannonForward.y = 0f;
+            cannonForward.Normalize();
+            Debug.Log($"[CannonMuzzle] 発射方向（forward）: {cannonForward}");
         }
 
         float timeout = 10f;
