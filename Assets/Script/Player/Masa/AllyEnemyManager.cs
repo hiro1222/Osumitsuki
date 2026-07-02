@@ -31,6 +31,10 @@ public class AllyEnemyManager : MonoBehaviour
     [Tooltip("Harai/DerivedHarai開始時から見た目を隠す秒数。Haraiが終わってもこの秒数は隠れ続ける。")]
     [SerializeField] private float hideDurationSeconds = 0.5f;
 
+    [Header("── お墨付きSE ──")]
+    [SerializeField] private AudioSource seSource;
+    [SerializeField] private AudioClip becomeAllySE;
+
     private readonly List<AllyEnemy> followingAllies = new List<AllyEnemy>();
     private int stockCount = 0;
 
@@ -218,6 +222,9 @@ public class AllyEnemyManager : MonoBehaviour
 
     public void OnEnemyBecameAlly(Vector3 spawnPosition, float inkRecovery)
     {
+        if (seSource != null && becomeAllySE != null)
+            seSource.PlayOneShot(becomeAllySE);
+
         Vector3 fixedSpawnPos = spawnPosition;
         fixedSpawnPos.y = transform.position.y;
 
