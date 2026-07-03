@@ -47,6 +47,7 @@ public class Boss_Door : MonoBehaviour
 	[Header("アクティブ")]
 	[SerializeField] private bool enabled = false;
 
+	private AudioSource stampSound;
 	private bool flg = false;
 
 
@@ -61,6 +62,8 @@ public class Boss_Door : MonoBehaviour
 		leftOpenRot = leftDoor.localRotation * Quaternion.Euler(0, leftOpenAngle, 0);
 		rightOpenRot = rightDoor.localRotation * Quaternion.Euler(0, rightOpenAngle, 0);
 		SpawnAuraEffect();
+
+		stampSound = GetComponent<AudioSource>();
 	}
 
 
@@ -161,6 +164,7 @@ public class Boss_Door : MonoBehaviour
 
 			Debug.Log("スタンプエフェクト");
 			stampEffect = instance.GetComponent<ParticleSystem>();
+			stampSound.Play();
 		}
 	}
 
