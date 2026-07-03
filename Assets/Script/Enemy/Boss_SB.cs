@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// ボスエネミー「鎧墨袋（Boss_SB）」
@@ -321,6 +322,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [SerializeField] private SoundEffect defeatSE;
     [SerializeField] private SoundEffect stunHitSE;
     [SerializeField] private SoundEffect stunHitFinalSE;
+    [Tooltip("SEのフェードアウト時間（秒）")]
+    [SerializeField] private float seFadeOutDuration = 0.3f;
+    [Header("── ループSE専用AudioSource ──")]
+    [SerializeField] private AudioSource loopAudioSource;
 
     [Header("── ローリングSE（クロスフェードループ用） ──")]
     [SerializeField] private AudioSource rollAudioSourceA;
@@ -380,6 +385,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private Vector3 rollAvoidMoveDir; // キャッシュした移動方向
 
     private bool isPushing = false; // 押し処理が重複しないように
+
+    private Coroutine seFadeOutCoroutine;
 
     /// <summary>フェーズ3で木箱によりスタンしているか（大砲ヒットによるスタンではない）</summary>
     public bool GetIsPhase3BoxStun() => currentPhase == 2 && state == BossState.Stun && !isHitCannon;
@@ -506,15 +513,25 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     {
         if (audioSource == null || se == null || se.clip == null) return;
 
+        // フェードアウト中なら止めて音量を元に戻す
+        if (seFadeOutCoroutine != null)
+        {
+            StopCoroutine(seFadeOutCoroutine);
+            seFadeOutCoroutine = null;
+            audioSource.volume = 1f; // 音量リセット
+        }
+
         if (se.loop)
         {
-            audioSource.clip = se.clip;
-            audioSource.volume = se.volume;
-            audioSource.loop = true;
-            audioSource.Play();
+            if (loopAudioSource == null) return;
+            loopAudioSource.clip = se.clip;
+            loopAudioSource.volume = se.volume;
+            loopAudioSource.loop = true;
+            loopAudioSource.Play();
         }
         else
         {
+            if (audioSource == null) return;
             audioSource.PlayOneShot(se.clip, se.volume);
         }
     }
@@ -525,11 +542,59 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         PlaySE(se);
     }
 
+    /// <summary>ループSEだけをフェードアウトして止める</summary>
+    private void StopLoopSE()
+    {
+        Debug.Log($"[Boss_SB] StopLoopSE呼ばれた");
+
+        // loopAudioSourceはフェードアウト
+        if (loopAudioSource != null && loopAudioSource.isPlaying)
+        {
+            if (seFadeOutCoroutine != null)
+            {
+                StopCoroutine(seFadeOutCoroutine);
+                seFadeOutCoroutine = null;
+            }
+            seFadeOutCoroutine = StartCoroutine(FadeOutSE(loopAudioSource));
+        }
+
+        // rollAudioSourceは即座に止めて音量もリセット
+        if (rollLoopCoroutine != null)
+        {
+            StopCoroutine(rollLoopCoroutine);
+            rollLoopCoroutine = null;
+        }
+
+    }
+
     /// <summary>現在再生中のSEを全て停止する</summary>
     private void StopAllSE()
     {
         if (audioSource != null)
             audioSource.Stop();
+
+        StopLoopSE();
+    }
+
+    private IEnumerator FadeOutSE(AudioSource target)
+    {
+        if (target == null) yield break;
+
+        float startVolume = target.volume;
+        float elapsed = 0f;
+
+        target.loop = false;
+
+        while (elapsed < seFadeOutDuration)
+        {
+            elapsed += Time.deltaTime;
+            target.volume = Mathf.Lerp(startVolume, 0f, elapsed / seFadeOutDuration);
+            yield return null;
+        }
+
+        target.Stop();
+        target.volume = startVolume;
+        seFadeOutCoroutine = null;
     }
 
     /// <summary>状態に応じてエフェクトを切り替える</summary>
@@ -877,6 +942,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterChase()
     {
+        StopAllSE();
+
         state = BossState.Chase;
         attackTimer = 0f;
         attackDelay = Random.Range(attackDelayMin, attackDelayMax);
@@ -953,7 +1020,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         {
             audioSource.clip = chargeSE.clip;
             audioSource.volume = chargeSE.volume;
-            audioSource.loop = true;
+            audioSource.loop = chargeSE.loop;
             audioSource.Play();
         }
 
@@ -1002,7 +1069,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         //    audioSource.loop = false;
         //    audioSource.Stop();
         //}
-
         prevState = state;
         state = BossState.Tackle;
 
@@ -1200,7 +1266,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         rollXRotation = 0f;
         rollDirection = (player.position - transform.position).normalized;
         rollDirection.y = 0f;
-        StartRollLoopSE();
         StartCoroutine(RollWindupCoroutine());
     }
 
@@ -1265,6 +1330,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void StartRollLoopSE()
     {
         if (rollSE?.clip == null) return;
+
+        // StopLoopSEで既にリセット済みなので、そのまま再生開始
         rollLoopCoroutine = StartCoroutine(RollLoopCoroutine());
     }
 
@@ -1389,10 +1456,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     }
 
     private IEnumerator RollWindupCoroutine()
-    {
+    { 
         BossState prevState = state;
         state = BossState.Stop;
         isRollWindup = true; // 開始
+
+        PlaySE(chargeSE);
 
         Quaternion startRot = transform.rotation;
         Quaternion tiltRot = startRot * Quaternion.Euler(rollWindupTiltAngle, 0f, 0f);
@@ -1418,6 +1487,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         transform.rotation = startRot;
         isRollWindup = false; // 終了
 
+        StopAllSE();
+
+        StartRollLoopSE();
+
         state = BossState.Roll;
     }
 
@@ -1435,6 +1508,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterHipDropCharge()
     {
+
+        StopAllSE();
+
         state = BossState.HipDropCharge;
         hipDropChargeTimer = 0f;
         hipDropCurrentCount = 0;
@@ -1648,6 +1724,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterStop()
     {
+
         prevState = state;
         state = BossState.Stop;
         stopTimer = 0f;
@@ -1682,6 +1759,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterStun()
     {
+        StopLoopSE(); 
+
         state = BossState.Stun;
         stunTimer = 0f;
         Debug.Log("[Boss_SB] スタン！");
@@ -1768,6 +1847,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
 
     private void EnterRoar()
     {
+        StopAllSE();
+
         state = BossState.Roar;
      
         Debug.Log($"[Boss_SB] 咆哮！フェーズ{currentPhase + 1}");
@@ -2112,6 +2193,7 @@ GameObject prefab, List<Transform> spawnPoints)
 
     private void ApplyKnockbackToPlayer()
     {
+        StopAllSE();
         if (playerMove == null) return;
 
         Debug.Log($"[Boss_SB] ApplyKnockback hitEffectPlayer={hitEffectPlayer}");
