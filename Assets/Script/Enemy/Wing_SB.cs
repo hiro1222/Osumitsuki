@@ -103,6 +103,7 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
     private PlayerStats playerStats;
     [SerializeField] private int damageAmount = 1;
 
+    private PlayerSound playerSound;
 
     // ====================================================================
     //  内部状態
@@ -202,6 +203,12 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
                 playerStats = player.GetComponentInChildren<PlayerStats>();
             if (playerStats == null)
                 playerStats = player.GetComponentInParent<PlayerStats>();
+
+            playerSound = player.GetComponent<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInChildren<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInParent<PlayerSound>();
         }
     }
 
@@ -512,6 +519,9 @@ public class Wing_SB : MonoBehaviour, IF_Enemy
 
         if (playerStats != null)
             playerStats.Damage(damageAmount);
+
+        if (playerSound != null)
+            playerSound.PlayDamage();
     }
 
     // ====================================================================

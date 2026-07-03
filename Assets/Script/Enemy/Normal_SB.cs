@@ -84,6 +84,8 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     private PlayerStats playerStats;
     [SerializeField] private int damageAmount = 1;
 
+    private PlayerSound playerSound;
+
 
     private Rigidbody rb;
 
@@ -153,6 +155,11 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
                 if (playerController == null)
                     playerController = go.GetComponentInParent<CharacterController>();
 
+                playerSound = go.GetComponent<PlayerSound>();
+                if (playerSound == null)
+                    playerSound = go.GetComponentInChildren<PlayerSound>();
+                if (playerSound == null)
+                    playerSound = go.GetComponentInParent<PlayerSound>();
             }
         }
         else
@@ -177,6 +184,11 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
             if (playerStats == null)
                 playerStats = player.GetComponentInParent<PlayerStats>();
 
+            playerSound = player.GetComponent<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInChildren<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInParent<PlayerSound>();
         }
 
 
@@ -320,12 +332,10 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     // ====================================================================
     //  プレイヤーへのノックバック
     // ====================================================================
-
     private void ApplyKnockbackToPlayer()
     {
         if (playerMove == null) return;
 
-        // ヒットエフェクト
         if (hitEffectPlayer != null)
             hitEffectPlayer.PlayHitEffect();
 
@@ -337,9 +347,15 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
                                   + Vector3.up * knockbackUpForce;
 
         playerMove.ApplyKnockback(knockbackVelocity, knockbackDuration);
-
-        if (playerStats != null)
-            playerStats.Damage(damageAmount);
+        if (playerSound != null)
+        {
+            Debug.Log("[Normal_SB] playerSound 呼び出し実行");
+            playerSound.PlayDamage();
+        }
+        else
+        {
+            Debug.LogWarning("[Normal_SB] playerSound が null です");
+        }
     }
 
     // ====================================================================

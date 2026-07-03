@@ -410,6 +410,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private CharacterController bossController;
     private PlayerStats playerStats;
 
+    private PlayerSound playerSound;
+
     float tackleSEPreDelay = 0.3f;
 
     // ====================================================================
@@ -456,6 +458,12 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
                 playerStats = player.GetComponentInChildren<PlayerStats>();
             if (playerStats == null)
                 playerStats = player.GetComponentInParent<PlayerStats>();
+
+            playerSound = player.GetComponent<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInChildren<PlayerSound>();
+            if (playerSound == null)
+                playerSound = player.GetComponentInParent<PlayerSound>();
         }
 
         if (cannonMuzzleTransform == null)
@@ -2228,6 +2236,9 @@ GameObject prefab, List<Transform> spawnPoints)
 
         if (playerStats != null)
             playerStats.Damage(1);
+
+        if (playerSound != null)
+            playerSound.PlayDamage(true);
     }
 
     // ====================================================================
