@@ -336,6 +336,7 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
     {
         if (playerMove == null) return;
 
+
         if (hitEffectPlayer != null)
             hitEffectPlayer.PlayHitEffect();
 
@@ -351,6 +352,7 @@ public class Normal_SB : MonoBehaviour, IF_Enemy
         {
             Debug.Log("[Normal_SB] playerSound 呼び出し実行");
             playerSound.PlayDamage();
+            playerStats.Damage(damageAmount);
         }
         else
         {
