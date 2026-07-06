@@ -235,6 +235,10 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     [Tooltip("回復量（フェーズ1:2 フェーズ2:10）")]
     [SerializeField] private float[] inkRecoveries = { 2f, 10f, 10f };
 
+    [Header("── プレイヤー衝突クールダウン ──")]
+    [Tooltip("プレイヤーに当たってから次に当たれるまでの時間（秒）")]
+    [SerializeField] private float playerHitCooldown = 1.0f;
+
     [Header("── フェーズ別ステータス ──")]
     [Tooltip("必要塗り回数（フェーズ1:10 フェーズ2:12 フェーズ3:15）")]
     [SerializeField] private int[] requiredInkCounts = { 10, 12, 15 };
@@ -349,6 +353,8 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     // Charge用
     private float chargeTimer = 0f;
     private Vector3 chargeTargetDir;
+
+    private float playerHitCooldownTimer = 0f;
 
     // Tackle用（フェーズ1）
     private Vector3 tackleDirection;
@@ -490,6 +496,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void Update()
     {
         if (player == null) return;
+
+        if (playerHitCooldownTimer > 0f)
+            playerHitCooldownTimer -= Time.deltaTime;
 
         if (!isLaunching)
             ClampToArea();
@@ -899,7 +908,6 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
     private void CheckPlayerCollision()
     {
         if (state == BossState.Idle ||
-            state == BossState.Stop ||
             state == BossState.Stun ||
             state == BossState.Roar ||
             state == BossState.RollEnd ||
@@ -908,17 +916,7 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             isLaunching ||
             isHitCannon) return;
 
-        if (state == BossState.HipDrop && cannonMuzzleTransform != null)
-        {
-            float distToCannon = Vector3.Distance(
-                new Vector3(transform.position.x, 0, transform.position.z),
-                new Vector3(cannonMuzzleTransform.position.x, 0, cannonMuzzleTransform.position.z));
-            if (distToCannon <= cannonSafeRadius)
-            {
-                Debug.Log($"[Boss_SB] 大砲近くなので判定スキップ dist={distToCannon}");
-                return;
-            }
-        }
+        if (playerHitCooldownTimer > 0f) return;
 
         Vector3 bossPos = bodyTransform != null ? bodyTransform.position : transform.position;
         Vector3 playerPos = player.position;
@@ -926,21 +924,11 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
         playerPos.y = 0f;
         float dist = Vector3.Distance(bossPos, playerPos);
 
-
         if (dist <= collideDistance)
         {
-            if (isHitCannon || isLaunching) return;
+            playerHitCooldownTimer = playerHitCooldown;
 
-            Debug.Log($"[Boss_SB] 衝突発生！bodyTransform.posY={bodyTransform?.position.y} transform.posY={transform.position.y} dist={dist}");
             ApplyKnockbackToPlayer();
-
-
-            if (state == BossState.Tackle)
-                EnterStop();
-            else if (state == BossState.Roll)
-                StartCoroutine(RollEndCoroutine());
-            else if (state == BossState.Chase)
-                EnterStop();
         }
     }
 
@@ -1545,6 +1533,9 @@ public class Boss_SB : MonoBehaviour, IF_Enemy
             }
 
             hipDropCurrentCount = i;
+
+            if (i == 0)
+                PlaySE(jumpSE);
 
             // ジャンプ＋チャージ（ホーミング）
             yield return StartCoroutine(HipDropChargeCoroutine());
